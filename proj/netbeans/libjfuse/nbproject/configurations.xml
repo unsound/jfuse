@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="51">
+  <logicalFolder name="root" displayName="root" projectFiles="true">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="native" displayName="native" projectFiles="true">
+      <logicalFolder name="libjfuse" displayName="libjfuse" projectFiles="true">
+        <itemPath>../../../src/native/libjfuse/jfuse.c</itemPath>
+        <itemPath>../../../src/native/libjfuse/jfuse.h</itemPath>
+      </logicalFolder>
+      <itemPath>../../../src/native/fuse_module.cpp</itemPath>
+      <itemPath>../../../src/native/fuse_module.h</itemPath>
+      <itemPath>../../../src/native/FUSEFillDirContext.cpp</itemPath>
+      <itemPath>../../../src/native/FUSEFillDirContext.h</itemPath>
+      <itemPath>../../../src/native/JNIModule.cpp</itemPath>
+      <itemPath>../../../src/native/org_catacombae_jfuse_FUSEFillDir.cpp</itemPath>
+      <itemPath>../../../src/native/org_catacombae_jfuse_FUSEFillDir.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceRootList>
+    <Elem>../../../src/native</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="2">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>4</platform>
+      </toolsSet>
+      <compileType>
+        <cCompilerTool>
+          <includeDirectories>
+            <directoryPath>/System/Library/Frameworks/JavaVM.framework/Headers</directoryPath>
+          </includeDirectories>
+        </cCompilerTool>
+        <ccCompilerTool>
+          <includeDirectories>
+            <directoryPath>/System/Library/Frameworks/JavaVM.framework/Headers</directoryPath>
+          </includeDirectories>
+        </ccCompilerTool>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+      <item path="../../../src/native/FUSEFillDirContext.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../src/native/FUSEFillDirContext.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="../../../src/native/JNIModule.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../src/native/fuse_module.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../src/native/fuse_module.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="../../../src/native/libjfuse/jfuse.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="../../../src/native/libjfuse/jfuse.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="../../../src/native/org_catacombae_jfuse_FUSEFillDir.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../src/native/org_catacombae_jfuse_FUSEFillDir.h">
+        <itemTool>3</itemTool>
+      </item>
+    </conf>
+    <conf name="Release" type="2">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>4</platform>
+      </toolsSet>
+      <compileType>
+        <cCompilerTool>
+          <developmentMode>5</developmentMode>
+        </cCompilerTool>
+        <ccCompilerTool>
+          <developmentMode>5</developmentMode>
+        </ccCompilerTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+      <item path="../../../src/native/FUSEFillDirContext.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../src/native/FUSEFillDirContext.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="../../../src/native/JNIModule.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../src/native/fuse_module.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../src/native/fuse_module.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="../../../src/native/libjfuse/jfuse.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="../../../src/native/libjfuse/jfuse.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="../../../src/native/org_catacombae_jfuse_FUSEFillDir.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../src/native/org_catacombae_jfuse_FUSEFillDir.h">
+        <itemTool>3</itemTool>
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>

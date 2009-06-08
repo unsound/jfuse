@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project basedir="." default="all" name="jFUSE">
+  <property environment="env"/>
+  <property name="debuglevel" value="source,lines,vars"/>
+  <property name="java.target.level" value="1.5"/>
+  <property name="java.source.level" value="1.5"/>
+  <property name="java.source.dir" value="src/java"/>
+  <property name="manifest.source.dir" value="src/META-INF"/>
+  <property name="builddir" value=".build~"/>
+  <property name="libdir" value="lib"/>
+  <property name="manifest.filename" value="${manifest.source.dir}/MANIFEST.MF"/>
+  <property name="outjar.filename" value="${libdir}/jfuse.jar"/>
+  
+  <path id="build.classpath">
+    <pathelement location="${builddir}"/>
+    <!-- <pathelement location="${libdir}/swing-layout-1.0.3.jar"/> -->
+  </path>
+  <path id="javadoc.classpath">
+    <!-- empty because jFUSE doesn't depend on any external libraries at the moment -->
+  </path>
+
+  <target name="all" depends="cleanall,jar,javadoc"/>
+  <target name="init">
+    <mkdir dir="${builddir}"/>
+  </target>
+  <target name="clean">
+    <delete dir="${builddir}"/>
+  </target>
+  <target name="cleanall" depends="clean"/>
+  <target name="build" depends="build-subprojects,build-project"/>
+  <target name="build-subprojects"/>
+  <target name="build-project" depends="init">
+    <!-- <echo message="${ant.project.name}: ${ant.file}"/> -->
+    <javac debug="true"
+	   debuglevel="${debuglevel}"
+	   destdir="${builddir}"
+	   source="${java.source.level}"
+	   target="${java.target.level}"
+	   deprecation="on">
+      <compilerarg value="-Xlint:unchecked"/>
+      <src path="${java.source.dir}"/>
+      <classpath refid="build.classpath"/>
+    </javac>
+  </target>
+  <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+  <target name="jar" depends="build">
+    <jar destfile="${outjar.filename}" basedir="${builddir}" manifest="${manifest.filename}"/>
+  </target>
+  
+  <target name="javadoc">
+    <javadoc destdir="javadoc.~"
+	     packagenames="org.catacombae.*"
+	     sourcepath="${java.source.dir}"
+	     access="private"
+             author="true"
+             version="true"
+             use="true"
+             windowtitle="jFUSE API">
+      
+      <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
+      <classpath>
+	<path refid="javadoc.classpath"/>
+      </classpath>
+    </javadoc>
+  </target>
+</project>

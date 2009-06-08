@@ -1,0 +1,13 @@
+package org.catacombae.jfuse;
+
+public interface FUSEDirFil {
+    public long fill(byte[] struct_fuse_dirhandlep_h,
+		     byte[] const_charp_name,
+		     int int_type,
+		     byte[] ino_t_ino);
+}
+
+// /* Used by deprecated getdir() method */
+// typedef struct fuse_dirhandle *fuse_dirh_t;
+// typedef int (*fuse_dirfil_t) (fuse_dirh_t h, const char *name, int type,
+//                               ino_t ino);

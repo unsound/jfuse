@@ -1,0 +1,5 @@
+package org.catacombae.jfuse;
+
+public class FUSEFileSystem implements FUSEOperations {
+    
+}

@@ -1,0 +1,7 @@
+package org.catacombae.jfuse;
+
+public class StructUtimbuf {
+    public int getWhatever(byte[] struct_utimbuf) {
+	return 0;
+    }
+}

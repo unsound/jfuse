@@ -1,0 +1,5 @@
+public interface FUSE26ReturnValues {
+    public static final int ENOENT;
+    
+    public static final long USER_DEFINED_RETVAL_MASK = 0x100000000L;
+}

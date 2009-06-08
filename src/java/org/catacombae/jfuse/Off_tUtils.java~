@@ -1,0 +1,12 @@
+package org.catacombae.jfuse;
+
+public class Off_t {
+    public static long toLong(byte[] off_tValue) {
+	if(off_tValue.length <= 8)
+	    return Util.readLong(off_tValue);
+	else
+	    throw new IllegalArgumentException("off_t value doesn't fit in a long! " +
+					       "off_t value is " + (off_tValue.length*8) +
+					       " bits wide.");
+    }
+}
