@@ -1,7 +1,0 @@
-package org.catacombae.jfuse;
-
-/**
- * Empty interface that just extends the latest version of the operations interface.
- * For people that don't really know anything about FUSE versions.
- */
-public interface FUSEOperations extends FUSE26Operations {}
