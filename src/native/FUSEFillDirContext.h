@@ -12,7 +12,7 @@
 
 class FUSEFillDirContext {
 public:
-    FUSEFillDirContext();
+    FUSEFillDirContext(fuse_fill_dir_t filler, void *buf);
     FUSEFillDirContext(const FUSEFillDirContext& orig);
     virtual ~FUSEFillDirContext();
 
