@@ -24,24 +24,35 @@
 package org.catacombae.jfuse;
 
 public class FUSEFillDir {
+    static {
+        JNILoader.ensureLoaded();
+    }
+
     private final byte[] nativeFunctionPointer;
 
     public FUSEFillDir(byte[] nativeFunctionPointer) {
+        if(nativeFunctionPointer == null)
+            throw new IllegalArgumentException("null nativeFunctionPointer not allowed.");
+
         this.nativeFunctionPointer = new byte[nativeFunctionPointer.length];
         System.arraycopy(nativeFunctionPointer, 0, this.nativeFunctionPointer, 0,
                 this.nativeFunctionPointer.length);
     }
-
-     //* @param voidp_buf the buffer passed to the readdir() operation
+    
+    //* @param voidp_buf the buffer passed to the readdir() operation
     /**
      * Function to add an entry in a readdir() operation
      *
      * @param name <b>(const char*)</b> the file name of the directory entry
      * @param stat <b>(const struct stat*)</b> file attributes, can be NULL
      * @param off <b>(off_t)</b> offset of the next entry or zero
-     * @return 1 if buffer is full, zero otherwise
+     * @return true if buffer is full, false otherwise
      */
-    public native boolean fill(byte[] name, Stat stat, long off);
+    public boolean fill(byte[] name, Stat stat, long off) {
+        return fillNative(name, stat, off);
+    }
+
+    private native boolean fillNative(byte[] name, Stat stat, long off);
 }
 
 // /** Function to add an entry in a readdir() operation
