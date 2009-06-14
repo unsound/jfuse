@@ -5,49 +5,135 @@
 
 package org.catacombae.jfuse;
 
-import java.util.HashMap;
-import java.util.Set;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  *
  * @author erik
  */
 public class FUSEOptions {
-    private Boolean debug = null;
-    private Boolean foreground = null;
-    private Boolean singleThreaded = null;
-    private String fsname = null;
 
-    private final HashMap<String,String> optionMap =
-            new HashMap<String,String>();
+    private final LinkedList<Option> optionList = new LinkedList<Option>();
 
-    public void setOption(String name, String value) {
+    public void addOption(String name, String value) {
         if(name.contains(",") || value.contains(","))
             throw new IllegalArgumentException("The character ',' is reserved" +
                     " and can not exist in the name or value of an option.");
 
-        optionMap.put(name, value);
+        removeOption(name);
+        optionList.addLast(new Option(name, value));
     }
 
-    public String getOption(String name) {
-        return optionMap.get(name);
+    public void addOption(String name) {
+        if(name.contains(","))
+            throw new IllegalArgumentException("The character ',' is reserved" +
+                    " and can not exist in the name or value of an option.");
+        
+        removeOption(name);
+        optionList.addLast(new Option(name));
     }
 
-    public String[] getOptionNames() {
-        Set<String> keySet = optionMap.keySet();
-        return keySet.toArray(new String[keySet.size()]);
+    public boolean removeOption(String name) {
+        for(Iterator<Option> it = optionList.iterator(); it.hasNext(); ) {
+            Option o = it.next();
+            if(o.name.equals(name)) {
+                it.remove();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @param name
+     * @return
+     * @throws NullPointerException if there is no option defined for
+     * <code>name</code>.
+     */
+    public String getOptionValue(String name) {
+        for(Iterator<Option> it = optionList.iterator(); it.hasNext(); ) {
+            Option o = it.next();
+            if(o.name.equals(name)) {
+                return o.value;
+            }
+        }
+
+        throw new NullPointerException();
+    }
+
+    public String[] getDefinedOptions() {
+        String[] result = new String[optionList.size()];
+
+        int i = 0;
+        for(Iterator<Option> it = optionList.iterator(); it.hasNext();) {
+            result[i++] = it.next().name;
+        }
+        
+        return result;
     }
 
     public void setDebug(Boolean b) {
-        debug = b;
+        final String debugOption = "debug";
+        if(b)
+            addOption(debugOption);
+        else
+            removeOption(debugOption);
     }
+    
     public void setForeground(Boolean b) {
-        foreground = b;
+        final String foregroundOption = "-f";
+        if(b)
+            addOption(foregroundOption);
+        else
+            removeOption(foregroundOption);
     }
+
     public void setSingleThreaded(Boolean b) {
-        singleThreaded = b;
+        final String singleThreadedOption = "-s";
+        if(b)
+            addOption(singleThreadedOption);
+        else
+            removeOption(singleThreadedOption);
     }
-    public void setFsname(String s) {
-        fsname = s;
+
+    public void setFsname(String fsname) {
+        addOption("fsname", fsname);
+    }
+
+    public String[] generateOptionStrings() {
+        String[] result = new String[optionList.size()];
+
+        int i = 0;
+        for(Iterator<Option> it = optionList.iterator(); it.hasNext();) {
+            Option o = it.next();
+            result[i++] = "-o" + o.name + (o.value != null ? "=" + o.value : "");
+        }
+
+        return result;
+    }
+
+    protected static class Option {
+        public final String name;
+        public final String value;
+
+        public Option(String name) {
+            if(name == null)
+                throw new IllegalArgumentException("No null names allowed.");
+
+            this.name = name;
+            this.value = null;
+        }
+
+        public Option(String name, String value) {
+            if(name == null)
+                throw new IllegalArgumentException("No null names allowed.");
+            if(value == null)
+                throw new IllegalArgumentException("No null values allowed. (Use the empty constructor)");
+
+            this.name = name;
+            this.value = value;
+        }
     }
 }
