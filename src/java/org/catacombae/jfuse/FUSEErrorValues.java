@@ -11,244 +11,243 @@ package org.catacombae.jfuse;
  * other constants can be added later if they are needed. (These are probably
  * enough)<br>
  *
- * Note that the actual values of the constants don't mean anything, except that
- * all are positive, and should be returned in negative form
- * (ex. "return -ENOENT;").
+ * The values of these constants are fetched from native code so they match the
+ * platform that the native library was compiled on.
  *
  * @author Erik Larsson
  */
 public interface FUSEErrorValues {
     /** Operation not permitted */
-    public static final int EPERM = 1;
+    public static final int EPERM = Errno.EPERM.getNativeErrnoValue();
     /** No such file or directory */
-    public static final int ENOENT = 2;
+    public static final int ENOENT = Errno.ENOENT.getNativeErrnoValue();
     /** No such process */
-    public static final int ESRCH = 3;
+    public static final int ESRCH = Errno.ESRCH.getNativeErrnoValue();
     /** Interrupted system call */
-    public static final int EINTR = 4;
+    public static final int EINTR = Errno.EINTR.getNativeErrnoValue();
     /** Input/output error */
-    public static final int EIO = 5;
+    public static final int EIO = Errno.EIO.getNativeErrnoValue();
     /** Device not configured */
-    public static final int ENXIO = 6;
+    public static final int ENXIO = Errno.ENXIO.getNativeErrnoValue();
     /** Argument list too long */
-    public static final int E2BIG = 7;
+    public static final int E2BIG = Errno.E2BIG.getNativeErrnoValue();
     /** Exec format error */
-    public static final int ENOEXEC = 8;
+    public static final int ENOEXEC = Errno.ENOEXEC.getNativeErrnoValue();
      /** Bad file descriptor */
-    public static final int EBADF = 9;
+    public static final int EBADF = Errno.EBADF.getNativeErrnoValue();
      /** No child processes */
-    public static final int ECHILD = 10;
+    public static final int ECHILD = Errno.ECHILD.getNativeErrnoValue();
      /** Resource deadlock avoided */
-    public static final int EDEADLK = 11;
+    public static final int EDEADLK = Errno.EDEADLK.getNativeErrnoValue();
                                        /* 11 was EAGAIN */
                                         /** Cannot allocate memory */
-    public static final int ENOMEM = 12;
+    public static final int ENOMEM = Errno.ENOMEM.getNativeErrnoValue();
      /** Permission denied */
-    public static final int EACCES = 13;
+    public static final int EACCES = Errno.EACCES.getNativeErrnoValue();
      /** Bad address */
-    public static final int EFAULT = 14;
+    public static final int EFAULT = Errno.EFAULT.getNativeErrnoValue();
      /** Block device required */
-    public static final int ENOTBLK = 15;
+    public static final int ENOTBLK = Errno.ENOTBLK.getNativeErrnoValue();
      /** Device busy */
-    public static final int EBUSY = 16;
+    public static final int EBUSY = Errno.EBUSY.getNativeErrnoValue();
      /** File exists */
-    public static final int EEXIST = 17;
+    public static final int EEXIST = Errno.EEXIST.getNativeErrnoValue();
      /** Cross-device link */
-    public static final int EXDEV = 18;
+    public static final int EXDEV = Errno.EXDEV.getNativeErrnoValue();
      /** Operation not supported by device */
-    public static final int ENODEV = 19;
+    public static final int ENODEV = Errno.ENODEV.getNativeErrnoValue();
      /** Not a directory */
-    public static final int ENOTDIR = 20;
+    public static final int ENOTDIR = Errno.ENOTDIR.getNativeErrnoValue();
      /** Is a directory */
-    public static final int EISDIR = 21;
+    public static final int EISDIR = Errno.EISDIR.getNativeErrnoValue();
      /** Invalid argument */
-    public static final int EINVAL = 22;
+    public static final int EINVAL = Errno.EINVAL.getNativeErrnoValue();
      /** Too many open files in system */
-    public static final int ENFILE = 23;
+    public static final int ENFILE = Errno.ENFILE.getNativeErrnoValue();
      /** Too many open files */
-    public static final int EMFILE = 24;
+    public static final int EMFILE = Errno.EMFILE.getNativeErrnoValue();
      /** Inappropriate ioctl for device */
-    public static final int ENOTTY = 25;
+    public static final int ENOTTY = Errno.ENOTTY.getNativeErrnoValue();
      /** Text file busy */
-    public static final int ETXTBSY = 26;
+    public static final int ETXTBSY = Errno.ETXTBSY.getNativeErrnoValue();
      /** File too large */
-    public static final int EFBIG = 27;
+    public static final int EFBIG = Errno.EFBIG.getNativeErrnoValue();
      /** No space left on device */
-    public static final int ENOSPC = 28;
+    public static final int ENOSPC = Errno.ENOSPC.getNativeErrnoValue();
      /** Illegal seek */
-    public static final int ESPIPE = 29;
+    public static final int ESPIPE = Errno.ESPIPE.getNativeErrnoValue();
      /** Read-only file system */
-    public static final int EROFS = 30;
+    public static final int EROFS = Errno.EROFS.getNativeErrnoValue();
      /** Too many links */
-    public static final int EMLINK = 31;
+    public static final int EMLINK = Errno.EMLINK.getNativeErrnoValue();
      /** Broken pipe */
-    public static final int EPIPE = 32;
+    public static final int EPIPE = Errno.EPIPE.getNativeErrnoValue();
 
 /* math software */
      /** Numerical argument out of domain */
-    public static final int EDOM = 33;
+    public static final int EDOM = Errno.EDOM.getNativeErrnoValue();
      /** Result too large */
-    public static final int ERANGE = 34;
+    public static final int ERANGE = Errno.ERANGE.getNativeErrnoValue();
 
 /* non-blocking and interrupt i/o */
      /** Resource temporarily unavailable */
-    public static final int EAGAIN = 35;
+    public static final int EAGAIN = Errno.EAGAIN.getNativeErrnoValue();
      /** Operation would block */
-    public static final int EWOULDBLOCK = 102;
+    public static final int EWOULDBLOCK = Errno.EWOULDBLOCK.getNativeErrnoValue();
      /** Operation now in progress */
-    public static final int EINPROGRESS = 36;
+    public static final int EINPROGRESS = Errno.EINPROGRESS.getNativeErrnoValue();
      /** Operation already in progress */
-    public static final int EALREADY = 37;
+    public static final int EALREADY = Errno.EALREADY.getNativeErrnoValue();
 
 /* ipc/network software -- argument errors */
      /** Socket operation on non-socket */
-    public static final int ENOTSOCK = 38;
+    public static final int ENOTSOCK = Errno.ENOTSOCK.getNativeErrnoValue();
      /** Destination address required */
-    public static final int EDESTADDRREQ = 39;
+    public static final int EDESTADDRREQ = Errno.EDESTADDRREQ.getNativeErrnoValue();
      /** Message too long */
-    public static final int EMSGSIZE = 40;
+    public static final int EMSGSIZE = Errno.EMSGSIZE.getNativeErrnoValue();
      /** Protocol wrong type for socket */
-    public static final int EPROTOTYPE = 41;
+    public static final int EPROTOTYPE = Errno.EPROTOTYPE.getNativeErrnoValue();
      /** Protocol not available */
-    public static final int ENOPROTOOPT = 42;
+    public static final int ENOPROTOOPT = Errno.ENOPROTOOPT.getNativeErrnoValue();
      /** Protocol not supported */
-    public static final int EPROTONOSUPPORT = 43;
+    public static final int EPROTONOSUPPORT = Errno.EPROTONOSUPPORT.getNativeErrnoValue();
      /** Socket type not supported */
-    public static final int ESOCKTNOSUPPORT = 44;
+    public static final int ESOCKTNOSUPPORT = Errno.ESOCKTNOSUPPORT.getNativeErrnoValue();
      /** Operation not supported */
-    public static final int ENOTSUP = 45;
+    public static final int ENOTSUP = Errno.ENOTSUP.getNativeErrnoValue();
     /** Operation not supported on socket (all other systems) */
-    public static final int EOPNOTSUPP = 103;
+    public static final int EOPNOTSUPP = Errno.EOPNOTSUPP.getNativeErrnoValue();
 
      /** Protocol family not supported */
-    public static final int EPFNOSUPPORT = 46;
+    public static final int EPFNOSUPPORT = Errno.EPFNOSUPPORT.getNativeErrnoValue();
      /** Address family not supported by protocol family */
-    public static final int EAFNOSUPPORT = 47;
+    public static final int EAFNOSUPPORT = Errno.EAFNOSUPPORT.getNativeErrnoValue();
      /** Address already in use */
-    public static final int EADDRINUSE = 48;
+    public static final int EADDRINUSE = Errno.EADDRINUSE.getNativeErrnoValue();
      /** Can't assign requested address */
-    public static final int EADDRNOTAVAIL = 49;
+    public static final int EADDRNOTAVAIL = Errno.EADDRNOTAVAIL.getNativeErrnoValue();
 
 /* ipc/network software -- operational errors */
      /** Network is down */
-    public static final int ENETDOWN = 50;
+    public static final int ENETDOWN = Errno.ENETDOWN.getNativeErrnoValue();
      /** Network is unreachable */
-    public static final int ENETUNREACH = 51;
+    public static final int ENETUNREACH = Errno.ENETUNREACH.getNativeErrnoValue();
      /** Network dropped connection on reset */
-    public static final int ENETRESET = 52;
+    public static final int ENETRESET = Errno.ENETRESET.getNativeErrnoValue();
      /** Software caused connection abort */
-    public static final int ECONNABORTED = 53;
+    public static final int ECONNABORTED = Errno.ECONNABORTED.getNativeErrnoValue();
      /** Connection reset by peer */
-    public static final int ECONNRESET = 54;
+    public static final int ECONNRESET = Errno.ECONNRESET.getNativeErrnoValue();
      /** No buffer space available */
-    public static final int ENOBUFS = 55;
+    public static final int ENOBUFS = Errno.ENOBUFS.getNativeErrnoValue();
      /** Socket is already connected */
-    public static final int EISCONN = 56;
+    public static final int EISCONN = Errno.EISCONN.getNativeErrnoValue();
      /** Socket is not connected */
-    public static final int ENOTCONN = 57;
+    public static final int ENOTCONN = Errno.ENOTCONN.getNativeErrnoValue();
      /** Can't send after socket shutdown */
-    public static final int ESHUTDOWN = 58;
+    public static final int ESHUTDOWN = Errno.ESHUTDOWN.getNativeErrnoValue();
      /** Too many references: can't splice */
-    public static final int ETOOMANYREFS = 59;
+    public static final int ETOOMANYREFS = Errno.ETOOMANYREFS.getNativeErrnoValue();
      /** Operation timed out */
-    public static final int ETIMEDOUT = 60;
+    public static final int ETIMEDOUT = Errno.ETIMEDOUT.getNativeErrnoValue();
      /** Connection refused */
-    public static final int ECONNREFUSED = 61;
+    public static final int ECONNREFUSED = Errno.ECONNREFUSED.getNativeErrnoValue();
 
  /** Too many levels of symbolic links */
-    public static final int ELOOP = 62;
+    public static final int ELOOP = Errno.ELOOP.getNativeErrnoValue();
      /** File name too long */
-    public static final int ENAMETOOLONG = 63;
+    public static final int ENAMETOOLONG = Errno.ENAMETOOLONG.getNativeErrnoValue();
 
 /* should be rearranged */
      /** Host is down */
-    public static final int EHOSTDOWN = 64;
+    public static final int EHOSTDOWN = Errno.EHOSTDOWN.getNativeErrnoValue();
      /** No route to host */
-    public static final int EHOSTUNREACH = 65;
+    public static final int EHOSTUNREACH = Errno.EHOSTUNREACH.getNativeErrnoValue();
      /** Directory not empty */
-    public static final int ENOTEMPTY = 66;
+    public static final int ENOTEMPTY = Errno.ENOTEMPTY.getNativeErrnoValue();
 
 /* quotas & mush */
      /** Too many processes */
-    public static final int EPROCLIM = 67;
+    public static final int EPROCLIM = Errno.EPROCLIM.getNativeErrnoValue();
      /** Too many users */
-    public static final int EUSERS = 68;
+    public static final int EUSERS = Errno.EUSERS.getNativeErrnoValue();
      /** Disc quota exceeded */
-    public static final int EDQUOT = 69;
+    public static final int EDQUOT = Errno.EDQUOT.getNativeErrnoValue();
 
 /* Network File System */
      /** Stale NFS file handle */
-    public static final int ESTALE = 70;
+    public static final int ESTALE = Errno.ESTALE.getNativeErrnoValue();
      /** Too many levels of remote in path */
-    public static final int EREMOTE = 71;
+    public static final int EREMOTE = Errno.EREMOTE.getNativeErrnoValue();
      /** RPC struct is bad */
-    public static final int EBADRPC = 72;
+    public static final int EBADRPC = Errno.EBADRPC.getNativeErrnoValue();
      /** RPC version wrong */
-    public static final int ERPCMISMATCH = 73;
+    public static final int ERPCMISMATCH = Errno.ERPCMISMATCH.getNativeErrnoValue();
      /** RPC prog. not avail */
-    public static final int EPROGUNAVAIL = 74;
+    public static final int EPROGUNAVAIL = Errno.EPROGUNAVAIL.getNativeErrnoValue();
      /** Program version wrong */
-    public static final int EPROGMISMATCH = 75;
+    public static final int EPROGMISMATCH = Errno.EPROGMISMATCH.getNativeErrnoValue();
      /** Bad procedure for program */
-    public static final int EPROCUNAVAIL = 76;
+    public static final int EPROCUNAVAIL = Errno.EPROCUNAVAIL.getNativeErrnoValue();
 
  /** No locks available */
-    public static final int ENOLCK = 77;
+    public static final int ENOLCK = Errno.ENOLCK.getNativeErrnoValue();
     /** Function not implemented */
-    public static final int ENOSYS = 78;
+    public static final int ENOSYS = Errno.ENOSYS.getNativeErrnoValue();
 
      /** Inappropriate file type or format */
-    public static final int EFTYPE = 79;
+    public static final int EFTYPE = Errno.EFTYPE.getNativeErrnoValue();
      /** Authentication error */
-    public static final int EAUTH = 80;
+    public static final int EAUTH = Errno.EAUTH.getNativeErrnoValue();
      /** Need authenticator */
-    public static final int ENEEDAUTH = 81;
+    public static final int ENEEDAUTH = Errno.ENEEDAUTH.getNativeErrnoValue();
 
 /* Intelligent device errors */
      /** Device power is off */
-    public static final int EPWROFF = 82;
+    public static final int EPWROFF = Errno.EPWROFF.getNativeErrnoValue();
      /** Device error, e.g. paper out */
-    public static final int EDEVERR = 83;
+    public static final int EDEVERR = Errno.EDEVERR.getNativeErrnoValue();
 
      /** Value too large to be stored in data type */
-    public static final int EOVERFLOW = 84;
+    public static final int EOVERFLOW = Errno.EOVERFLOW.getNativeErrnoValue();
 
 /* Program loading errors */
 
      /** Bad executable */
-    public static final int EBADEXEC = 85;
+    public static final int EBADEXEC = Errno.EBADEXEC.getNativeErrnoValue();
      /** Bad CPU type in executable */
-    public static final int EBADARCH = 86;
+    public static final int EBADARCH = Errno.EBADARCH.getNativeErrnoValue();
      /** Shared library version mismatch */
-    public static final int ESHLIBVERS = 87;
+    public static final int ESHLIBVERS = Errno.ESHLIBVERS.getNativeErrnoValue();
      /** Malformed Macho file */
-    public static final int EBADMACHO = 88;
+    public static final int EBADMACHO = Errno.EBADMACHO.getNativeErrnoValue();
  /** Operation canceled */
-    public static final int ECANCELED = 89;
+    public static final int ECANCELED = Errno.ECANCELED.getNativeErrnoValue();
      /** Identifier removed */
-    public static final int EIDRM = 90;
+    public static final int EIDRM = Errno.EIDRM.getNativeErrnoValue();
      /** No message of desired type */
-    public static final int ENOMSG = 91;
+    public static final int ENOMSG = Errno.ENOMSG.getNativeErrnoValue();
      /** Illegal byte sequence */
-    public static final int EILSEQ = 92;
+    public static final int EILSEQ = Errno.EILSEQ.getNativeErrnoValue();
      /** Attribute not found */
-    public static final int ENOATTR = 93;
+    public static final int ENOATTR = Errno.ENOATTR.getNativeErrnoValue();
      /** Bad message */
-    public static final int EBADMSG = 94;
+    public static final int EBADMSG = Errno.EBADMSG.getNativeErrnoValue();
      /** Reserved */
-    public static final int EMULTIHOP = 95;
+    public static final int EMULTIHOP = Errno.EMULTIHOP.getNativeErrnoValue();
      /** No message available on STREAM */
-    public static final int ENODATA = 96;
+    public static final int ENODATA = Errno.ENODATA.getNativeErrnoValue();
      /** Reserved */
-    public static final int ENOLINK = 97;
+    public static final int ENOLINK = Errno.ENOLINK.getNativeErrnoValue();
      /** No STREAM resources */
-    public static final int ENOSR = 98;
+    public static final int ENOSR = Errno.ENOSR.getNativeErrnoValue();
      /** Not a STREAM */
-    public static final int ENOSTR = 99;
+    public static final int ENOSTR = Errno.ENOSTR.getNativeErrnoValue();
      /** Protocol error */
-    public static final int EPROTO = 100;
+    public static final int EPROTO = Errno.EPROTO.getNativeErrnoValue();
      /** STREAM ioctl timeout */
-    public static final int ETIME = 101;
+    public static final int ETIME = Errno.ETIME.getNativeErrnoValue();
      /** Must be equal largest errno */
-    public static final int ELAST = 103;
+    public static final int ELAST = Errno.ELAST.getNativeErrnoValue();
 }
