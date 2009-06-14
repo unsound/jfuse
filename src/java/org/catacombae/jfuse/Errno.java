@@ -241,4 +241,23 @@ public enum Errno {
     ETIME,
     /** Must be equal largest errno */
     ELAST;
+
+    private final int nativeErrnoValue;
+
+    private Errno() {
+        JNILoader.ensureLoaded();
+
+        this.nativeErrnoValue = getNativeErrnoValue(name());
+    }
+
+    public int getNativeErrnoValue() {
+        return nativeErrnoValue;
+    }
+    
+    private static native int getNativeErrnoValue(String errnoName);
+
+    public static void main(String[] args) {
+        for(Errno e : Errno.values())
+            System.out.println(e.name() + ": " + e.nativeErrnoValue);
+    }
 }
