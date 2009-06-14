@@ -4,19 +4,19 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>../../../src/native/common.h</itemPath>
+      <itemPath>../../../src/native/CSLog.h</itemPath>
+      <itemPath>../../../src/native/fuse26_module.h</itemPath>
+      <itemPath>../../../src/native/FUSE26Util.h</itemPath>
+      <itemPath>../../../src/native/FUSEFillDirContext.h</itemPath>
+      <itemPath>../../../src/native/JavaSignatures.h</itemPath>
+      <itemPath>../../../src/native/jFUSEContext.h</itemPath>
+      <itemPath>../../../src/native/JNIUtil.h</itemPath>
+      <itemPath>../../../src/native/org_catacombae_jfuse_Errno.h</itemPath>
+      <itemPath>../../../src/native/org_catacombae_jfuse_FUSE.h</itemPath>
+      <itemPath>../../../src/native/org_catacombae_jfuse_FUSEFillDir.h</itemPath>
     </logicalFolder>
     <logicalFolder name="native" displayName="native" projectFiles="true">
-      <logicalFolder name="libjfuse" displayName="libjfuse" projectFiles="true">
-        <itemPath>../../../src/native/libjfuse/jfuse.c</itemPath>
-        <itemPath>../../../src/native/libjfuse/jfuse.h</itemPath>
-      </logicalFolder>
-      <itemPath>../../../src/native/fuse_module.cpp</itemPath>
-      <itemPath>../../../src/native/fuse_module.h</itemPath>
-      <itemPath>../../../src/native/FUSEFillDirContext.cpp</itemPath>
-      <itemPath>../../../src/native/FUSEFillDirContext.h</itemPath>
-      <itemPath>../../../src/native/JNIModule.cpp</itemPath>
-      <itemPath>../../../src/native/org_catacombae_jfuse_FUSEFillDir.cpp</itemPath>
-      <itemPath>../../../src/native/org_catacombae_jfuse_FUSEFillDir.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -25,6 +25,15 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>../../../src/native/common.cpp</itemPath>
+      <itemPath>../../../src/native/fuse26_module.cpp</itemPath>
+      <itemPath>../../../src/native/FUSE26Util.cpp</itemPath>
+      <itemPath>../../../src/native/FUSEFillDirContext.cpp</itemPath>
+      <itemPath>../../../src/native/jFUSEContext.cpp</itemPath>
+      <itemPath>../../../src/native/JNIUtil.cpp</itemPath>
+      <itemPath>../../../src/native/org_catacombae_jfuse_Errno.cpp</itemPath>
+      <itemPath>../../../src/native/org_catacombae_jfuse_FUSE_26.cpp</itemPath>
+      <itemPath>../../../src/native/org_catacombae_jfuse_FUSEFillDir.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -45,39 +54,82 @@
       </toolsSet>
       <compileType>
         <cCompilerTool>
+          <architecture>2</architecture>
           <includeDirectories>
             <directoryPath>/System/Library/Frameworks/JavaVM.framework/Headers</directoryPath>
           </includeDirectories>
+          <preprocessorList>
+            <Elem>_FILE_OFFSET_BITS=64</Elem>
+          </preprocessorList>
+          <warningLevel>2</warningLevel>
         </cCompilerTool>
         <ccCompilerTool>
+          <architecture>2</architecture>
           <includeDirectories>
             <directoryPath>/System/Library/Frameworks/JavaVM.framework/Headers</directoryPath>
           </includeDirectories>
+          <preprocessorList>
+            <Elem>_FILE_OFFSET_BITS=64</Elem>
+          </preprocessorList>
+          <warningLevel>2</warningLevel>
         </ccCompilerTool>
         <linkerTool>
+          <output>dist/Debug/${PLATFORM}/libjfuse.dylib</output>
           <linkerLibItems>
+            <linkerOptionItem>-lfuse</linkerOptionItem>
+            <linkerOptionItem>-framework JavaVM</linkerOptionItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
+      <item path="../../../src/native/CSLog.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="../../../src/native/FUSE26Util.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../src/native/FUSE26Util.h">
+        <itemTool>3</itemTool>
+      </item>
       <item path="../../../src/native/FUSEFillDirContext.cpp">
         <itemTool>1</itemTool>
       </item>
       <item path="../../../src/native/FUSEFillDirContext.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="../../../src/native/JNIModule.cpp">
+      <item path="../../../src/native/JNIUtil.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="../../../src/native/fuse_module.cpp">
-        <itemTool>1</itemTool>
-      </item>
-      <item path="../../../src/native/fuse_module.h">
+      <item path="../../../src/native/JNIUtil.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="../../../src/native/libjfuse/jfuse.c">
-        <itemTool>0</itemTool>
+      <item path="../../../src/native/JavaSignatures.h">
+        <itemTool>3</itemTool>
       </item>
-      <item path="../../../src/native/libjfuse/jfuse.h">
+      <item path="../../../src/native/common.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../src/native/common.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="../../../src/native/fuse26_module.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../src/native/fuse26_module.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="../../../src/native/jFUSEContext.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../src/native/jFUSEContext.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="../../../src/native/org_catacombae_jfuse_Errno.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../src/native/org_catacombae_jfuse_Errno.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="../../../src/native/org_catacombae_jfuse_FUSE.h">
         <itemTool>3</itemTool>
       </item>
       <item path="../../../src/native/org_catacombae_jfuse_FUSEFillDir.cpp">
@@ -85,6 +137,9 @@
       </item>
       <item path="../../../src/native/org_catacombae_jfuse_FUSEFillDir.h">
         <itemTool>3</itemTool>
+      </item>
+      <item path="../../../src/native/org_catacombae_jfuse_FUSE_26.cpp">
+        <itemTool>1</itemTool>
       </item>
     </conf>
     <conf name="Release" type="2">
@@ -108,25 +163,55 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
+      <item path="../../../src/native/CSLog.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="../../../src/native/FUSE26Util.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../src/native/FUSE26Util.h">
+        <itemTool>3</itemTool>
+      </item>
       <item path="../../../src/native/FUSEFillDirContext.cpp">
         <itemTool>1</itemTool>
       </item>
       <item path="../../../src/native/FUSEFillDirContext.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="../../../src/native/JNIModule.cpp">
+      <item path="../../../src/native/JNIUtil.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="../../../src/native/fuse_module.cpp">
-        <itemTool>1</itemTool>
-      </item>
-      <item path="../../../src/native/fuse_module.h">
+      <item path="../../../src/native/JNIUtil.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="../../../src/native/libjfuse/jfuse.c">
-        <itemTool>0</itemTool>
+      <item path="../../../src/native/JavaSignatures.h">
+        <itemTool>3</itemTool>
       </item>
-      <item path="../../../src/native/libjfuse/jfuse.h">
+      <item path="../../../src/native/common.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../src/native/common.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="../../../src/native/fuse26_module.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../src/native/fuse26_module.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="../../../src/native/jFUSEContext.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../src/native/jFUSEContext.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="../../../src/native/org_catacombae_jfuse_Errno.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../src/native/org_catacombae_jfuse_Errno.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="../../../src/native/org_catacombae_jfuse_FUSE.h">
         <itemTool>3</itemTool>
       </item>
       <item path="../../../src/native/org_catacombae_jfuse_FUSEFillDir.cpp">
@@ -134,6 +219,9 @@
       </item>
       <item path="../../../src/native/org_catacombae_jfuse_FUSEFillDir.h">
         <itemTool>3</itemTool>
+      </item>
+      <item path="../../../src/native/org_catacombae_jfuse_FUSE_26.cpp">
+        <itemTool>1</itemTool>
       </item>
     </conf>
   </confs>

@@ -9,8 +9,8 @@ TOP=`pwd`
 PLATFORM=GNU-MacOSX
 TMPDIR=build/Debug/${PLATFORM}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=dist/Debug/${PLATFORM}/liblibjfuse.dylib
-OUTPUT_BASENAME=liblibjfuse.dylib
+OUTPUT_PATH=dist/Debug/${PLATFORM}/libjfuse.dylib
+OUTPUT_BASENAME=libjfuse.dylib
 PACKAGE_TOP_DIR=liblibjfuse.dylib/
 
 # Functions

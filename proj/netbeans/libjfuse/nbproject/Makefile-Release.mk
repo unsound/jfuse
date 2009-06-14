@@ -28,11 +28,15 @@ OBJECTDIR=build/Release/${PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/_ext/Users/erik/devel/jFUSE/proj/netbeans/libjfuse/../../../src/native/fuse_module.o \
-	${OBJECTDIR}/_ext/Users/erik/devel/jFUSE/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_FUSEFillDir.o \
-	${OBJECTDIR}/_ext/Users/erik/devel/jFUSE/proj/netbeans/libjfuse/../../../src/native/libjfuse/jfuse.o \
-	${OBJECTDIR}/_ext/Users/erik/devel/jFUSE/proj/netbeans/libjfuse/../../../src/native/FUSEFillDirContext.o \
-	${OBJECTDIR}/_ext/Users/erik/devel/jFUSE/proj/netbeans/libjfuse/../../../src/native/JNIModule.o
+	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_FUSE_26.o \
+	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/FUSE26Util.o \
+	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/fuse26_module.o \
+	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/FUSEFillDirContext.o \
+	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/JNIUtil.o \
+	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_FUSEFillDir.o \
+	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/jFUSEContext.o \
+	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_Errno.o \
+	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/common.o
 
 # C Compiler Flags
 CFLAGS=
@@ -55,30 +59,50 @@ dist/Release/${PLATFORM}/liblibjfuse.dylib: ${OBJECTFILES}
 	${MKDIR} -p dist/Release/${PLATFORM}
 	${LINK.cc} -dynamiclib -install_name liblibjfuse.dylib -o dist/Release/${PLATFORM}/liblibjfuse.dylib -fPIC ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
-${OBJECTDIR}/_ext/Users/erik/devel/jFUSE/proj/netbeans/libjfuse/../../../src/native/fuse_module.o: ../../../src/native/fuse_module.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/jFUSE/proj/netbeans/libjfuse/../../../src/native
+${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_FUSE_26.o: ../../../src/native/org_catacombae_jfuse_FUSE_26.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/Users/erik/devel/jFUSE/proj/netbeans/libjfuse/../../../src/native/fuse_module.o ../../../src/native/fuse_module.cpp
+	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_FUSE_26.o ../../../src/native/org_catacombae_jfuse_FUSE_26.cpp
 
-${OBJECTDIR}/_ext/Users/erik/devel/jFUSE/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_FUSEFillDir.o: ../../../src/native/org_catacombae_jfuse_FUSEFillDir.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/jFUSE/proj/netbeans/libjfuse/../../../src/native
+${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/FUSE26Util.o: ../../../src/native/FUSE26Util.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/Users/erik/devel/jFUSE/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_FUSEFillDir.o ../../../src/native/org_catacombae_jfuse_FUSEFillDir.cpp
+	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/FUSE26Util.o ../../../src/native/FUSE26Util.cpp
 
-${OBJECTDIR}/_ext/Users/erik/devel/jFUSE/proj/netbeans/libjfuse/../../../src/native/libjfuse/jfuse.o: ../../../src/native/libjfuse/jfuse.c 
-	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/jFUSE/proj/netbeans/libjfuse/../../../src/native/libjfuse
+${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/fuse26_module.o: ../../../src/native/fuse26_module.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
 	${RM} $@.d
-	$(COMPILE.c) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/Users/erik/devel/jFUSE/proj/netbeans/libjfuse/../../../src/native/libjfuse/jfuse.o ../../../src/native/libjfuse/jfuse.c
+	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/fuse26_module.o ../../../src/native/fuse26_module.cpp
 
-${OBJECTDIR}/_ext/Users/erik/devel/jFUSE/proj/netbeans/libjfuse/../../../src/native/FUSEFillDirContext.o: ../../../src/native/FUSEFillDirContext.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/jFUSE/proj/netbeans/libjfuse/../../../src/native
+${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/FUSEFillDirContext.o: ../../../src/native/FUSEFillDirContext.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/Users/erik/devel/jFUSE/proj/netbeans/libjfuse/../../../src/native/FUSEFillDirContext.o ../../../src/native/FUSEFillDirContext.cpp
+	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/FUSEFillDirContext.o ../../../src/native/FUSEFillDirContext.cpp
 
-${OBJECTDIR}/_ext/Users/erik/devel/jFUSE/proj/netbeans/libjfuse/../../../src/native/JNIModule.o: ../../../src/native/JNIModule.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/jFUSE/proj/netbeans/libjfuse/../../../src/native
+${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/JNIUtil.o: ../../../src/native/JNIUtil.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/Users/erik/devel/jFUSE/proj/netbeans/libjfuse/../../../src/native/JNIModule.o ../../../src/native/JNIModule.cpp
+	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/JNIUtil.o ../../../src/native/JNIUtil.cpp
+
+${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_FUSEFillDir.o: ../../../src/native/org_catacombae_jfuse_FUSEFillDir.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_FUSEFillDir.o ../../../src/native/org_catacombae_jfuse_FUSEFillDir.cpp
+
+${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/jFUSEContext.o: ../../../src/native/jFUSEContext.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/jFUSEContext.o ../../../src/native/jFUSEContext.cpp
+
+${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_Errno.o: ../../../src/native/org_catacombae_jfuse_Errno.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_Errno.o ../../../src/native/org_catacombae_jfuse_Errno.cpp
+
+${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/common.o: ../../../src/native/common.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/common.o ../../../src/native/common.cpp
 
 # Subprojects
 .build-subprojects:
