@@ -8,19 +8,13 @@
 #ifndef _FUSE_MODULE_H
 #define	_FUSE_MODULE_H
 
+#define FUSE_USE_VERSION 26
+
 #include <jni.h>
+#include <fuse.h>
+#include "jFUSEContext.h"
 
-struct jfuse_context {
-    JNIEnv *env;
-    jobject fsProvider;
-
-    jmethodID getattrMID;
-    jmethodID openMID;
-    jmethodID readMID;
-    jmethodID readdirMID;
-};
-
-void jfuse_set_context(struct jfuse_context *ctx);
+void jfuse_set_context(jFUSEContext *ctx);
 
 /*
  * Function definitions for our jFUSE callbacks.
@@ -136,11 +130,6 @@ int jfuse_fsetattr_x(const char *, struct setattr_x *,
         struct fuse_file_info *);
 
 #endif /* __FreeBSD__ >= 10 */
-
-/**
- * Merges the contents of statObject into the struct stat target.
- */
-int mergeStat(JNIEnv *env, jobject statObject, struct stat *target);
 
 #endif	/* _FUSE_MODULE_H */
 
