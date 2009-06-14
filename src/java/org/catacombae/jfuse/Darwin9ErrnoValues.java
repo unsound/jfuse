@@ -6,12 +6,13 @@
 package org.catacombae.jfuse;
 
 /**
- * List of all the valid errno values defined in an errno.h . Most of these are
- * the same on all unixish systems, particulary POSIX ones.
+ * List of all the valid errno values defined in the Mac OS X 10.5 SDK version
+ * of <code>errno.h</code>. Many of these are the same on all unixish systems,
+ * POSIX ones in particular.
  *
  * @author Erik Larsson
  */
-public interface Darwin96ErrnoValues {
+interface Darwin9ErrnoValues {
     //public static final long USER_DEFINED_RETVAL_MASK = 0x100000000L;
 
     /** Operation not permitted */
