@@ -21,6 +21,8 @@
 #ifndef RARFS_FUSE_H
 #define RARFS_FUSE_H
 
+#define FUSE_USE_VERSION 26
+
 #include <fuse.h>
 
 int rarfs_getattr(const char *path, struct stat *stbuf);
