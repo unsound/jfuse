@@ -1,21 +1,25 @@
-
-#include <string.h>
-
-#define FUSE_USE_VERSION 26
+#include "org_catacombae_jfuse_FUSE.h"
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include <jni.h>
-#include <fuse/fuse.h>
+
+#define FUSE_USE_VERSION 26
+#include <fuse.h>
 #include <fuse/fuse_common.h>
 
-#include "fuse_module.h"
+#include "fuse26_module.h"
+#include "CSLog.h"
 
-#define LOG_ENABLE_ERROR TRUE
-#if LOG_ENABLE_ERROR
-#define LOG_ERROR(...) do { FILE *logFile = stderr; fprintf(logFile, "ERROR: "); fprintf(logFile, __VA_ARGS__); fprintf(logFile, "\n"); fflush(logFile); } while(0)
-#else
-#define LOG_ERROR(...)
-#endif
+#define errorHandling(...) \
+    do { \
+        fprintf(stderr, "Panic!\n"); \
+        char *ptr = NULL; \
+        ptr[0] = '\0'; \
+        exit(1); \
+    } while(0)
 
 /*
 struct fuse_capability {
@@ -25,21 +29,91 @@ struct fuse_capability {
 };
 */
 
-static jboolean getCapability(JNIEnv *env, jclass capabilitiesClass,
-        jobject capabilities, char *name) {
+static bool getCapability(JNIEnv *env, jclass capabilitiesClass,
+        jobject capabilities, char *name, jboolean *out) {
     jfieldID fid = env->GetFieldID(capabilitiesClass, name, "Z");
     if(fid == NULL) {
-        LOG_ERROR("Could not get capability field id: %s", name);
-        return JNI_FALSE;
+        CSLogError("Could not get capability field id: %s", name);
+        return false;
     }
-    return env->GetBooleanField(capabilities, fid);
+    else {
+        *out = env->GetBooleanField(capabilities, fid);
+        return true;
+    }
 }
 
-static struct fuse_operations createFUSE26Operations(JNIEnv *env,
-        jclass capabilitiesClass, jobject capabilities) {
-    struct fuse_operations ops;
-    memset(&ops, 0, sizeof(struct fuse_operations));
+static bool fillFUSE26Operations(JNIEnv *env, jclass capabilitiesClass,
+        jobject capabilities, struct fuse_operations *ops) {
+    CSLogTraceEnter("fillFUSE26Operations(%p, %p, %p, %p)",
+            env, capabilitiesClass, capabilities, ops);
 
+    memset(ops, 0, sizeof(struct fuse_operations));
+
+#define AddOperationIfSupported2(a, b) \
+    do { \
+        jboolean value; \
+        if(getCapability(env, capabilitiesClass, capabilities, #b, &value)) { \
+            if(value == JNI_TRUE) { \
+                ops->a = jfuse_##a; \
+                CSLogDebug("Added capability " #b " -> " #a); \
+            } \
+        } \
+        else \
+            return false; \
+    } while(0)
+
+#define AddOperationIfSupported(a) AddOperationIfSupported2(a, a)
+
+    //ops->getdir = jfuse_get
+
+    AddOperationIfSupported(getattr);
+    AddOperationIfSupported(readlink);
+    AddOperationIfSupported(getdir);
+    AddOperationIfSupported(mknod);
+    AddOperationIfSupported(mkdir);
+    AddOperationIfSupported(unlink);
+    AddOperationIfSupported(rmdir);
+    AddOperationIfSupported(symlink);
+    AddOperationIfSupported(rename);
+    AddOperationIfSupported(link);
+    AddOperationIfSupported(chmod);
+    AddOperationIfSupported(chown);
+    AddOperationIfSupported(truncate);
+    AddOperationIfSupported(utime);
+    AddOperationIfSupported(open);
+    AddOperationIfSupported(read);
+    AddOperationIfSupported(write);
+    AddOperationIfSupported(statfs);
+    AddOperationIfSupported(flush);
+    AddOperationIfSupported(release);
+    AddOperationIfSupported(fsync);
+#if (__FreeBSD__ >= 10)
+    AddOperationIfSupported2(setxattr, setxattr_BSD);
+    AddOperationIfSupported2(getxattr, getxattr_BSD);
+#else
+    AddOperationIfSupported(setxattr);
+    AddOperationIfSupported(getxattr);
+#endif
+    AddOperationIfSupported(listxattr);
+    AddOperationIfSupported(removexattr);
+    AddOperationIfSupported(opendir);
+    AddOperationIfSupported(readdir);
+    AddOperationIfSupported(releasedir);
+    AddOperationIfSupported(fsyncdir);
+    AddOperationIfSupported(init);
+    AddOperationIfSupported(destroy);
+    AddOperationIfSupported(access);
+    AddOperationIfSupported(create);
+    AddOperationIfSupported(ftruncate);
+    AddOperationIfSupported(fgetattr);
+    AddOperationIfSupported(lock);
+    AddOperationIfSupported(utimens);
+    AddOperationIfSupported(bmap);
+
+#undef AddOperationIfSupported
+#undef AddOperationIfSupported2
+
+    /*
     if(getCapability(env, capabilitiesClass, capabilities, "getattr") == JNI_TRUE)
         ops.getattr = jfuse_getattr;
     if(getCapability(env, capabilitiesClass, capabilities, "readlink") == JNI_TRUE)
@@ -123,54 +197,80 @@ static struct fuse_operations createFUSE26Operations(JNIEnv *env,
         ops.utimens = jfuse_utimens;
     if(getCapability(env, capabilitiesClass, capabilities, "bmap") == JNI_TRUE)
         ops.bmap = jfuse_bmap;
+    */
     /*
     if(getCapability(env, capabilitiesClass, capabilities, "") == JNI_TRUE)
         ops. = jfuse_;
     */
 
-    return ops;
+    CSLogTraceLeave("fillFUSE26Operations(%p, %p, %p, %p): %d",
+            env, capabilitiesClass, capabilities, ops, true);
+    
+    return true;
 }
 
 static struct fuse_operations jfuse_operations;
 
-JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSE_mountNative26(JNIEnv *env,
-        jclass cls, jobject fileSystem,
-        jstring mountPoint, jobject options) {
+/*
+ * Class:     org_catacombae_jfuse_FUSE
+ * Method:    mountNative26
+ * Signature: (Lorg/catacombae/jfuse/FUSE26FileSystem;Ljava/lang/String;Lorg/catacombae/jfuse/FUSEOptions;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSE_mountNative26(
+        JNIEnv *env, jclass cls, jobject fileSystem, jstring mountPoint,
+        jobjectArray optionStrings) {
+    CSLogTraceEnter("Java_org_catacombae_jfuse_FUSE_mountNative26(%p, %p, %p, %p, %p)",
+            env, cls, fileSystem, mountPoint, optionStrings);
 
     jclass fileSystemClass = env->GetObjectClass(fileSystem);
     if(fileSystemClass == NULL)
         errorHandling();
+    else
+        CSLogDebug("Got file system class: %p", fileSystemClass);
 
-    jmethodID mid = env->GetMethodID(fileSystemClass, "getCapabilities",
-            "(Lorg/catacombae/jfuse/FUSE26Capabilities;)V");
-    if(mid == NULL)
-        errorHandling();
-    jobject capabilities = env->CallObjectMethod(fileSystem, mid);
+    jmethodID getCapabilitiesMid = env->GetMethodID(fileSystemClass,
+            "getCapabilities", "()Lorg/catacombae/jfuse/FUSE26Capabilities;");
+    if(getCapabilitiesMid == NULL)
+        CSPanicWithMessage("Could not get method ID for getCapabilities!");
+    else
+        CSLogDebug("Got method ID for getCapabilities(): %p", getCapabilitiesMid);
+
+    jobject capabilities = env->CallObjectMethod(fileSystem, getCapabilitiesMid);
     if(capabilities == NULL)
-        errorHandling();
+        CSPanicWithMessage("Could not call object method getCapabilities.");
+    else
+        CSLogDebug("Called method getCapabilities() with result: %p", capabilities);
+
     jclass capabilitiesClass = env->GetObjectClass(capabilities);
     if(capabilitiesClass == NULL)
-        errorHandling();
+        CSPanicWithMessage("Could not get capabilities class!");
+    else
+        CSLogDebug("Got capabilities class: %p", capabilitiesClass);
 
-    jfuse_operations = createFUSE26Operations(env, capabilitiesClass, capabilities);
-    
+    if(!fillFUSE26Operations(env, capabilitiesClass, capabilities, &jfuse_operations))
+        CSPanicWithMessage("Could not fill FUSE 2.6 operations!");
+    else
+        CSLogDebug("Filled FUSE 2.6 operations.");
+
     /* Read mountpoint. */
     jboolean isCopy;
     const char *utf8MountPoint = env->GetStringUTFChars(mountPoint, &isCopy);
-    
+
     /* Read options. */
     struct fuse_args args = FUSE_ARGS_INIT(0, NULL);
-    jmethodID mid = env->GetMethodID(fileSystemClass, "getCapabilities",
-            "(Lorg/catacombae/jfuse/FUSEOptions;)V");
-    if(mid == NULL)
-        errorHandling();
-    jobject capabilities = env->CallObjectMethod(fileSystem, mid);
-    if(capabilities == NULL)
-        errorHandling();
-    jclass capabilitiesClass = env->GetObjectClass(capabilities);
-    if(capabilitiesClass == NULL)
-        errorHandling();
+    jsize optionStringsLength = env->GetArrayLength(optionStrings);
+    for(int i = 0; i < optionStringsLength; ++i) {
+        jstring cur = (jstring)env->GetObjectArrayElement(optionStrings, i);
+        const char *utfChars = env->GetStringUTFChars(cur, NULL);
 
+        fuse_opt_add_arg(&args, utfChars);
+
+        env->ReleaseStringUTFChars(cur, utfChars);
+        env->DeleteLocalRef(cur);
+    }
+    
+    jFUSEContext *context = new jFUSEContext(env, fileSystem);
+    
     /*
      * FUSE regular mount procedure:
      *
@@ -215,16 +315,22 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSE_mountNative26(JNIEnv *
      */
     fuse_chan *chan = fuse_mount(utf8MountPoint, &args);
     if(chan == NULL)
-        todoErrorHandling();
+        errorHandling();
 
     fuse *fh = fuse_new(chan, &args, &jfuse_operations,
-            sizeof(jfuse_operations), NULL);
+            sizeof(jfuse_operations), context);
     if(fh == NULL)
-        todoErrorHandling();
+        errorHandling();
 
     fuse_loop(fh);
 
     fuse_opt_free_args(&args);
     fuse_unmount(utf8MountPoint, chan);
     fuse_destroy(fh);
+
+    delete context;
+
+    CSLogTraceLeave("Java_org_catacombae_jfuse_FUSE_mountNative26(%p, %p, %p, %p, %p): %d",
+            env, cls, fileSystem, mountPoint, optionStrings, JNI_TRUE);
+    return JNI_TRUE;
 }
