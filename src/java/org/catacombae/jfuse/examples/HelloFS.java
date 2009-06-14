@@ -11,6 +11,7 @@ import org.catacombae.jfuse.FUSEFileSystemAdapter;
 import org.catacombae.jfuse.FUSEFillDir;
 import org.catacombae.jfuse.FUSEUtil;
 import org.catacombae.jfuse.Stat;
+import org.catacombae.jfuse.util.Log;
 
 /**
  *
@@ -29,47 +30,60 @@ public class HelloFS extends FUSEFileSystemAdapter {
 
     @Override
     public int getattr(byte[] path, Stat stbuf) {
-        String pathString = FUSEUtil.decodeUTF8(path);
-        if(pathString == null) // Invalid UTF-8 sequence.
-            return -ENOENT;
+        Log.traceEnter("HelloFS.gettattr", path, stbuf);
 
         int res = 0;
-
-        stbuf.zero();
-        if(pathString.equals("/")) {
-            stbuf.st_mode = Stat.S_IFDIR | 0755;
-            stbuf.st_nlink = 2;
-        }
-        else if(pathString.equals(hello_path)) {
-            stbuf.st_mode = Stat.S_IFREG | 0444;
-            stbuf.st_nlink = 1;
-            stbuf.st_size = hello_str.length;
-        }
-        else
+        String pathString = FUSEUtil.decodeUTF8(path);
+        Log.trace("  pathString = \"" + pathString + "\"");
+        if(pathString == null) // Invalid UTF-8 sequence.
             res = -ENOENT;
+        else {
+            stbuf.zero();
+            if(pathString.equals("/")) {
+                stbuf.st_mode = Stat.S_IFDIR | 0755;
+                stbuf.st_nlink = 2;
+            }
+            else if(pathString.equals(hello_path)) {
+                stbuf.st_mode = Stat.S_IFREG | 0444;
+                stbuf.st_nlink = 1;
+                stbuf.st_size = hello_str.length;
+            }
+            else
+                res = -ENOENT;
+        }
 
+        Log.traceExit("HelloFS.gettattr", res, path, stbuf);
         return res;
     }
 
     @Override
     public int readdir(byte[] path, FUSEFillDir filler, long offset, FUSEFileInfo fi) {
+        Log.traceEnter("HelloFS.readdir", path, filler, offset, fi);
+
+        int res = 0;
         String pathString = FUSEUtil.decodeUTF8(path);
+        Log.trace("  pathString = \"" + pathString + "\"");
         if(pathString == null) // Invalid UTF-8 sequence.
-            return -ENOENT;
+            res = -ENOENT;
+        else if(!pathString.equals("/"))
+            res = -ENOENT;
+        else {
+            filler.fill(FUSEUtil.encodeUTF8("."), null, 0);
+            filler.fill(FUSEUtil.encodeUTF8(".."), null, 0);
+            filler.fill(FUSEUtil.encodeUTF8(hello_path.substring(1)), null, 0);
+        }
 
-        if(!pathString.equals("/"))
-            return -ENOENT;
-
-        filler.fill(FUSEUtil.encodeUTF8("."), null, 0);
-        filler.fill(FUSEUtil.encodeUTF8(".."), null, 0);
-        filler.fill(FUSEUtil.encodeUTF8(hello_path.substring(1)), null, 0);
-
-        return 0;
+        Log.traceExit("HelloFS.readdir", res, path, filler, offset, fi);
+        return res;
     }
 
     @Override
     public int open(byte[] path, FUSEFileInfo fi) {
+        Log.traceEnter("HelloFS.open", path, fi);
+
+        int res = 0;
         String pathString = FUSEUtil.decodeUTF8(path);
+        Log.trace("  pathString = \"" + pathString + "\"");
         if(pathString == null) // Invalid UTF-8 sequence.
             return -ENOENT;
 
@@ -79,31 +93,41 @@ public class HelloFS extends FUSEFileSystemAdapter {
         if((fi.flags & 3) != FUSEFileInfo.O_RDONLY)
             return -EACCES;
 
+        Log.traceExit("HelloFS.open", res, path, fi);
         return 0;
     }
 
     @Override
     public int read(byte[] path, byte[] buf, int size, int offset, FUSEFileInfo fi) {
+        Log.traceEnter("int HelloFS.read", path, buf, size, offset, fi);
+
+        int res = 0;
         String pathString = FUSEUtil.decodeUTF8(path);
+        Log.trace("  pathString = \"" + pathString + "\"");
         if(pathString == null) // Invalid UTF-8 sequence.
-            return -ENOENT;
-
-        if(!pathString.equals(hello_path))
-            return -ENOENT;
-        
-        int len = hello_str.length;
-        if(offset < len) {
-           if (offset + size > len)
-               size = len - offset;
-           System.arraycopy(hello_str, offset, buf, 0, size);
+            res = -ENOENT;
+        else if(!pathString.equals(hello_path))
+            res = -ENOENT;
+        else {
+            int len = hello_str.length;
+            if(offset < len) {
+                if(offset + size > len)
+                    res = len - offset;
+                System.arraycopy(hello_str, offset, buf, 0, size);
+            }
+            else
+                res = 0;
         }
-        else
-            size = 0;
 
+        Log.traceExit("int HelloFS.read", res, path, buf, size, offset, fi);
         return size;
     }
 
     public static void main(String[] args) {
+        System.err.print("HelloFS.main(");
+        for(String s : args)
+            System.err.print("\"" + s + "\" ");
+        System.err.println("\b)");
         FUSE.main(args, new HelloFS());
     }
 }
