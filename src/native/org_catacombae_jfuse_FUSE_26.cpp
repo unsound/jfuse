@@ -21,14 +21,6 @@
         exit(1); \
     } while(0)
 
-/*
-struct fuse_capability {
-    char *name;
-    void *jfuse_function;
-    void **fuse_operation;
-};
-*/
-
 static bool getCapability(JNIEnv *env, jclass capabilitiesClass,
         jobject capabilities, char *name, jboolean *out) {
     jfieldID fid = env->GetFieldID(capabilitiesClass, name, "Z");
@@ -112,96 +104,6 @@ static bool fillFUSE26Operations(JNIEnv *env, jclass capabilitiesClass,
 
 #undef AddOperationIfSupported
 #undef AddOperationIfSupported2
-
-    /*
-    if(getCapability(env, capabilitiesClass, capabilities, "getattr") == JNI_TRUE)
-        ops.getattr = jfuse_getattr;
-    if(getCapability(env, capabilitiesClass, capabilities, "readlink") == JNI_TRUE)
-        ops.readlink = jfuse_readlink;
-    if(getCapability(env, capabilitiesClass, capabilities, "getdir") == JNI_TRUE)
-        ops.getdir = jfuse_getdir;
-    if(getCapability(env, capabilitiesClass, capabilities, "mknod") == JNI_TRUE)
-        ops.mknod = jfuse_mknod;
-    if(getCapability(env, capabilitiesClass, capabilities, "mkdir") == JNI_TRUE)
-        ops.mkdir = jfuse_mkdir;
-    if(getCapability(env, capabilitiesClass, capabilities, "unlink") == JNI_TRUE)
-        ops.unlink = jfuse_unlink;
-    if(getCapability(env, capabilitiesClass, capabilities, "rmdir") == JNI_TRUE)
-        ops.rmdir = jfuse_rmdir;
-    if(getCapability(env, capabilitiesClass, capabilities, "symlink") == JNI_TRUE)
-        ops.symlink = jfuse_symlink;
-    if(getCapability(env, capabilitiesClass, capabilities, "rename") == JNI_TRUE)
-        ops.rename = jfuse_rename;
-    if(getCapability(env, capabilitiesClass, capabilities, "link") == JNI_TRUE)
-        ops.link = jfuse_link;
-    if(getCapability(env, capabilitiesClass, capabilities, "chmod") == JNI_TRUE)
-        ops.chmod = jfuse_chmod;
-    if(getCapability(env, capabilitiesClass, capabilities, "chown") == JNI_TRUE)
-        ops.chown = jfuse_chown;
-    if(getCapability(env, capabilitiesClass, capabilities, "truncate") == JNI_TRUE)
-        ops.truncate = jfuse_truncate;
-    if(getCapability(env, capabilitiesClass, capabilities, "utime") == JNI_TRUE)
-        ops.utime = jfuse_utime;
-    if(getCapability(env, capabilitiesClass, capabilities, "open") == JNI_TRUE)
-        ops.open = jfuse_open;
-    if(getCapability(env, capabilitiesClass, capabilities, "read") == JNI_TRUE)
-        ops.read = jfuse_read;
-    if(getCapability(env, capabilitiesClass, capabilities, "write") == JNI_TRUE)
-        ops.write = jfuse_write;
-    if(getCapability(env, capabilitiesClass, capabilities, "statfs") == JNI_TRUE)
-        ops.statfs = jfuse_statfs;
-    if(getCapability(env, capabilitiesClass, capabilities, "flush") == JNI_TRUE)
-        ops.flush = jfuse_flush;
-    if(getCapability(env, capabilitiesClass, capabilities, "release") == JNI_TRUE)
-        ops.release = jfuse_release;
-    if(getCapability(env, capabilitiesClass, capabilities, "fsync") == JNI_TRUE)
-        ops.fsync = jfuse_fsync;
-#if (__FreeBSD__ >= 10)
-    if(getCapability(env, capabilitiesClass, capabilities, "setxattr_BSD") == JNI_TRUE)
-        ops.setxattr = jfuse_setxattr;
-    if(getCapability(env, capabilitiesClass, capabilities, "getxattr_BSD") == JNI_TRUE)
-        ops.getxattr = jfuse_getxattr;
-#else
-    if(getCapability(env, capabilitiesClass, capabilities, "setxattr") == JNI_TRUE)
-        ops.setxattr = jfuse_setxattr;
-    if(getCapability(env, capabilitiesClass, capabilities, "getxattr") == JNI_TRUE)
-        ops.getxattr = jfuse_getxattr;
-#endif
-    if(getCapability(env, capabilitiesClass, capabilities, "listxattr") == JNI_TRUE)
-        ops.listxattr = jfuse_listxattr;
-    if(getCapability(env, capabilitiesClass, capabilities, "removexattr") == JNI_TRUE)
-        ops.removexattr = jfuse_removexattr;
-    if(getCapability(env, capabilitiesClass, capabilities, "opendir") == JNI_TRUE)
-        ops.opendir = jfuse_opendir;
-    if(getCapability(env, capabilitiesClass, capabilities, "readdir") == JNI_TRUE)
-        ops.readdir = jfuse_readdir;
-    if(getCapability(env, capabilitiesClass, capabilities, "releasedir") == JNI_TRUE)
-        ops.releasedir = jfuse_releasedir;
-    if(getCapability(env, capabilitiesClass, capabilities, "fsyncdir") == JNI_TRUE)
-        ops.fsyncdir = jfuse_fsyncdir;
-    if(getCapability(env, capabilitiesClass, capabilities, "init") == JNI_TRUE)
-        ops.init = jfuse_init;
-    if(getCapability(env, capabilitiesClass, capabilities, "destroy") == JNI_TRUE)
-        ops.destroy = jfuse_destroy;
-    if(getCapability(env, capabilitiesClass, capabilities, "access") == JNI_TRUE)
-        ops.access = jfuse_access;
-    if(getCapability(env, capabilitiesClass, capabilities, "create") == JNI_TRUE)
-        ops.create = jfuse_create;
-    if(getCapability(env, capabilitiesClass, capabilities, "ftruncate") == JNI_TRUE)
-        ops.ftruncate = jfuse_ftruncate;
-    if(getCapability(env, capabilitiesClass, capabilities, "fgetattr") == JNI_TRUE)
-        ops.fgetattr = jfuse_fgetattr;
-    if(getCapability(env, capabilitiesClass, capabilities, "lock") == JNI_TRUE)
-        ops.lock = jfuse_lock;
-    if(getCapability(env, capabilitiesClass, capabilities, "utimens") == JNI_TRUE)
-        ops.utimens = jfuse_utimens;
-    if(getCapability(env, capabilitiesClass, capabilities, "bmap") == JNI_TRUE)
-        ops.bmap = jfuse_bmap;
-    */
-    /*
-    if(getCapability(env, capabilitiesClass, capabilities, "") == JNI_TRUE)
-        ops. = jfuse_;
-    */
 
     CSLogTraceLeave("fillFUSE26Operations(%p, %p, %p, %p): %d",
             env, capabilitiesClass, capabilities, ops, true);
