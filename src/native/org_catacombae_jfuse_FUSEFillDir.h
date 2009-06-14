@@ -12,7 +12,7 @@ extern "C" {
  * Method:    fill
  * Signature: ([BLorg/catacombae/jfuse/Stat;J)Z
  */
-JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSEFillDir_fill
+JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSEFillDir_fillNative
   (JNIEnv *, jobject, jbyteArray, jobject, jlong);
 
 #ifdef __cplusplus
