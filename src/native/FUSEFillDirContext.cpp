@@ -8,7 +8,6 @@
 #include "fusefilldircontext.h"
 
 FUSEFillDirContext::FUSEFillDirContext(fuse_fill_dir_t filler, void *buf) {
-    if(filler == NULL)
     this->filler = filler;
     this->buf = buf;
 }
