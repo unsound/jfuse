@@ -52,7 +52,7 @@ public class HelloFS extends FUSEFileSystemAdapter {
                 res = -ENOENT;
         }
 
-        Log.traceExit("HelloFS.gettattr", res, path, stbuf);
+        Log.traceLeave("HelloFS.gettattr", res, path, stbuf);
         return res;
     }
 
@@ -73,7 +73,7 @@ public class HelloFS extends FUSEFileSystemAdapter {
             filler.fill(FUSEUtil.encodeUTF8(hello_path.substring(1)), null, 0);
         }
 
-        Log.traceExit("HelloFS.readdir", res, path, filler, offset, fi);
+        Log.traceLeave("HelloFS.readdir", res, path, filler, offset, fi);
         return res;
     }
 
@@ -93,34 +93,39 @@ public class HelloFS extends FUSEFileSystemAdapter {
         if((fi.flags & 3) != FUSEFileInfo.O_RDONLY)
             return -EACCES;
 
-        Log.traceExit("HelloFS.open", res, path, fi);
+        Log.traceLeave("HelloFS.open", res, path, fi);
         return 0;
     }
 
     @Override
-    public int read(byte[] path, byte[] buf, int size, int offset, FUSEFileInfo fi) {
+    public int read(byte[] path, byte[] buf, int size, long offset, FUSEFileInfo fi) {
         Log.traceEnter("int HelloFS.read", path, buf, size, offset, fi);
 
         int res = 0;
         String pathString = FUSEUtil.decodeUTF8(path);
         Log.trace("  pathString = \"" + pathString + "\"");
-        if(pathString == null) // Invalid UTF-8 sequence.
+        if(pathString == null) {// Invalid UTF-8 sequence.
+            Log.warning("Recieved byte sequence that could not be decoded.");
             res = -ENOENT;
+        }
+        else if(offset < 0 || offset > Integer.MAX_VALUE) {
+            Log.warning("'offset' out of range.");
+            res = -EINVAL;
+        }
         else if(!pathString.equals(hello_path))
             res = -ENOENT;
         else {
-            int len = hello_str.length;
-            if(offset < len) {
-                if(offset + size > len)
-                    res = len - offset;
-                System.arraycopy(hello_str, offset, buf, 0, size);
+            int bytesLeftInFile = hello_str.length - (int)(offset);
+            if(bytesLeftInFile > 0) {
+                res = Math.min(bytesLeftInFile, size);
+                System.arraycopy(hello_str, (int)offset, buf, 0, res);
             }
             else
                 res = 0;
         }
 
-        Log.traceExit("int HelloFS.read", res, path, buf, size, offset, fi);
-        return size;
+        Log.traceLeave("int HelloFS.read", res, path, buf, size, offset, fi);
+        return res;
     }
 
     public static void main(String[] args) {
