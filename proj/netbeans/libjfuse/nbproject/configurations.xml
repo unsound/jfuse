@@ -16,8 +16,6 @@
       <itemPath>../../../src/native/org_catacombae_jfuse_FUSE.h</itemPath>
       <itemPath>../../../src/native/org_catacombae_jfuse_FUSEFillDir.h</itemPath>
     </logicalFolder>
-    <logicalFolder name="native" displayName="native" projectFiles="true">
-    </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
                    projectFiles="true">
