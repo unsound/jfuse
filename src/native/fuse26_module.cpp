@@ -48,45 +48,39 @@ int jfuse_getattr(const char *path, struct stat *stbuf) {
     jobject obj = context->getFSProvider();
 
     // Argument 1: path
-    int pathlen = strlen(path);
-    jbyteArray pathJava = env->NewByteArray(pathlen); // <alloc>
-    if(pathJava == NULL || env->ExceptionCheck() == JNI_TRUE)
-        CSPanicWithMessage("Could not create new byte array with length %d", pathlen);
-
-    env->SetByteArrayRegion(pathJava, 0, pathlen, (const signed char*) path);
-    if(env->ExceptionCheck() == JNI_TRUE)
-        CSPanicWithMessage("Could not set byte array region with length %d to \"%s\"", pathlen, path);
-
+    CSLogDebug("Processing argument 1 (path)...");
+    jbyteArray pathJava = JNIUtil::cstringToJByteArray(env, path); // <alloc>
+    if(pathJava == NULL) {
+        if(env->ExceptionCheck() == JNI_TRUE)
+            env->ExceptionDescribe();
+        CSPanicWithMessage("Could not create new Java byte array from string \"%s\".", path);
+    }
 
     // Argument 2: stbuf
-    jclass statClass = env->FindClass(STAT_CLASS);
-    if(statClass == NULL || env->ExceptionCheck() == JNI_TRUE)
-        CSPanicWithMessage("Could not find class \"%s\"", STAT_CLASS);
-
-    jmethodID statConstructor = env->GetMethodID(statClass, STAT_INIT_NAME, STAT_INIT_SIGNATURE);
-    if(statConstructor == NULL || env->ExceptionCheck() == JNI_TRUE)
-        CSPanicWithMessage("Could not find constructor Stat.%s with signature %s",
-                STAT_INIT_NAME, STAT_INIT_SIGNATURE);
-
     jobject statInstance = FUSE26Util::newStat(env, stbuf);
-    if(statInstance != NULL) {
-        jmethodID getattrMID = context->getFSProviderMethod(OPS_GETATTR_NAME, OPS_GETATTR_SIGNATURE);
-        if(getattrMID != NULL) {
-            jint jretval = env->CallIntMethod(obj, getattrMID, pathJava, statInstance);
-            if(env->ExceptionCheck() == JNI_FALSE && FUSE26Util::mergeStat(env, statInstance, stbuf))
-                retval = jretval;
-        }
-        else
-            CSLogError("Could not getFSProviderMethod for \"%s\" with signature %s",
-                OPS_GETATTR_NAME, OPS_GETATTR_SIGNATURE);
-
-        env->DeleteLocalRef(statInstance);
+    if(statInstance == NULL) {
+        if(env->ExceptionCheck() == JNI_TRUE)
+            env->ExceptionDescribe();
+        CSPanicWithMessage("Could not create new Java Stat object.");
     }
-    else
-        CSLogError("Could not create new Stat instance with \"%s\" and signature %s",
-            STAT_INIT_NAME, STAT_INIT_SIGNATURE);
 
-    env->DeleteLocalRef(statClass);
+    jmethodID getattrMID = context->getFSProviderMethod(OPS_GETATTR_NAME, OPS_GETATTR_SIGNATURE);
+    if(getattrMID == NULL || env->ExceptionCheck() == JNI_TRUE)
+        CSLogError("Could not getFSProviderMethod for \"%s\" with signature %s",
+            OPS_GETATTR_NAME, OPS_GETATTR_SIGNATURE);
+    else {
+        jint jretval = env->CallIntMethod(obj, getattrMID, pathJava, statInstance);
+
+        if(env->ExceptionCheck() == JNI_FALSE) {
+            if(!FUSE26Util::mergeStat(env, statInstance, stbuf))
+                CSPanicWithMessage("Could not merge Stat -> struct stat");
+        }
+
+        if(env->ExceptionCheck() == JNI_FALSE)
+            retval = jretval;
+    }
+
+    env->DeleteLocalRef(statInstance);
     env->DeleteLocalRef(pathJava);
 
     if(env->ExceptionCheck() == JNI_TRUE) {
@@ -159,81 +153,148 @@ int jfuse_open(const char *path, struct fuse_file_info *fi) {
             path, fi);
     CSLogTrace("  path=\"%s\"", path);
 
-    if(true)
+    if(false)
         return -ENOENT;
-
+    
+    int retval = -EIO;
     jFUSEContext *context = getjFUSEContext();
 
     JNIEnv *env = context->getJNIEnv();
     jobject obj = context->getFSProvider();
 
     // Argument 1: path
-    int pathlen = strlen(path);
-    jbyteArray pathJava = env->NewByteArray(pathlen); // <alloc>
-    env->SetByteArrayRegion(pathJava, 0, pathlen, (const signed char*)path);
+    CSLogDebug("Processing argument 1 (path)...");
+    jbyteArray pathJava = JNIUtil::cstringToJByteArray(env, path); // <alloc>
+    if(pathJava == NULL) {
+        if(env->ExceptionCheck() == JNI_TRUE)
+            env->ExceptionDescribe();
+        CSPanicWithMessage("Could not create new Java byte array from string \"%s\".", path);
+    }
 
     // Argument 2: fi
-    jobject ffiInstance = FUSE26Util::newFUSEFileInfo(env, fi);
-    
+    CSLogDebug("Processing argument 2 (fi)...");
+    jobject ffiInstance = FUSE26Util::newFUSEFileInfo(env, fi); // <alloc>
+    if(ffiInstance == NULL) {
+        if(env->ExceptionCheck() == JNI_TRUE)
+            env->ExceptionDescribe();
+        CSPanicWithMessage("Could not create new FUSEFileInfo.");
+    }
+
     jmethodID openMID = context->getFSProviderMethod(OPS_OPEN_NAME, OPS_OPEN_SIGNATURE);
-    jint jretval = env->CallIntMethod(obj, openMID, pathJava, ffiInstance);
+    if(openMID == NULL || env->ExceptionCheck() == JNI_TRUE) {
+        CSLogError("Could not getFSProviderMethod for \"%s\" with signature %s",
+                OPS_OPEN_NAME, OPS_OPEN_SIGNATURE);
+    }
+    else {
+        jint jretval = env->CallIntMethod(obj, openMID, pathJava, ffiInstance);
 
-    // Merge FUSEFileInfo fields into fi
-    FUSE26Util::mergeFUSEFileInfo(env, ffiInstance, fi);
+        if(env->ExceptionCheck() == JNI_FALSE) {
+            // Merge FUSEFileInfo fields into fi
+            if(!FUSE26Util::mergeFUSEFileInfo(env, ffiInstance, fi))
+                CSPanicWithMessage("Could not merge FUSEFileInfo -> struct fuse_file_info");
+        }
 
-    env->DeleteLocalRef(ffiInstance);
-    env->DeleteLocalRef(pathJava);
+        if(env->ExceptionCheck() == JNI_FALSE) {
+            // Return the proper retval.
+            retval = jretval;
+        }
+    }
 
-    int retval = -javaErrnoToErrno(jretval);
+    env->DeleteLocalRef(ffiInstance); // </alloc>
+    env->DeleteLocalRef(pathJava); // </alloc>
+
+    if(env->ExceptionCheck() == JNI_TRUE) {
+        CSLogError("Exception occurred when executing jfuse_open.");
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+    }
+
     CSLogTraceLeave("int jfuse_open(%p, %p): %d",
             path, fi, retval);
     return retval;
 
 }
 
-int jfuse_read(const char *path, char *targetbuf, size_t targetbuf_len, off_t targetbuf_off,
+int jfuse_read(const char *path, char *targetbuf, size_t targetbuf_len, off_t file_off,
         struct fuse_file_info *fi) {
     CSLogTraceEnter("int jfuse_read(%p, %p, %zu, %" PRId64 ", %p)",
-            path, targetbuf, targetbuf_len, targetbuf_off, fi);
+            path, targetbuf, targetbuf_len, file_off, fi);
     CSLogTrace("  path=\"%s\"", path);
 
-    if(true)
+    if(false)
         return -ENOENT;
 
+    int retval = -EIO;
     jFUSEContext *context = getjFUSEContext();
 
     JNIEnv *env = context->getJNIEnv();
     jobject obj = context->getFSProvider();
 
     // Argument 1: path
-    int pathlen = strlen(path);
-    jbyteArray pathJava = env->NewByteArray(pathlen); // <alloc>
-    env->SetByteArrayRegion(pathJava, 0, pathlen, (const signed char*)path);
+    CSLogDebug("Processing argument 1 (path)...");
+    jbyteArray pathJava = JNIUtil::cstringToJByteArray(env, path); // <alloc>
+    if(pathJava == NULL) {
+        if(env->ExceptionCheck() == JNI_TRUE)
+            env->ExceptionDescribe();
+        CSPanicWithMessage("Could not create new Java byte array from string \"%s\".", path);
+    }
 
-    // Argument 2-4: targetbuf
+    // Argument 2: dest
+    CSLogDebug("Processing argument 3, 4 (targetbuf, targetbuf_len)...");
     jbyteArray targetArray = env->NewByteArray(targetbuf_len); // <alloc>
+    if(targetArray == NULL) {
+        if(env->ExceptionCheck() == JNI_TRUE)
+            env->ExceptionDescribe();
+        CSPanicWithMessage("Could not create new Java byte array for dest.");
+    }
 
     // Argument 5: fi
+    CSLogDebug("Processing argument 5 (fi)...");
     jobject ffiInstance = FUSE26Util::newFUSEFileInfo(env, fi); // <alloc>
+    if(ffiInstance == NULL) {
+        if(env->ExceptionCheck() == JNI_TRUE)
+            env->ExceptionDescribe();
+        CSPanicWithMessage("Could not create new FUSEFileInfo.");
+    }
 
     jmethodID readMID = context->getFSProviderMethod(OPS_READ_NAME, OPS_READ_SIGNATURE);
-    jint jretval = env->CallIntMethod(obj, readMID, pathJava, targetArray,
-            0, targetbuf_len, ffiInstance);
+    if(readMID == NULL || env->ExceptionCheck() == JNI_TRUE) {
+        CSLogError("Could not getFSProviderMethod for \"%s\" with signature %s",
+                OPS_READ_NAME, OPS_READ_SIGNATURE);
+    }
+    else {
+        jint jretval = env->CallIntMethod(obj, readMID, pathJava, targetArray,
+                targetbuf_len, file_off, ffiInstance);
 
-    // Merge FUSEFileInfo fields into fi
-    FUSE26Util::mergeFUSEFileInfo(env, ffiInstance, fi);
+        if(env->ExceptionCheck() == JNI_FALSE) {
+            // Merge FUSEFileInfo fields into fi
+            if(!FUSE26Util::mergeFUSEFileInfo(env, ffiInstance, fi))
+                CSPanicWithMessage("Could not merge FUSEFileInfo -> struct fuse_file_info");
+        }
 
-    // Copy data to native buffer
-    env->GetByteArrayRegion(targetArray, 0, targetbuf_len, (signed char*)(targetbuf+targetbuf_off));
+        if(env->ExceptionCheck() == JNI_FALSE) {
+            // Copy data to native buffer
+            env->GetByteArrayRegion(targetArray, 0, targetbuf_len, (signed char*) (targetbuf));
+        }
+
+        if(env->ExceptionCheck() == JNI_FALSE) {
+            // Return the proper retval.
+            retval = jretval;
+        }
+    }
 
     env->DeleteLocalRef(ffiInstance); // </alloc>
     env->DeleteLocalRef(targetArray); // </alloc>
     env->DeleteLocalRef(pathJava); // </alloc>
 
-    int retval = -javaErrnoToErrno(jretval);
+    if(env->ExceptionCheck() == JNI_TRUE) {
+        CSLogError("Exception occurred when executing jfuse_read.");
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+    }
 
     CSLogTraceLeave("int jfuse_read(%p, %p, %zu, %" PRId64 ", %p): %d",
-            path, targetbuf, targetbuf_len, targetbuf_off, fi, retval);
+            path, targetbuf, targetbuf_len, file_off, fi, retval);
     return retval;
 }
 
@@ -361,7 +422,8 @@ int jfuse_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
 
         if(env->ExceptionCheck() == JNI_FALSE) {
             // Merge FUSEFileInfo fields into fi
-            FUSE26Util::mergeFUSEFileInfo(env, ffiInstance, fi);
+            if(!FUSE26Util::mergeFUSEFileInfo(env, ffiInstance, fi))
+                CSPanicWithMessage("Could not merge FUSEFileInfo -> struct fuse_file_info");
         }
 
         if(env->ExceptionCheck() == JNI_FALSE) {
@@ -372,6 +434,12 @@ int jfuse_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
 
     env->DeleteLocalRef(ffiInstance); // </alloc>
     env->DeleteLocalRef(pathJava); // </alloc>
+
+    if(env->ExceptionCheck() == JNI_TRUE) {
+        CSLogError("Exception occurred when executing jfuse_readdir.");
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+    }
 
     CSLogTraceLeave("int jfuse_readdir(%p, %p, %p, %" PRId64 ", %p): %d",
             path, buf, filler, offset, fi, retval);
