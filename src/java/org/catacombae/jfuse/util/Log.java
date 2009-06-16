@@ -22,8 +22,8 @@ public class Log {
         
         System.err.println(sb.toString());
     }
-    public static void traceExit(String methodName, Object retval, Object... args) {
-        StringBuilder sb = new StringBuilder("EXIT: ");
+    public static void traceLeave(String methodName, Object retval, Object... args) {
+        StringBuilder sb = new StringBuilder("LEAVE: ");
         sb.append(methodName).append("(");
         for(int i = 0; i < args.length; ++i) {
             if(i != 0)
@@ -41,5 +41,9 @@ public class Log {
      */
     public static void trace(String msg) {
         System.err.println("TRACE: " + msg);
+    }
+
+    public static void warning(String msg) {
+        System.err.println("WARNING: " + msg);
     }
 }
