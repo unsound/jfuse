@@ -105,7 +105,7 @@ public abstract class FUSE26FileSystemAdapter implements FUSEFileSystem {
     }
 
     @Override
-    public int read(byte[] path, byte[] dest, int len, int off, FUSEFileInfo fi) {
+    public int read(byte[] path, byte[] dest, int len, long offset, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 

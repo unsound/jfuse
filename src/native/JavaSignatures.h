@@ -17,7 +17,7 @@
 #define OPS_OPEN_NAME           "open"
 #define OPS_OPEN_SIGNATURE      "([B" JFUSE_CLASS(FUSEFileInfo) ")I" // (byte[], FUSEFileInfo)->int
 #define OPS_READ_NAME           "read"
-#define OPS_READ_SIGNATURE      "([B[BII" JFUSE_CLASS(FUSEFileInfo) ")I" // (byte[], byte[], int, int, FUSEFileInfo)->int
+#define OPS_READ_SIGNATURE      "([B[BIJ" JFUSE_CLASS(FUSEFileInfo) ")I" // (byte[], byte[], int, long, FUSEFileInfo)->int
 #define OPS_READDIR_NAME        "readdir"
 #define OPS_READDIR_SIGNATURE   "([B" JFUSE_CLASS(FUSEFillDir) "J" JFUSE_CLASS(FUSEFileInfo) ")I" // (byte[], FUSEFillDir, long, FUSEFileInfo)->int
 
