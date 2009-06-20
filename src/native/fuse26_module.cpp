@@ -17,6 +17,55 @@
 
 #define handleError(...) CSPanicWithMessage("%s(%d): Unspecified panic condition.", __FILE__, __LINE__)
 
+#define JAVA_ARG_CSTRING(num, str) \
+    CSLogDebug("Processing argument %d (%s) of type cstring...", num, #str); \
+    jbyteArray java_arg##num = JNIUtil::cstringToJByteArray(env, str); \
+    if(java_arg##num == NULL) { \
+        if(env->ExceptionCheck() == JNI_TRUE) \
+            env->ExceptionDescribe(); \
+        CSPanicWithMessage("Could not create new Java byte array from string \"%s\".", str); \
+    }
+
+#define JAVA_ARG_EMPTY_BYTE_ARRAY(num, len) \
+    CSLogDebug("Processing argument %d (%s) of type byte array...", num, #len); \
+    jbyteArray java_arg##num = env->NewByteArray(len); \
+    if(java_arg##num == NULL) { \
+        if(env->ExceptionCheck() == JNI_TRUE) \
+            env->ExceptionDescribe(); \
+        CSPanicWithMessage("Could not create new Java byte array for dest."); \
+    }
+
+#define JAVA_ARG_STAT(num, stbuf) \
+    CSLogDebug("Processing argument %d (%s) of type struct stat...", num, #stbuf); \
+    jobject java_arg##num = FUSE26Util::newStat(env, stbuf); \
+    if(java_arg##num == NULL) { \
+        if(env->ExceptionCheck() == JNI_TRUE) \
+            env->ExceptionDescribe(); \
+        CSPanicWithMessage("Could not create new Java Stat object from stat buffer."); \
+    }
+
+#define JAVA_ARG_FUSE_FILE_INFO(num, fi) \
+    CSLogDebug("Processing argument %d (%s) of type struct fuse_file_info...", num, #fi); \
+    jobject java_arg##num = FUSE26Util::newFUSEFileInfo(env, fi); \
+    if(java_arg##num == NULL) { \
+        if(env->ExceptionCheck() == JNI_TRUE) \
+            env->ExceptionDescribe(); \
+        CSPanicWithMessage("Could not create new FUSEFileInfo."); \
+    }
+
+#define JAVA_ARG_FUSE_FILL_DIR(num, filler, buf) \
+    CSLogDebug("Processing argument %d (%s) of type struct fuse_fill_dir_t...", num, #filler); \
+    jobject java_arg##num = FUSE26Util::createFUSEFillDir(env, filler, buf); \
+    if(java_arg##num == NULL) { \
+        if(env->ExceptionCheck() == JNI_TRUE) \
+            env->ExceptionDescribe(); \
+        CSPanicWithMessage("Could not create new FUSEFillDir."); \
+    }
+
+#define JAVA_ARG_CLEANUP(num) \
+    env->DeleteLocalRef(java_arg##num)
+
+
 static inline jFUSEContext* getjFUSEContext() {
     struct fuse_context *fuse_ctx = fuse_get_context();
     return (jFUSEContext*)fuse_ctx->private_data;
@@ -27,19 +76,6 @@ int jfuse_getattr(const char *path, struct stat *stbuf) {
             path, stbuf);
     CSLogTrace("  path=\"%s\"", path);
 
-    if(false) {
-        memset(stbuf, 0, sizeof (struct stat));
-
-        if (strcmp(path, "/") == 0) { /* The root directory of our file system. */
-            stbuf->st_mode = S_IFDIR | 0755;
-            stbuf->st_nlink = 3;
-        } else { /* We reject everything else. */
-            return -ENOENT;
-        }
-
-        return 0;
-    }
-
     int retval = -EIO;
 
     jFUSEContext *context = getjFUSEContext();
@@ -47,32 +83,18 @@ int jfuse_getattr(const char *path, struct stat *stbuf) {
     JNIEnv *env = context->getJNIEnv();
     jobject obj = context->getFSProvider();
 
-    // Argument 1: path
-    CSLogDebug("Processing argument 1 (path)...");
-    jbyteArray pathJava = JNIUtil::cstringToJByteArray(env, path); // <alloc>
-    if(pathJava == NULL) {
-        if(env->ExceptionCheck() == JNI_TRUE)
-            env->ExceptionDescribe();
-        CSPanicWithMessage("Could not create new Java byte array from string \"%s\".", path);
-    }
-
-    // Argument 2: stbuf
-    jobject statInstance = FUSE26Util::newStat(env, stbuf);
-    if(statInstance == NULL) {
-        if(env->ExceptionCheck() == JNI_TRUE)
-            env->ExceptionDescribe();
-        CSPanicWithMessage("Could not create new Java Stat object.");
-    }
-
+    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_STAT(2, stbuf);
+    
     jmethodID getattrMID = context->getFSProviderMethod(OPS_GETATTR_NAME, OPS_GETATTR_SIGNATURE);
     if(getattrMID == NULL || env->ExceptionCheck() == JNI_TRUE)
         CSLogError("Could not getFSProviderMethod for \"%s\" with signature %s",
             OPS_GETATTR_NAME, OPS_GETATTR_SIGNATURE);
     else {
-        jint jretval = env->CallIntMethod(obj, getattrMID, pathJava, statInstance);
+        jint jretval = env->CallIntMethod(obj, getattrMID, java_arg1, java_arg2);
 
         if(env->ExceptionCheck() == JNI_FALSE) {
-            if(!FUSE26Util::mergeStat(env, statInstance, stbuf))
+            if(!FUSE26Util::mergeStat(env, java_arg2, stbuf))
                 CSPanicWithMessage("Could not merge Stat -> struct stat");
         }
 
@@ -80,9 +102,9 @@ int jfuse_getattr(const char *path, struct stat *stbuf) {
             retval = jretval;
     }
 
-    env->DeleteLocalRef(statInstance);
-    env->DeleteLocalRef(pathJava);
-
+    JAVA_ARG_CLEANUP(2);
+    JAVA_ARG_CLEANUP(1);
+    
     if(env->ExceptionCheck() == JNI_TRUE) {
         CSLogError("Exception occurred when executing jfuse_getattr.");
         env->ExceptionDescribe();
@@ -162,23 +184,8 @@ int jfuse_open(const char *path, struct fuse_file_info *fi) {
     JNIEnv *env = context->getJNIEnv();
     jobject obj = context->getFSProvider();
 
-    // Argument 1: path
-    CSLogDebug("Processing argument 1 (path)...");
-    jbyteArray pathJava = JNIUtil::cstringToJByteArray(env, path); // <alloc>
-    if(pathJava == NULL) {
-        if(env->ExceptionCheck() == JNI_TRUE)
-            env->ExceptionDescribe();
-        CSPanicWithMessage("Could not create new Java byte array from string \"%s\".", path);
-    }
-
-    // Argument 2: fi
-    CSLogDebug("Processing argument 2 (fi)...");
-    jobject ffiInstance = FUSE26Util::newFUSEFileInfo(env, fi); // <alloc>
-    if(ffiInstance == NULL) {
-        if(env->ExceptionCheck() == JNI_TRUE)
-            env->ExceptionDescribe();
-        CSPanicWithMessage("Could not create new FUSEFileInfo.");
-    }
+    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_FUSE_FILE_INFO(2, fi);
 
     jmethodID openMID = context->getFSProviderMethod(OPS_OPEN_NAME, OPS_OPEN_SIGNATURE);
     if(openMID == NULL || env->ExceptionCheck() == JNI_TRUE) {
@@ -186,11 +193,11 @@ int jfuse_open(const char *path, struct fuse_file_info *fi) {
                 OPS_OPEN_NAME, OPS_OPEN_SIGNATURE);
     }
     else {
-        jint jretval = env->CallIntMethod(obj, openMID, pathJava, ffiInstance);
+        jint jretval = env->CallIntMethod(obj, openMID, java_arg1, java_arg2);
 
         if(env->ExceptionCheck() == JNI_FALSE) {
             // Merge FUSEFileInfo fields into fi
-            if(!FUSE26Util::mergeFUSEFileInfo(env, ffiInstance, fi))
+            if(!FUSE26Util::mergeFUSEFileInfo(env, java_arg2, fi))
                 CSPanicWithMessage("Could not merge FUSEFileInfo -> struct fuse_file_info");
         }
 
@@ -200,8 +207,8 @@ int jfuse_open(const char *path, struct fuse_file_info *fi) {
         }
     }
 
-    env->DeleteLocalRef(ffiInstance); // </alloc>
-    env->DeleteLocalRef(pathJava); // </alloc>
+    JAVA_ARG_CLEANUP(2);
+    JAVA_ARG_CLEANUP(1);
 
     if(env->ExceptionCheck() == JNI_TRUE) {
         CSLogError("Exception occurred when executing jfuse_open.");
@@ -230,16 +237,10 @@ int jfuse_read(const char *path, char *targetbuf, size_t targetbuf_len, off_t fi
     JNIEnv *env = context->getJNIEnv();
     jobject obj = context->getFSProvider();
 
-    // Argument 1: path
-    CSLogDebug("Processing argument 1 (path)...");
-    jbyteArray pathJava = JNIUtil::cstringToJByteArray(env, path); // <alloc>
-    if(pathJava == NULL) {
-        if(env->ExceptionCheck() == JNI_TRUE)
-            env->ExceptionDescribe();
-        CSPanicWithMessage("Could not create new Java byte array from string \"%s\".", path);
-    }
+    JAVA_ARG_CSTRING(1, path);
 
     // Argument 2: dest
+    /*
     CSLogDebug("Processing argument 3, 4 (targetbuf, targetbuf_len)...");
     jbyteArray targetArray = env->NewByteArray(targetbuf_len); // <alloc>
     if(targetArray == NULL) {
@@ -247,15 +248,10 @@ int jfuse_read(const char *path, char *targetbuf, size_t targetbuf_len, off_t fi
             env->ExceptionDescribe();
         CSPanicWithMessage("Could not create new Java byte array for dest.");
     }
+    */
+    JAVA_ARG_EMPTY_BYTE_ARRAY(2, targetbuf_len);
 
-    // Argument 5: fi
-    CSLogDebug("Processing argument 5 (fi)...");
-    jobject ffiInstance = FUSE26Util::newFUSEFileInfo(env, fi); // <alloc>
-    if(ffiInstance == NULL) {
-        if(env->ExceptionCheck() == JNI_TRUE)
-            env->ExceptionDescribe();
-        CSPanicWithMessage("Could not create new FUSEFileInfo.");
-    }
+    JAVA_ARG_FUSE_FILE_INFO(5, fi);
 
     jmethodID readMID = context->getFSProviderMethod(OPS_READ_NAME, OPS_READ_SIGNATURE);
     if(readMID == NULL || env->ExceptionCheck() == JNI_TRUE) {
@@ -263,18 +259,18 @@ int jfuse_read(const char *path, char *targetbuf, size_t targetbuf_len, off_t fi
                 OPS_READ_NAME, OPS_READ_SIGNATURE);
     }
     else {
-        jint jretval = env->CallIntMethod(obj, readMID, pathJava, targetArray,
-                targetbuf_len, file_off, ffiInstance);
+        jint jretval = env->CallIntMethod(obj, readMID, java_arg1, java_arg2,
+                targetbuf_len, file_off, java_arg5);
 
         if(env->ExceptionCheck() == JNI_FALSE) {
             // Merge FUSEFileInfo fields into fi
-            if(!FUSE26Util::mergeFUSEFileInfo(env, ffiInstance, fi))
+            if(!FUSE26Util::mergeFUSEFileInfo(env, java_arg5, fi))
                 CSPanicWithMessage("Could not merge FUSEFileInfo -> struct fuse_file_info");
         }
 
         if(env->ExceptionCheck() == JNI_FALSE) {
             // Copy data to native buffer
-            env->GetByteArrayRegion(targetArray, 0, targetbuf_len, (signed char*) (targetbuf));
+            env->GetByteArrayRegion(java_arg2, 0, targetbuf_len, (signed char*) (targetbuf));
         }
 
         if(env->ExceptionCheck() == JNI_FALSE) {
@@ -283,9 +279,9 @@ int jfuse_read(const char *path, char *targetbuf, size_t targetbuf_len, off_t fi
         }
     }
 
-    env->DeleteLocalRef(ffiInstance); // </alloc>
-    env->DeleteLocalRef(targetArray); // </alloc>
-    env->DeleteLocalRef(pathJava); // </alloc>
+    JAVA_ARG_CLEANUP(5);
+    JAVA_ARG_CLEANUP(2);
+    JAVA_ARG_CLEANUP(1);
 
     if(env->ExceptionCheck() == JNI_TRUE) {
         CSLogError("Exception occurred when executing jfuse_read.");
@@ -366,18 +362,6 @@ int jfuse_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
     CSLogTraceEnter("int jfuse_readdir(%p, %p, %p, %" PRId64 ", %p)",
             path, buf, filler, offset, fi);
     CSLogTrace("  path=\"%s\"", path);
-
-    if(false) {
-        // Temp testcode
-        if (strcmp(path, "/") != 0) { /* We only recognize the root directory. */
-            return -ENOENT;
-        }
-
-        filler(buf, ".", NULL, 0); /* Current directory (.)  */
-        filler(buf, "..", NULL, 0); /* Parent directory (..)  */
-
-        return 0;
-    }
     
     int retval = -EIO;
     jFUSEContext *context = getjFUSEContext();
@@ -385,32 +369,11 @@ int jfuse_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
     JNIEnv *env = context->getJNIEnv();
     jobject obj = context->getFSProvider();
 
-    // Argument 1: path
-    CSLogDebug("Processing argument 1 (path)...");
-    jbyteArray pathJava = JNIUtil::cstringToJByteArray(env, path);
-    if(pathJava == NULL) {
-        if(env->ExceptionCheck() == JNI_TRUE)
-            env->ExceptionDescribe();
-        CSPanicWithMessage("Could not create new Java byte array from string \"%s\".", path);
-    }
+    JAVA_ARG_CSTRING(1, path);
 
-    // Argument 2: filler
-    CSLogDebug("Processing argument 2 (filler)...");
-    jobject fillDir = FUSE26Util::createFUSEFillDir(env, filler, buf);
-    if(fillDir == NULL) {
-        if(env->ExceptionCheck() == JNI_TRUE)
-            env->ExceptionDescribe();
-        CSPanicWithMessage("Could not create new FUSEFillDir.");
-    }
-
-    // Argument 4: fi
-    CSLogDebug("Processing argument 4 (fi)...");
-    jobject ffiInstance = FUSE26Util::newFUSEFileInfo(env, fi); // <alloc>
-    if(fillDir == NULL) {
-        if(env->ExceptionCheck() == JNI_TRUE)
-            env->ExceptionDescribe();
-        CSPanicWithMessage("Could not create new FUSEFileInfo.");
-    }
+    JAVA_ARG_FUSE_FILL_DIR(2, filler, buf);
+    
+    JAVA_ARG_FUSE_FILE_INFO(4, fi);
 
     jmethodID readdirMID = context->getFSProviderMethod(OPS_READDIR_NAME, OPS_READDIR_SIGNATURE);
     if(readdirMID == NULL || env->ExceptionCheck() == JNI_TRUE) {
@@ -418,11 +381,11 @@ int jfuse_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
                 OPS_READDIR_NAME, OPS_READDIR_SIGNATURE);
     }
     else {
-        jint jretval = env->CallIntMethod(obj, readdirMID, pathJava, fillDir, offset, ffiInstance);
+        jint jretval = env->CallIntMethod(obj, readdirMID, java_arg1, java_arg2, offset, java_arg4);
 
         if(env->ExceptionCheck() == JNI_FALSE) {
             // Merge FUSEFileInfo fields into fi
-            if(!FUSE26Util::mergeFUSEFileInfo(env, ffiInstance, fi))
+            if(!FUSE26Util::mergeFUSEFileInfo(env, java_arg4, fi))
                 CSPanicWithMessage("Could not merge FUSEFileInfo -> struct fuse_file_info");
         }
 
@@ -432,8 +395,9 @@ int jfuse_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
         }
     }
 
-    env->DeleteLocalRef(ffiInstance); // </alloc>
-    env->DeleteLocalRef(pathJava); // </alloc>
+    JAVA_ARG_CLEANUP(4);
+    JAVA_ARG_CLEANUP(2);
+    JAVA_ARG_CLEANUP(1);
 
     if(env->ExceptionCheck() == JNI_TRUE) {
         CSLogError("Exception occurred when executing jfuse_readdir.");
