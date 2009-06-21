@@ -1,19 +1,16 @@
+#include "org_catacombae_jfuse_FUSEFillDir.h"
 
 #include "common.h"
-
-#include "org_catacombae_jfuse_FUSEFillDir.h"
 #include "fuse26_module.h"
-#include "fusefilldircontext.h"
+#include "FUSEFillDirContext.h"
 #include "CSLog.h"
 #include "FUSE26Util.h"
+#include "JavaSignatures.h"
 
 #include <stdlib.h>
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 #include <fuse.h>
-
-#define FUSEFILLDIR_CLASS "org/catacombae/jfuse/FUSEFillDir"
-
 
 /*
  * Class:     org_catacombae_jfuse_FUSEFillDir
