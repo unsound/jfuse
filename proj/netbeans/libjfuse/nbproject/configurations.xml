@@ -49,10 +49,10 @@
         <developmentServer>localhost</developmentServer>
         <compilerSet>GNU|GNU</compilerSet>
         <platform>4</platform>
+        <dependencyChecking>false</dependencyChecking>
       </toolsSet>
       <compileType>
         <cCompilerTool>
-          <architecture>2</architecture>
           <includeDirectories>
             <directoryPath>/System/Library/Frameworks/JavaVM.framework/Headers</directoryPath>
           </includeDirectories>
@@ -62,10 +62,10 @@
           <warningLevel>2</warningLevel>
         </cCompilerTool>
         <ccCompilerTool>
-          <architecture>2</architecture>
           <includeDirectories>
             <directoryPath>/System/Library/Frameworks/JavaVM.framework/Headers</directoryPath>
           </includeDirectories>
+          <commandLine>-mmacosx-version-min=10.4 -arch i386 -arch ppc -arch x86_64 -arch ppc64</commandLine>
           <preprocessorList>
             <Elem>_FILE_OFFSET_BITS=64</Elem>
           </preprocessorList>
