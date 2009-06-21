@@ -8,6 +8,7 @@
 #ifndef _FUSEFILLDIRCONTEXT_H
 #define	_FUSEFILLDIRCONTEXT_H
 
+#define FUSE_USE_VERSION 26
 #include <fuse.h>
 
 class FUSEFillDirContext {
