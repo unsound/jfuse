@@ -51,7 +51,7 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_StatConstant_getNativeValue
     env->ReleaseStringUTFChars(constantName, constantNameChars);
 
     CSLogTraceLeave("jint Java_org_catacombae_jfuse_StatConstant_getNativeValue"
-            "(%p, %p, %p): %" PRId32 "", env, cls, constantName, result);
+            "(%p, %p, %p): %" PRId32, env, cls, constantName, (int32_t)result);
     return result;
 
 }
