@@ -24,10 +24,9 @@
 package org.catacombae.jfuse;
 
 /**
- * All methods must return an int value to indicate status.
- * If <code>null</code> is returned, it is silently treated as the int value
- * EOPNOTSUPP, which is the default return value for "operation not supported".
- *
+ * All methods that return an <code>int</code> must return a negated int value from
+ * {@link FUSEErrorValues} when an error condition occurs.
+ * 
  * @author Erik Larsson
  */
 public interface FUSE26Operations extends FUSEErrorValues {
@@ -50,7 +49,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Read the target of a symbolic link
+     * Read the target of a symbolic link.
      *
      * The buffer should be filled with a null terminated string.  The
      * buffer size argument includes the space for the terminating
@@ -71,7 +70,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Deprecated, use readdir() instead
+     * Deprecated, use readdir() instead.
      * </pre>
      *
      * @param path <b>(const char*)</b>
@@ -87,7 +86,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Create a file node
+     * Create a file node.
      *
      * This is called for creation of all non-directory, non-symlink
      * nodes.  If the filesystem defines a create() method, then for
@@ -105,7 +104,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Create a directory
+     * Create a directory.
      * </pre>
      *
      * @param path <b>(const char*)</b> the path to the file system node on
@@ -118,7 +117,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Remove a file
+     * Remove a file.
      * </pre>
      *
      * @param path <b>(const char*)</b> the path to the file system node on
@@ -129,7 +128,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Remove a directory
+     * Remove a directory.
      * </pre>
      *
      * @param path <b>(const char*)</b> the path to the file system node on
@@ -140,7 +139,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
     
     /**
      * <pre>
-     * Create a symbolic link
+     * Create a symbolic link.
      * </pre>
      *
      * @param sourcePath <b>(const char*)</b>
@@ -153,7 +152,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
     
     /**
      * <pre>
-     * Rename a file 
+     * Rename a file.
      * </pre>
      *
      * @param oldPath <b>(const char*)</b>
@@ -166,7 +165,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
     
     /**
      * <pre>
-     * Create a hard link to a file 
+     * Create a hard link to a file.
      * </pre>
      * 
      * @param sourcePath <b>(const char*)</b>
@@ -179,7 +178,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
     
     /**
      * <pre>
-     * Change the permission bits of a file 
+     * Change the permission bits of a file.
      * </pre>
      *
      * @param path <b>(const char*)</b> the path to the file system node on
@@ -209,7 +208,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Change the size of a file 
+     * Change the size of a file.
      * </pre>
      *
      * @param path <b>(const char*)</b> the path to the file system node on
@@ -223,7 +222,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Change the access and/or modification times of a file
+     * Change the access and/or modification times of a file.
      *
      * Deprecated, use utimens() instead.
      * </pre>
@@ -240,7 +239,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * File open operation
+     * File open operation.
      *
      * No creation, or truncation flags (O_CREAT, O_EXCL, O_TRUNC)
      * will be passed to open().  Open should check if the operation
@@ -262,7 +261,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Read data from an open file
+     * Read data from an open file.
      *
      * Read should return exactly the number of bytes requested except
      * on EOF or error, otherwise the rest of the data will be
@@ -290,7 +289,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Write data to an open file
+     * Write data to an open file.
      *
      * Write should return exactly the number of bytes requested
      * except on error.  An exception to this is when the 'direct_io'
@@ -316,7 +315,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Get file system statistics
+     * Get file system statistics.
      *
      * The 'f_frsize', 'f_favail', 'f_fsid' and 'f_flag' fields are ignored
      *
@@ -335,7 +334,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Possibly flush cached data
+     * Possibly flush cached data.
      *
      * BIG NOTE: This is not equivalent to fsync().  It's not a
      * request to sync dirty data.
@@ -370,7 +369,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Release an open file
+     * Release an open file.
      *
      * Release is called when there are no more references to an open
      * file: all file descriptors are closed and all memory mappings
@@ -396,7 +395,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Synchronize file contents
+     * Synchronize file contents.
      *
      * If the datasync parameter is non-zero, then only the user data
      * should be flushed, not the meta data.
@@ -416,7 +415,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Set extended attributes 
+     * Set extended attributes.
      * </pre>
      * @param opt__uint32_t_options Optional argument. Only FreeBSD-compatible
      * operating systems will bother about this argument. This is what Mac OS X
@@ -442,7 +441,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Set extended attributes
+     * Set extended attributes.
      * </pre>
      *
      * This is the FreeBSD version of the callback. If you want your application
@@ -467,7 +466,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Set extended attributes
+     * Set extended attributes.
      * </pre>
      *
      * This is the non-BSD version of the callback. If you want your application
@@ -491,12 +490,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Get extended attributes 
-     * </pre>
-     */
-    /**
-     * <pre>
-     * Get extended attributes
+     * Get extended attributes.
      * </pre>
      *
      * This is the FreeBSD version of the callback. If you want your application
@@ -519,7 +513,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Get extended attributes
+     * Get extended attributes.
      * </pre>
      *
      * This is the non-BSD version of the callback. If you want your application
@@ -540,7 +534,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * List extended attributes
+     * List extended attributes.
      * </pre>
      *
      * @param path <b>(const char*)</b>
@@ -555,7 +549,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Remove extended attributes
+     * Remove extended attributes.
      * </pre>
      *
      * @param path <b>(const char*)</b>
@@ -568,7 +562,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Open directory
+     * Open directory.
      *
      * This method should check if the open operation is permitted for
      * this  directory
@@ -586,7 +580,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Read directory
+     * Read directory.
      *
      * This supersedes the old getdir() interface.  New applications
      * should use this.
@@ -622,7 +616,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Release directory
+     * Release directory.
      *
      * Introduced in version 2.3
      * </pre>
@@ -637,7 +631,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Synchronize directory contents
+     * Synchronize directory contents.
      *
      * If the datasync parameter is non-zero, then only the user data
      * should be flushed, not the meta data
@@ -657,7 +651,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Initialize filesystem
+     * Initialize filesystem.
      *
      * The return value will passed in the private_data field of
      * fuse_context to all file operations and as a parameter to the
@@ -676,7 +670,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Clean up filesystem
+     * Clean up filesystem.
      *
      * Called on filesystem exit.
      *
@@ -687,7 +681,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Check file access permissions
+     * Check file access permissions.
      *
      * This will be called for the access() system call.  If the
      * 'default_permissions' mount option is given, this method is not
@@ -708,7 +702,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Create and open a file
+     * Create and open a file.
      *
      * If the file does not exist, first create it with the specified
      * mode, and then open it.
@@ -732,7 +726,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Change the size of an open file
+     * Change the size of an open file.
      *
      * This method is called instead of the truncate() method if the
      * truncation was invoked from an ftruncate() system call.
@@ -756,7 +750,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Get attributes from an open file
+     * Get attributes from an open file.
      *
      * This method is called instead of the getattr() method if the
      * file information is available.
@@ -780,7 +774,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Perform POSIX file locking operation
+     * Perform POSIX file locking operation.
      *
      * The cmd argument will be either F_GETLK, F_SETLK or F_SETLKW.
      *
@@ -827,15 +821,14 @@ public interface FUSE26Operations extends FUSEErrorValues {
     /**
      * <pre>
      * Change the access and modification times of a file with
-     * nanosecond resolution
+     * nanosecond resolution.
      *
      * Introduced in version 2.6
      * </pre>
      *
      * @param path <b>(const char*)</b>
-     * @param tv <b>(const struct timespec[2])</b> a Timespec array with two
-     * values, the first representing the access time, and the other the
-     * modification time.
+     * @param accessTime <b>(const struct timespec)</b>
+     * @param modificationTime <b>(const struct timespec)</b>
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
@@ -844,7 +837,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
 
     /**
      * <pre>
-     * Map block index within file to block index within device
+     * Map block index within file to block index within device.
      *
      * Note: This makes sense only for block device backed filesystems
      * mounted with the 'blkdev' option

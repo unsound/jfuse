@@ -47,8 +47,8 @@ public class FUSEOptions {
 
     /**
      *
-     * @param name
-     * @return
+     * @param name the name of the option.
+     * @return the value associated with the option <code>name</code>.
      * @throws NullPointerException if there is no option defined for
      * <code>name</code>.
      */
