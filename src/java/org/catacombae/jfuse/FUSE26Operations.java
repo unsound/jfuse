@@ -822,7 +822,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
     public int lock(byte[] path,
 		     FUSEFileInfo fi,
 		     int cmd,
-		     byte[] flock);
+		     Flock flock);
 
     /**
      * <pre>
@@ -840,7 +840,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
      * otherwise.
      */
     public int utimens(byte[] path,
-			Timespec[] tv); // TODO: tv
+			Timespec accessTime, Timespec modificationTime); // TODO: tv
 
     /**
      * <pre>

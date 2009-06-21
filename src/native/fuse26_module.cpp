@@ -58,6 +58,15 @@ static inline jFUSEContext* getjFUSEContext() {
         CSPanicWithMessage("Could not create new FUSEFileInfo."); \
     }
 
+#define JAVA_ARG_FLOCK(num, flk) \
+    CSLogDebug("Processing argument %d (%s) of type struct flock...", num, #flk); \
+    jobject java_arg##num = FUSE26Util::newFlock(env, flk); \
+    if(java_arg##num == NULL) { \
+        if(env->ExceptionCheck() == JNI_TRUE) \
+            env->ExceptionDescribe(); \
+        CSPanicWithMessage("Could not create new Flock."); \
+    }
+
 #define JAVA_ARG_FUSE_FILL_DIR(num, filler, buf) \
     CSLogDebug("Processing argument %d (%s) of type struct fuse_fill_dir_t...", num, #filler); \
     jobject java_arg##num = FUSE26Util::createFUSEFillDir(env, filler, buf); \
@@ -65,6 +74,24 @@ static inline jFUSEContext* getjFUSEContext() {
         if(env->ExceptionCheck() == JNI_TRUE) \
             env->ExceptionDescribe(); \
         CSPanicWithMessage("Could not create new FUSEFillDir."); \
+    }
+
+#define JAVA_ARG_TIMESPEC(num, ts) \
+    CSLogDebug("Processing argument %d (%s) of type struct timespec...", num, #ts); \
+    jobject java_arg##num = FUSE26Util::newTimespec(env, ts); \
+    if(java_arg##num == NULL) { \
+        if(env->ExceptionCheck() == JNI_TRUE) \
+            env->ExceptionDescribe(); \
+        CSPanicWithMessage("Could not create new Timespec."); \
+    }
+
+#define JAVA_ARG_LONGREF(num, lr) \
+    CSLogDebug("Processing argument %d (%s) of type uint64_t*...", num, #lr); \
+    jobject java_arg##num = FUSE26Util::newLongRef(env, lr); \
+    if(java_arg##num == NULL) { \
+        if(env->ExceptionCheck() == JNI_TRUE) \
+            env->ExceptionDescribe(); \
+        CSPanicWithMessage("Could not create new LongRef."); \
     }
 
 #define JAVA_ARG_CLEANUP(num) \
@@ -79,11 +106,11 @@ static inline jFUSEContext* getjFUSEContext() {
         env->ExceptionClear(); \
     }
 
-#define JFUSE_FS_PROVIDER_MID_OK(a, b) \
-    jmethodID fsProviderMid = context->getFSProviderMethod(a, b); \
+#define JFUSE_FS_PROVIDER_MID_OK(name, signature) \
+    jmethodID fsProviderMid = context->getFSProviderMethod(name, signature); \
     if(fsProviderMid == NULL || env->ExceptionCheck() == JNI_TRUE) { \
         CSLogError("Could not getFSProviderMethod for \"%s\" with signature %s", \
-                a, b); \
+                name, signature); \
     } \
     else
 
@@ -99,6 +126,18 @@ static inline jFUSEContext* getjFUSEContext() {
         if(env->ExceptionCheck() == JNI_FALSE) { \
             if (!FUSE26Util::mergeFUSEFileInfo(env, ffi_object, fi)) \
                 CSPanicWithMessage("Could not merge FUSEFileInfo -> struct fuse_file_info"); \
+        }
+
+#define JFUSE_MERGE_FLOCK(flock_object, flk) \
+        if(env->ExceptionCheck() == JNI_FALSE) { \
+            if (!FUSE26Util::mergeFlock(env, flock_object, flk)) \
+                CSPanicWithMessage("Could not merge Flock -> struct flock"); \
+        }
+
+#define JFUSE_MERGE_LONGREF(lr_object, lr) \
+        if(env->ExceptionCheck() == JNI_FALSE) { \
+            if (!FUSE26Util::mergeLongRef(env, lr_object, lr)) \
+                CSPanicWithMessage("Could not merge LongRef -> uint64_t*"); \
         }
 
 #define JFUSE_MERGE_BYTE_ARRAY(javabuf, cbuf, cbuf_len) \
@@ -587,7 +626,19 @@ int jfuse_access(const char *path, int amode) {
     CSLogTraceEnter("int jfuse_access(%p, %d)", path, amode);
     CSLogTrace("  path=\"%s\"", path);
 
-    int retval = -ENOTSUP;
+    JFUSE_OPERATION_INIT();
+
+    JAVA_ARG_CSTRING(1, path);
+
+    JFUSE_FS_PROVIDER_MID_OK(OPS_ACCESS_NAME, OPS_ACCESS_SIGNATURE) {
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), amode);
+
+        JFUSE_SET_RETVAL();
+    }
+
+    JAVA_ARG_CLEANUP(1);
+
+    JAVA_EXCEPTION_CHECK("jfuse_access");
 
     CSLogTraceLeave("int jfuse_access(%p, %d): %d",
                 path, amode, retval);
@@ -598,7 +649,23 @@ int jfuse_create(const char *path, mode_t crmode, struct fuse_file_info *fi) {
     CSLogTraceEnter("int jfuse_create(%p, %d, %p)", path, crmode, fi);
     CSLogTrace("  path=\"%s\"", path);
 
-    int retval = -ENOTSUP;
+    JFUSE_OPERATION_INIT();
+
+    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_FUSE_FILE_INFO(3, fi);
+
+    JFUSE_FS_PROVIDER_MID_OK(OPS_CREATE_NAME, OPS_CREATE_SIGNATURE) {
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), crmode, JAVA_ARG(3));
+
+        JFUSE_MERGE_FUSE_FILE_INFO(JAVA_ARG(3), fi);
+
+        JFUSE_SET_RETVAL();
+    }
+
+    JAVA_ARG_CLEANUP(3);
+    JAVA_ARG_CLEANUP(1);
+
+    JAVA_EXCEPTION_CHECK("jfuse_create");
 
     CSLogTraceLeave("int jfuse_create(%p, %d, %p): %d",
                 path, crmode, fi, retval);
@@ -609,7 +676,23 @@ int jfuse_ftruncate(const char *path, off_t size, struct fuse_file_info *fi) {
     CSLogTraceEnter("int jfuse_ftruncate(%p, %" PRId64 ", %p)", path, size, fi);
     CSLogTrace("  path=\"%s\"", path);
 
-    int retval = -ENOTSUP;
+    JFUSE_OPERATION_INIT();
+
+    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_FUSE_FILE_INFO(3, fi);
+
+    JFUSE_FS_PROVIDER_MID_OK(OPS_FTRUNCATE_NAME, OPS_FTRUNCATE_SIGNATURE) {
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), size, JAVA_ARG(3));
+
+        JFUSE_MERGE_FUSE_FILE_INFO(JAVA_ARG(3), fi);
+
+        JFUSE_SET_RETVAL();
+    }
+
+    JAVA_ARG_CLEANUP(3);
+    JAVA_ARG_CLEANUP(1);
+
+    JAVA_EXCEPTION_CHECK("jfuse_ftruncate");
 
     CSLogTraceLeave("int jfuse_ftruncate(%p, %" PRId64 ", %p): %d",
                 path, size, fi, retval);
@@ -620,7 +703,26 @@ int jfuse_fgetattr(const char *path, struct stat *stbuf, struct fuse_file_info *
     CSLogTraceEnter("int jfuse_fgetattr(%p, %p, %p)", path, stbuf, fi);
     CSLogTrace("  path=\"%s\"", path);
 
-    int retval = -ENOTSUP;
+    JFUSE_OPERATION_INIT();
+
+    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_STAT(2, stbuf);
+    JAVA_ARG_FUSE_FILE_INFO(3, fi);
+
+    JFUSE_FS_PROVIDER_MID_OK(OPS_FGETATTR_NAME, OPS_FGETATTR_SIGNATURE) {
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), JAVA_ARG(3));
+
+        JFUSE_MERGE_STAT(JAVA_ARG(2), stbuf);
+        JFUSE_MERGE_FUSE_FILE_INFO(JAVA_ARG(3), fi);
+
+        JFUSE_SET_RETVAL();
+    }
+
+    JAVA_ARG_CLEANUP(3);
+    JAVA_ARG_CLEANUP(2);
+    JAVA_ARG_CLEANUP(1);
+
+    JAVA_EXCEPTION_CHECK("jfuse_fgetattr");
 
     CSLogTraceLeave("int jfuse_fgetattr(%p, %p, %p): %d",
                 path, stbuf, fi, retval);
@@ -632,7 +734,26 @@ int jfuse_lock(const char *path, struct fuse_file_info *fi, int cmd,
     CSLogTraceEnter("int jfuse_lock(%p, %p, %d, %p)", path, fi, cmd, flk);
     CSLogTrace("  path=\"%s\"", path);
 
-    int retval = -ENOTSUP;
+    JFUSE_OPERATION_INIT();
+
+    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_FUSE_FILE_INFO(2, fi);
+    JAVA_ARG_FLOCK(4, flk);
+
+    JFUSE_FS_PROVIDER_MID_OK(OPS_LOCK_NAME, OPS_LOCK_SIGNATURE) {
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), cmd, JAVA_ARG(4));
+
+        JFUSE_MERGE_FUSE_FILE_INFO(JAVA_ARG(2), fi);
+        JFUSE_MERGE_FLOCK(JAVA_ARG(4), flk);
+
+        JFUSE_SET_RETVAL();
+    }
+
+    JAVA_ARG_CLEANUP(4);
+    JAVA_ARG_CLEANUP(2);
+    JAVA_ARG_CLEANUP(1);
+
+    JAVA_EXCEPTION_CHECK("jfuse_lock");
 
     CSLogTraceLeave("int jfuse_lock(%p, %p, %d, %p): %d",
                 path, fi, cmd, flk, retval);
@@ -643,7 +764,23 @@ int jfuse_utimens(const char *path, const struct timespec tv[2]) {
     CSLogTraceEnter("int jfuse_utimens(%p, %p)", path, tv);
     CSLogTrace("  path=\"%s\"", path);
 
-    int retval = -ENOTSUP;
+    JFUSE_OPERATION_INIT();
+
+    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_TIMESPEC(2, &tv[0]);
+    JAVA_ARG_TIMESPEC(3, &tv[1]);
+
+    JFUSE_FS_PROVIDER_MID_OK(OPS_UTIMENS_NAME, OPS_UTIMENS_SIGNATURE) {
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), JAVA_ARG(3));
+        
+        JFUSE_SET_RETVAL();
+    }
+
+    JAVA_ARG_CLEANUP(3);
+    JAVA_ARG_CLEANUP(2);
+    JAVA_ARG_CLEANUP(1);
+
+    JAVA_EXCEPTION_CHECK("jfuse_utimens");
 
     CSLogTraceLeave("int jfuse_utimens(%p, %p): %d",
                 path, tv, retval);
@@ -654,7 +791,23 @@ int jfuse_bmap(const char *path, size_t blocksize, uint64_t *idx) {
     CSLogTraceEnter("int jfuse_bmap(%p, %zu, %p)", path, blocksize, idx);
     CSLogTrace("  path=\"%s\"", path);
 
-    int retval = -ENOTSUP;
+    JFUSE_OPERATION_INIT();
+
+    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_LONGREF(3, idx);
+
+    JFUSE_FS_PROVIDER_MID_OK(OPS_BMAP_NAME, OPS_BMAP_SIGNATURE) {
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), blocksize, JAVA_ARG(3));
+
+        JFUSE_MERGE_LONGREF(JAVA_ARG(3), idx);
+
+        JFUSE_SET_RETVAL();
+    }
+
+    JAVA_ARG_CLEANUP(3);
+    JAVA_ARG_CLEANUP(1);
+
+    JAVA_EXCEPTION_CHECK("jfuse_bmap");
 
     CSLogTraceLeave("int jfuse_bmap(%p, %zu, %p): %d",
                 path, blocksize, idx, retval);

@@ -73,6 +73,12 @@ bool JNIUtil::setBooleanField(JNIEnv *env, jclass fieldClass, jobject fieldObjec
     setField(Boolean, "d", "Z");
 }
 
+bool JNIUtil::setShortField(JNIEnv *env, jclass fieldClass, jobject fieldObject,
+        const char *fieldName, jshort value2) {
+    uint16_t value = value2;
+    setField(Short, PRId16, "S");
+}
+
 bool JNIUtil::setIntField(JNIEnv *env, jclass fieldClass, jobject fieldObject,
         const char *fieldName, jint value2) {
     uint32_t value = value2;
@@ -87,6 +93,11 @@ bool JNIUtil::setLongField(JNIEnv *env, jclass fieldClass, jobject fieldObject,
 bool JNIUtil::getBooleanField(JNIEnv *env, jclass fieldClass, jobject fieldObject,
         const char *fieldName, jboolean *target) {
     getField(Boolean, "Z");
+}
+
+bool JNIUtil::getShortField(JNIEnv *env, jclass fieldClass, jobject fieldObject,
+        const char *fieldName, jshort *target) {
+    getField(Short, "S");
 }
 
 bool JNIUtil::getIntField(JNIEnv *env, jclass fieldClass, jobject fieldObject,

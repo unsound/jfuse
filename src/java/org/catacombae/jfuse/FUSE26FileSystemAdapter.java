@@ -215,12 +215,12 @@ public abstract class FUSE26FileSystemAdapter implements FUSEFileSystem {
     }
 
     @Override
-    public int lock(byte[] path, FUSEFileInfo fi, int cmd, byte[] flock) {
+    public int lock(byte[] path, FUSEFileInfo fi, int cmd, Flock flock) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     @Override
-    public int utimens(byte[] path, Timespec[] tv) {
+    public int utimens(byte[] path, Timespec accessTime, Timespec modificationTime) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
