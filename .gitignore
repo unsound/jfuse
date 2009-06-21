@@ -2,4 +2,5 @@
 .DS_Store
 Thumbs.db
 /proj/netbeans/jFUSE/build/*
+/proj/netbeans/jFUSE/dist/*
 /proj/netbeans/libjfuse/build/*
