@@ -30,6 +30,7 @@ OBJECTDIR=build/Release/${PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_FUSE_26.o \
 	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/FUSE26Util.o \
+	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_StatConstant.o \
 	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/fuse26_module.o \
 	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/FUSEFillDirContext.o \
 	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/JNIUtil.o \
@@ -68,6 +69,11 @@ ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src
 	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/FUSE26Util.o ../../../src/native/FUSE26Util.cpp
+
+${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_StatConstant.o: ../../../src/native/org_catacombae_jfuse_StatConstant.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_StatConstant.o ../../../src/native/org_catacombae_jfuse_StatConstant.cpp
 
 ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/fuse26_module.o: ../../../src/native/fuse26_module.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native

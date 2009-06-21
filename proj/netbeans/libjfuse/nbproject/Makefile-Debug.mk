@@ -30,6 +30,7 @@ OBJECTDIR=build/Debug/${PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_FUSE_26.o \
 	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/FUSE26Util.o \
+	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_StatConstant.o \
 	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/fuse26_module.o \
 	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/FUSEFillDirContext.o \
 	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/JNIUtil.o \
@@ -66,6 +67,10 @@ ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src
 ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/FUSE26Util.o: ../../../src/native/FUSE26Util.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
 	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -I/System/Library/Frameworks/JavaVM.framework/Headers -fPIC  -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/FUSE26Util.o ../../../src/native/FUSE26Util.cpp
+
+${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_StatConstant.o: ../../../src/native/org_catacombae_jfuse_StatConstant.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
+	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -I/System/Library/Frameworks/JavaVM.framework/Headers -fPIC  -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_StatConstant.o ../../../src/native/org_catacombae_jfuse_StatConstant.cpp
 
 ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/fuse26_module.o: ../../../src/native/fuse26_module.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
