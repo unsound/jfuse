@@ -135,6 +135,8 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_Errno_getNativeErrnoValue
         throwByName(env, "java/lang/RuntimeException", "Unrecognized Errno value!");
     }
 
+    env->ReleaseStringUTFChars(errnoName, errnoNameChars);
+
     CSLogTraceLeave("jint Java_org_catacombae_jfuse_Errno_getNativeErrnoValue"
             "(%p, %p, %p): %" PRId32 "", env, cls, errnoName, result);
     return result;
