@@ -65,6 +65,25 @@
 #define JAVA_ARG_CLEANUP(num) \
     env->DeleteLocalRef(java_arg##num)
 
+#define JAVA_ARG(num) java_arg##num
+
+#define JAVA_EXCEPTION_CHECK(operation_name) \
+    if(env->ExceptionCheck() == JNI_TRUE) { \
+        CSLogError("Exception occurred when executing " #operation_name "."); \
+        env->ExceptionDescribe(); \
+        env->ExceptionClear(); \
+    }
+
+#define JFUSE_FS_PROVIDER_MID_OK(a, b) \
+    jmethodID fsProviderMid = context->getFSProviderMethod(a, b); \
+    if(fsProviderMid == NULL || env->ExceptionCheck() == JNI_TRUE) { \
+        CSLogError("Could not getFSProviderMethod for \"%s\" with signature %s", \
+                a, b); \
+    } \
+    else
+
+#define JFUSE_FS_PROVIDER_MID fsProviderMid
+
 
 static inline jFUSEContext* getjFUSEContext() {
     struct fuse_context *fuse_ctx = fuse_get_context();
@@ -85,16 +104,12 @@ int jfuse_getattr(const char *path, struct stat *stbuf) {
 
     JAVA_ARG_CSTRING(1, path);
     JAVA_ARG_STAT(2, stbuf);
-    
-    jmethodID getattrMID = context->getFSProviderMethod(OPS_GETATTR_NAME, OPS_GETATTR_SIGNATURE);
-    if(getattrMID == NULL || env->ExceptionCheck() == JNI_TRUE)
-        CSLogError("Could not getFSProviderMethod for \"%s\" with signature %s",
-            OPS_GETATTR_NAME, OPS_GETATTR_SIGNATURE);
-    else {
-        jint jretval = env->CallIntMethod(obj, getattrMID, java_arg1, java_arg2);
+
+    JFUSE_FS_PROVIDER_MID_OK(OPS_GETATTR_NAME, OPS_GETATTR_SIGNATURE) {
+        jint jretval = env->CallIntMethod(obj, JFUSE_FS_PROVIDER_MID, JAVA_ARG(1), JAVA_ARG(2));
 
         if(env->ExceptionCheck() == JNI_FALSE) {
-            if(!FUSE26Util::mergeStat(env, java_arg2, stbuf))
+            if(!FUSE26Util::mergeStat(env, JAVA_ARG(2), stbuf))
                 CSPanicWithMessage("Could not merge Stat -> struct stat");
         }
 
@@ -104,12 +119,8 @@ int jfuse_getattr(const char *path, struct stat *stbuf) {
 
     JAVA_ARG_CLEANUP(2);
     JAVA_ARG_CLEANUP(1);
-    
-    if(env->ExceptionCheck() == JNI_TRUE) {
-        CSLogError("Exception occurred when executing jfuse_getattr.");
-        env->ExceptionDescribe();
-        env->ExceptionClear();
-    }
+
+    JAVA_EXCEPTION_CHECK("jfuse_getattr");
 
     CSLogTraceLeave("int jfuse_getattr(%p, %p): %d",
                 path, stbuf, retval);
@@ -187,17 +198,12 @@ int jfuse_open(const char *path, struct fuse_file_info *fi) {
     JAVA_ARG_CSTRING(1, path);
     JAVA_ARG_FUSE_FILE_INFO(2, fi);
 
-    jmethodID openMID = context->getFSProviderMethod(OPS_OPEN_NAME, OPS_OPEN_SIGNATURE);
-    if(openMID == NULL || env->ExceptionCheck() == JNI_TRUE) {
-        CSLogError("Could not getFSProviderMethod for \"%s\" with signature %s",
-                OPS_OPEN_NAME, OPS_OPEN_SIGNATURE);
-    }
-    else {
-        jint jretval = env->CallIntMethod(obj, openMID, java_arg1, java_arg2);
+    JFUSE_FS_PROVIDER_MID_OK(OPS_OPEN_NAME, OPS_OPEN_SIGNATURE) {
+        jint jretval = env->CallIntMethod(obj, JFUSE_FS_PROVIDER_MID, JAVA_ARG(1), JAVA_ARG(2));
 
         if(env->ExceptionCheck() == JNI_FALSE) {
             // Merge FUSEFileInfo fields into fi
-            if(!FUSE26Util::mergeFUSEFileInfo(env, java_arg2, fi))
+            if(!FUSE26Util::mergeFUSEFileInfo(env, JAVA_ARG(2), fi))
                 CSPanicWithMessage("Could not merge FUSEFileInfo -> struct fuse_file_info");
         }
 
@@ -210,11 +216,7 @@ int jfuse_open(const char *path, struct fuse_file_info *fi) {
     JAVA_ARG_CLEANUP(2);
     JAVA_ARG_CLEANUP(1);
 
-    if(env->ExceptionCheck() == JNI_TRUE) {
-        CSLogError("Exception occurred when executing jfuse_open.");
-        env->ExceptionDescribe();
-        env->ExceptionClear();
-    }
+    JAVA_EXCEPTION_CHECK("jfuse_open");
 
     CSLogTraceLeave("int jfuse_open(%p, %p): %d",
             path, fi, retval);
@@ -238,39 +240,22 @@ int jfuse_read(const char *path, char *targetbuf, size_t targetbuf_len, off_t fi
     jobject obj = context->getFSProvider();
 
     JAVA_ARG_CSTRING(1, path);
-
-    // Argument 2: dest
-    /*
-    CSLogDebug("Processing argument 3, 4 (targetbuf, targetbuf_len)...");
-    jbyteArray targetArray = env->NewByteArray(targetbuf_len); // <alloc>
-    if(targetArray == NULL) {
-        if(env->ExceptionCheck() == JNI_TRUE)
-            env->ExceptionDescribe();
-        CSPanicWithMessage("Could not create new Java byte array for dest.");
-    }
-    */
     JAVA_ARG_EMPTY_BYTE_ARRAY(2, targetbuf_len);
-
     JAVA_ARG_FUSE_FILE_INFO(5, fi);
 
-    jmethodID readMID = context->getFSProviderMethod(OPS_READ_NAME, OPS_READ_SIGNATURE);
-    if(readMID == NULL || env->ExceptionCheck() == JNI_TRUE) {
-        CSLogError("Could not getFSProviderMethod for \"%s\" with signature %s",
-                OPS_READ_NAME, OPS_READ_SIGNATURE);
-    }
-    else {
-        jint jretval = env->CallIntMethod(obj, readMID, java_arg1, java_arg2,
-                targetbuf_len, file_off, java_arg5);
+    JFUSE_FS_PROVIDER_MID_OK(OPS_READ_NAME, OPS_READ_SIGNATURE) {
+        jint jretval = env->CallIntMethod(obj, JFUSE_FS_PROVIDER_MID, JAVA_ARG(1), JAVA_ARG(2),
+                targetbuf_len, file_off, JAVA_ARG(5));
 
         if(env->ExceptionCheck() == JNI_FALSE) {
             // Merge FUSEFileInfo fields into fi
-            if(!FUSE26Util::mergeFUSEFileInfo(env, java_arg5, fi))
+            if(!FUSE26Util::mergeFUSEFileInfo(env, JAVA_ARG(5), fi))
                 CSPanicWithMessage("Could not merge FUSEFileInfo -> struct fuse_file_info");
         }
 
         if(env->ExceptionCheck() == JNI_FALSE) {
             // Copy data to native buffer
-            env->GetByteArrayRegion(java_arg2, 0, targetbuf_len, (signed char*) (targetbuf));
+            env->GetByteArrayRegion(JAVA_ARG(2), 0, targetbuf_len, (signed char*) (targetbuf));
         }
 
         if(env->ExceptionCheck() == JNI_FALSE) {
@@ -283,11 +268,7 @@ int jfuse_read(const char *path, char *targetbuf, size_t targetbuf_len, off_t fi
     JAVA_ARG_CLEANUP(2);
     JAVA_ARG_CLEANUP(1);
 
-    if(env->ExceptionCheck() == JNI_TRUE) {
-        CSLogError("Exception occurred when executing jfuse_read.");
-        env->ExceptionDescribe();
-        env->ExceptionClear();
-    }
+    JAVA_EXCEPTION_CHECK("jfuse_read");
 
     CSLogTraceLeave("int jfuse_read(%p, %p, %zu, %" PRId64 ", %p): %d",
             path, targetbuf, targetbuf_len, file_off, fi, retval);
@@ -370,26 +351,21 @@ int jfuse_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
     jobject obj = context->getFSProvider();
 
     JAVA_ARG_CSTRING(1, path);
-
     JAVA_ARG_FUSE_FILL_DIR(2, filler, buf);
-    
     JAVA_ARG_FUSE_FILE_INFO(4, fi);
 
-    jmethodID readdirMID = context->getFSProviderMethod(OPS_READDIR_NAME, OPS_READDIR_SIGNATURE);
-    if(readdirMID == NULL || env->ExceptionCheck() == JNI_TRUE) {
-        CSLogError("Could not getFSProviderMethod for \"%s\" with signature %s",
-                OPS_READDIR_NAME, OPS_READDIR_SIGNATURE);
-    }
-    else {
-        jint jretval = env->CallIntMethod(obj, readdirMID, java_arg1, java_arg2, offset, java_arg4);
+    JFUSE_FS_PROVIDER_MID_OK(OPS_READDIR_NAME, OPS_READDIR_SIGNATURE) {
 
-        if(env->ExceptionCheck() == JNI_FALSE) {
+        jint jretval = env->CallIntMethod(obj, JFUSE_FS_PROVIDER_MID, JAVA_ARG(1),
+                JAVA_ARG(2), offset, JAVA_ARG(4));
+
+        if (env->ExceptionCheck() == JNI_FALSE) {
             // Merge FUSEFileInfo fields into fi
-            if(!FUSE26Util::mergeFUSEFileInfo(env, java_arg4, fi))
+            if (!FUSE26Util::mergeFUSEFileInfo(env, JAVA_ARG(4), fi))
                 CSPanicWithMessage("Could not merge FUSEFileInfo -> struct fuse_file_info");
         }
 
-        if(env->ExceptionCheck() == JNI_FALSE) {
+        if (env->ExceptionCheck() == JNI_FALSE) {
             // Return the proper retval.
             retval = jretval;
         }
@@ -399,11 +375,7 @@ int jfuse_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
     JAVA_ARG_CLEANUP(2);
     JAVA_ARG_CLEANUP(1);
 
-    if(env->ExceptionCheck() == JNI_TRUE) {
-        CSLogError("Exception occurred when executing jfuse_readdir.");
-        env->ExceptionDescribe();
-        env->ExceptionClear();
-    }
+    JAVA_EXCEPTION_CHECK("jfuse_readdir");
 
     CSLogTraceLeave("int jfuse_readdir(%p, %p, %p, %" PRId64 ", %p): %d",
             path, buf, filler, offset, fi, retval);
