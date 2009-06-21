@@ -74,7 +74,8 @@ bool JNIUtil::setBooleanField(JNIEnv *env, jclass fieldClass, jobject fieldObjec
 }
 
 bool JNIUtil::setIntField(JNIEnv *env, jclass fieldClass, jobject fieldObject,
-        const char *fieldName, jint value) {
+        const char *fieldName, jint value2) {
+    uint32_t value = value2;
     setField(Int, PRId32, "I");
 }
 

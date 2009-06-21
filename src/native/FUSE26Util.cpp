@@ -31,11 +31,13 @@ jobject FUSE26Util::createFUSEFillDir(JNIEnv *env, fuse_fill_dir_t filler, void 
             jsize pointerArrayLength = sizeof (ctx);
             jbyteArray pointerArray = env->NewByteArray(pointerArrayLength);
             if(pointerArray == NULL || env->ExceptionCheck() == JNI_TRUE) {
-                CSLogError("Could not create new Java byte array with length %" PRId32, pointerArrayLength);
+                CSLogError("Could not create new Java byte array with length %"
+                        PRId32, (uint32_t)pointerArrayLength);
             }
             else {
                 // 4. Fill pointer array with pointer data.
-                env->SetByteArrayRegion(pointerArray, 0, pointerArrayLength, (signed char*) (&ctx));
+                env->SetByteArrayRegion(pointerArray, 0, pointerArrayLength,
+                        (signed char*) (&ctx));
                 if(env->ExceptionCheck() == JNI_TRUE) {
                     CSLogError("Could not fill array with pointer data.");
                 }
