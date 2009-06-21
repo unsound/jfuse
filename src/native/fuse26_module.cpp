@@ -84,6 +84,37 @@
 
 #define JFUSE_FS_PROVIDER_MID fsProviderMid
 
+#define JFUSE_MERGE_STAT(stat_object, stbuf) \
+        if(env->ExceptionCheck() == JNI_FALSE) { \
+            if(!FUSE26Util::mergeStat(env, stat_object, stbuf)) \
+                CSPanicWithMessage("Could not merge Stat -> struct stat"); \
+        }
+
+#define JFUSE_MERGE_FUSE_FILE_INFO(ffi_object, fi) \
+        if(env->ExceptionCheck() == JNI_FALSE) { \
+            if (!FUSE26Util::mergeFUSEFileInfo(env, ffi_object, fi)) \
+                CSPanicWithMessage("Could not merge FUSEFileInfo -> struct fuse_file_info"); \
+        }
+
+#define JFUSE_MERGE_BYTE_ARRAY(javabuf, cbuf, cbuf_len) \
+        if(env->ExceptionCheck() == JNI_FALSE) { \
+            env->GetByteArrayRegion(javabuf, 0, cbuf_len, (signed char*) (cbuf)); \
+        }
+
+#define JFUSE_SET_RETVAL() \
+        if(env->ExceptionCheck() == JNI_FALSE) \
+            retval = jretval;
+
+#define JFUSE_OPERATION_INIT() \
+        int retval = -EIO; \
+        jFUSEContext *context = getjFUSEContext(); \
+        \
+        JNIEnv *env = context->getJNIEnv(); \
+        jobject obj = context->getFSProvider();
+
+#define JFUSE_FS_PROVIDER_CALL(...) \
+        jint jretval = env->CallIntMethod(obj, JFUSE_FS_PROVIDER_MID, __VA_ARGS__);
+
 
 static inline jFUSEContext* getjFUSEContext() {
     struct fuse_context *fuse_ctx = fuse_get_context();
@@ -95,26 +126,17 @@ int jfuse_getattr(const char *path, struct stat *stbuf) {
             path, stbuf);
     CSLogTrace("  path=\"%s\"", path);
 
-    int retval = -EIO;
-
-    jFUSEContext *context = getjFUSEContext();
-
-    JNIEnv *env = context->getJNIEnv();
-    jobject obj = context->getFSProvider();
+    JFUSE_OPERATION_INIT();
 
     JAVA_ARG_CSTRING(1, path);
     JAVA_ARG_STAT(2, stbuf);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_GETATTR_NAME, OPS_GETATTR_SIGNATURE) {
-        jint jretval = env->CallIntMethod(obj, JFUSE_FS_PROVIDER_MID, JAVA_ARG(1), JAVA_ARG(2));
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2));
 
-        if(env->ExceptionCheck() == JNI_FALSE) {
-            if(!FUSE26Util::mergeStat(env, JAVA_ARG(2), stbuf))
-                CSPanicWithMessage("Could not merge Stat -> struct stat");
-        }
+        JFUSE_MERGE_STAT(JAVA_ARG(2), stbuf);
 
-        if(env->ExceptionCheck() == JNI_FALSE)
-            retval = jretval;
+        JFUSE_SET_RETVAL();
     }
 
     JAVA_ARG_CLEANUP(2);
@@ -186,31 +208,17 @@ int jfuse_open(const char *path, struct fuse_file_info *fi) {
             path, fi);
     CSLogTrace("  path=\"%s\"", path);
 
-    if(false)
-        return -ENOENT;
-    
-    int retval = -EIO;
-    jFUSEContext *context = getjFUSEContext();
-
-    JNIEnv *env = context->getJNIEnv();
-    jobject obj = context->getFSProvider();
+    JFUSE_OPERATION_INIT();
 
     JAVA_ARG_CSTRING(1, path);
     JAVA_ARG_FUSE_FILE_INFO(2, fi);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_OPEN_NAME, OPS_OPEN_SIGNATURE) {
-        jint jretval = env->CallIntMethod(obj, JFUSE_FS_PROVIDER_MID, JAVA_ARG(1), JAVA_ARG(2));
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2));
 
-        if(env->ExceptionCheck() == JNI_FALSE) {
-            // Merge FUSEFileInfo fields into fi
-            if(!FUSE26Util::mergeFUSEFileInfo(env, JAVA_ARG(2), fi))
-                CSPanicWithMessage("Could not merge FUSEFileInfo -> struct fuse_file_info");
-        }
+        JFUSE_MERGE_FUSE_FILE_INFO(JAVA_ARG(2), fi);
 
-        if(env->ExceptionCheck() == JNI_FALSE) {
-            // Return the proper retval.
-            retval = jretval;
-        }
+        JFUSE_SET_RETVAL();
     }
 
     JAVA_ARG_CLEANUP(2);
@@ -230,38 +238,19 @@ int jfuse_read(const char *path, char *targetbuf, size_t targetbuf_len, off_t fi
             path, targetbuf, targetbuf_len, file_off, fi);
     CSLogTrace("  path=\"%s\"", path);
 
-    if(false)
-        return -ENOENT;
-
-    int retval = -EIO;
-    jFUSEContext *context = getjFUSEContext();
-
-    JNIEnv *env = context->getJNIEnv();
-    jobject obj = context->getFSProvider();
+    JFUSE_OPERATION_INIT();
 
     JAVA_ARG_CSTRING(1, path);
     JAVA_ARG_EMPTY_BYTE_ARRAY(2, targetbuf_len);
     JAVA_ARG_FUSE_FILE_INFO(5, fi);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_READ_NAME, OPS_READ_SIGNATURE) {
-        jint jretval = env->CallIntMethod(obj, JFUSE_FS_PROVIDER_MID, JAVA_ARG(1), JAVA_ARG(2),
-                targetbuf_len, file_off, JAVA_ARG(5));
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), targetbuf_len, file_off, JAVA_ARG(5));
 
-        if(env->ExceptionCheck() == JNI_FALSE) {
-            // Merge FUSEFileInfo fields into fi
-            if(!FUSE26Util::mergeFUSEFileInfo(env, JAVA_ARG(5), fi))
-                CSPanicWithMessage("Could not merge FUSEFileInfo -> struct fuse_file_info");
-        }
+        JFUSE_MERGE_FUSE_FILE_INFO(JAVA_ARG(5), fi);
+        JFUSE_MERGE_BYTE_ARRAY(JAVA_ARG(2), targetbuf, targetbuf_len);
 
-        if(env->ExceptionCheck() == JNI_FALSE) {
-            // Copy data to native buffer
-            env->GetByteArrayRegion(JAVA_ARG(2), 0, targetbuf_len, (signed char*) (targetbuf));
-        }
-
-        if(env->ExceptionCheck() == JNI_FALSE) {
-            // Return the proper retval.
-            retval = jretval;
-        }
+        JFUSE_SET_RETVAL();
     }
 
     JAVA_ARG_CLEANUP(5);
@@ -343,12 +332,8 @@ int jfuse_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
     CSLogTraceEnter("int jfuse_readdir(%p, %p, %p, %" PRId64 ", %p)",
             path, buf, filler, offset, fi);
     CSLogTrace("  path=\"%s\"", path);
-    
-    int retval = -EIO;
-    jFUSEContext *context = getjFUSEContext();
 
-    JNIEnv *env = context->getJNIEnv();
-    jobject obj = context->getFSProvider();
+    JFUSE_OPERATION_INIT();
 
     JAVA_ARG_CSTRING(1, path);
     JAVA_ARG_FUSE_FILL_DIR(2, filler, buf);
@@ -356,19 +341,11 @@ int jfuse_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_READDIR_NAME, OPS_READDIR_SIGNATURE) {
 
-        jint jretval = env->CallIntMethod(obj, JFUSE_FS_PROVIDER_MID, JAVA_ARG(1),
-                JAVA_ARG(2), offset, JAVA_ARG(4));
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), offset, JAVA_ARG(4));
 
-        if (env->ExceptionCheck() == JNI_FALSE) {
-            // Merge FUSEFileInfo fields into fi
-            if (!FUSE26Util::mergeFUSEFileInfo(env, JAVA_ARG(4), fi))
-                CSPanicWithMessage("Could not merge FUSEFileInfo -> struct fuse_file_info");
-        }
+        JFUSE_MERGE_FUSE_FILE_INFO(JAVA_ARG(4), fi);
 
-        if (env->ExceptionCheck() == JNI_FALSE) {
-            // Return the proper retval.
-            retval = jretval;
-        }
+        JFUSE_SET_RETVAL();
     }
 
     JAVA_ARG_CLEANUP(4);
