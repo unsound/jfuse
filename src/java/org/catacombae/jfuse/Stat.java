@@ -11,35 +11,35 @@ package org.catacombae.jfuse;
  */
 public class Stat {
     /** type of file */
-    public static final int S_IFMT = 0170000;
+    public static final int S_IFMT = StatConstant.S_IFMT.getNativeValue();
     /** named pipe (fifo) */
-    public static final int S_IFIFO = 0010000;
+    public static final int S_IFIFO = StatConstant.S_IFIFO.getNativeValue();
     /** character special */
-    public static final int S_IFCHR = 0020000;
+    public static final int S_IFCHR = StatConstant.S_IFCHR.getNativeValue();
     /** directory */
-    public static final int S_IFDIR = 0040000;
+    public static final int S_IFDIR = StatConstant.S_IFDIR.getNativeValue();
     /** block special */
-    public static final int S_IFBLK = 0060000;
+    public static final int S_IFBLK = StatConstant.S_IFBLK.getNativeValue();
     /** regular */
-    public static final int S_IFREG = 0100000;
+    public static final int S_IFREG = StatConstant.S_IFREG.getNativeValue();
     /** symbolic link */
-    public static final int S_IFLNK = 0120000;
+    public static final int S_IFLNK = StatConstant.S_IFLNK.getNativeValue();
     /** socket */
-    public static final int S_IFSOCK = 0140000;
+    public static final int S_IFSOCK = StatConstant.S_IFSOCK.getNativeValue();
     /** whiteout */
-    public static final int S_IFWHT = 0160000;
+    public static final int S_IFWHT = StatConstant.S_IFWHT.getNativeValue();
     /** set user id on execution */
-    public static final int S_ISUID = 0004000;
+    public static final int S_ISUID = StatConstant.S_ISUID.getNativeValue();
     /** set group id on execution */
-    public static final int S_ISGID = 0002000;
+    public static final int S_ISGID = StatConstant.S_ISGID.getNativeValue();
     /** save swapped text even after use */
-    public static final int S_ISVTX = 0001000;
+    public static final int S_ISVTX = StatConstant.S_ISVTX.getNativeValue();
     /** read permission, owner */
-    public static final int S_IRUSR = 0000400;
+    public static final int S_IRUSR = StatConstant.S_IRUSR.getNativeValue();
     /** write permission, owner */
-    public static final int S_IWUSR = 0000200;
+    public static final int S_IWUSR = StatConstant.S_IWUSR.getNativeValue();
     /** execute/search permission, owner */
-    public static final int S_IXUSR = 0000100;
+    public static final int S_IXUSR = StatConstant.S_IXUSR.getNativeValue();
 
     /** Type: dev_t (4 bytes) */
     public long st_dev = 0;
