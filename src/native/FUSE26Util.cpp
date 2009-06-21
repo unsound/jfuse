@@ -7,6 +7,38 @@
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
+/**
+ * Creates a new Java object from the specified class, init name and init
+ * signature. Currently you cannot pass on any arguments to the constructor, so
+ * initName and initSignature are really pointless (they will always be "<init>"
+ * and "()V".
+ */
+static inline jobject newObject(JNIEnv *env, const char *className, const char *initName,
+        const char *initSignature) {
+
+    jobject res = NULL;
+
+    jclass clazz = env->FindClass(className);
+    if(clazz == NULL || env->ExceptionCheck() == JNI_TRUE)
+        CSLogError("Could not find class \"%s\"", className);
+    else {
+        jmethodID constructor = env->GetMethodID(clazz, initName,
+                initSignature);
+        if(constructor == NULL || env->ExceptionCheck() == JNI_TRUE)
+            CSLogError("Could not find method \"%s\" with signature %s.", initName,
+                initSignature);
+        else {
+            jobject obj = env->NewObject(clazz, constructor);
+            if(obj == NULL || env->ExceptionCheck() == JNI_TRUE)
+                CSLogError("Could not create new FUSEFileInfo instance.");
+            else
+                res = obj;
+        }
+    }
+
+    return res;
+}
+
 jobject FUSE26Util::createFUSEFillDir(JNIEnv *env, fuse_fill_dir_t filler, void *buf) {
     CSLogTraceEnter("jobject FUSE26Util::createFUSEFillDir(%p, %p, %p)", env, filler, buf);
 
@@ -31,11 +63,13 @@ jobject FUSE26Util::createFUSEFillDir(JNIEnv *env, fuse_fill_dir_t filler, void 
             jsize pointerArrayLength = sizeof (ctx);
             jbyteArray pointerArray = env->NewByteArray(pointerArrayLength);
             if(pointerArray == NULL || env->ExceptionCheck() == JNI_TRUE) {
-                CSLogError("Could not create new Java byte array with length %" PRId32, pointerArrayLength);
+                CSLogError("Could not create new Java byte array with length %"
+                        PRId32, (uint32_t)pointerArrayLength);
             }
             else {
                 // 4. Fill pointer array with pointer data.
-                env->SetByteArrayRegion(pointerArray, 0, pointerArrayLength, (signed char*) (&ctx));
+                env->SetByteArrayRegion(pointerArray, 0, pointerArrayLength,
+                        (signed char*) (&ctx));
                 if(env->ExceptionCheck() == JNI_TRUE) {
                     CSLogError("Could not fill array with pointer data.");
                 }
@@ -167,7 +201,7 @@ bool FUSE26Util::mergeStat(JNIEnv *env, jobject statObject, struct stat *target)
     return res;
 }
 
-bool FUSE26Util::fillStat(JNIEnv *env, struct stat *st, jobject statObject) {
+bool FUSE26Util::fillStat(JNIEnv *env, const struct stat *st, jobject statObject) {
     CSLogTraceEnter("bool FUSE26Util::fillStat(%p, %p, %p)", env, st, statObject);
 
     bool ret = false;
@@ -224,7 +258,7 @@ bool FUSE26Util::fillStat(JNIEnv *env, struct stat *st, jobject statObject) {
     return ret;
 }
 
-jobject FUSE26Util::newStat(JNIEnv *env, struct stat *st) {
+jobject FUSE26Util::newStat(JNIEnv *env, const struct stat *st) {
     CSLogTraceEnter("jobject FUSE26Util::newStat(%p, %p)", env, st);
 
     jobject res = NULL;
@@ -322,7 +356,7 @@ bool FUSE26Util::mergeFUSEFileInfo(JNIEnv *env, jobject ffiObject, struct fuse_f
     return res;
 }
 
-bool FUSE26Util::fillFUSEFileInfo(JNIEnv *env, struct fuse_file_info *fi, jobject ffiObject) {
+bool FUSE26Util::fillFUSEFileInfo(JNIEnv *env, const struct fuse_file_info *fi, jobject ffiObject) {
     CSLogTraceEnter("bool FUSE26Util::fillFUSEFileInfo(%p, %p, %p)", env, fi, ffiObject);
 
     bool ret = false;
@@ -363,30 +397,19 @@ bool FUSE26Util::fillFUSEFileInfo(JNIEnv *env, struct fuse_file_info *fi, jobjec
  * Creates a new FUSEFileInfo object and fills it using the fields in
  * <code>fi</code>.
  */
-jobject FUSE26Util::newFUSEFileInfo(JNIEnv *env, struct fuse_file_info *fi) {
+jobject FUSE26Util::newFUSEFileInfo(JNIEnv *env, const struct fuse_file_info *fi) {
     CSLogTraceEnter("jobject FUSE26Util::newFUSEFileInfo(%p, %p)", env, fi);
 
     jobject res = NULL;
-    jclass ffiClass = env->FindClass(FUSEFILEINFO_CLASS);
-    if(ffiClass == NULL || env->ExceptionCheck() == JNI_TRUE)
-        CSLogError("Could not find class \"%s\"", FUSEFILEINFO_CLASS);
+
+    jobject obj = newObject(env, FUSEFILEINFO_CLASS, FUSEFILEINFO_INIT_NAME, FUSEFILEINFO_INIT_SIGNATURE);
+    if (obj == NULL || env->ExceptionCheck() == JNI_TRUE)
+        CSLogError("Could not create new FUSEFileInfo instance.");
     else {
-        jmethodID ffiConstructor = env->GetMethodID(ffiClass, FUSEFILEINFO_INIT_NAME,
-                FUSEFILEINFO_INIT_SIGNATURE);
-        if(ffiConstructor == NULL || env->ExceptionCheck() == JNI_TRUE)
-            CSLogError("Could not find method \"%s\" with signature %s.", FUSEFILEINFO_INIT_NAME,
-                FUSEFILEINFO_INIT_SIGNATURE);
-        else {
-            jobject obj = env->NewObject(ffiClass, ffiConstructor);
-            if(obj == NULL || env->ExceptionCheck() == JNI_TRUE)
-                CSLogError("Could not create new FUSEFileInfo instance.");
-            else {
-                if(!fillFUSEFileInfo(env, fi, obj))
-                    CSLogError("fillFUSEFileInfo failed!");
-                else
-                    res = obj;
-            }
-        }
+        if (!fillFUSEFileInfo(env, fi, obj))
+            CSLogError("fillFUSEFileInfo failed!");
+        else
+            res = obj;
     }
 
     if(env->ExceptionCheck() == JNI_TRUE)
@@ -396,4 +419,249 @@ jobject FUSE26Util::newFUSEFileInfo(JNIEnv *env, struct fuse_file_info *fi) {
     return res;
 }
 
+/**
+ * Merges the contents of source (Java class Flock) with the supplied
+ * struct flock.
+ */
+bool FUSE26Util::mergeFlock(JNIEnv *env, jobject source, struct flock *target) {
+    CSLogTraceEnter("bool FUSE26Util::mergeFlock(%p, %p, %p)", env, source, target);
+    bool res = false;
+    do {
+        jclass clazz = env->GetObjectClass(source);
+        if(clazz == NULL || env->ExceptionCheck() == JNI_TRUE) {
+            CSLogError("Could not get object class!");
+            if(env->ExceptionCheck())
+                env->ExceptionDescribe();
+            break;
+        }
 
+        jlong start;
+        jlong len;
+        jlong pid;
+        jshort type;
+        jshort whence;
+
+        if(!getLongField(env, clazz, source, "start", &start))
+            break;
+        if(!getLongField(env, clazz, source, "len", &len))
+            break;
+        if(!getLongField(env, clazz, source, "pid", &pid))
+            break;
+        if(!getShortField(env, clazz, source, "type", &type))
+            break;
+        if(!getShortField(env, clazz, source, "whence", &whence))
+            break;
+
+        target->l_start = start;
+        target->l_len = len;
+        target->l_pid = pid;
+        target->l_type = type;
+        target->l_whence = whence;
+        
+        res = true;
+    }
+    while(0);
+
+    CSLogTraceLeave("bool FUSE26Util::mergeFlock(%p, %p, %p): %d", env, source, target, res);
+    return res;
+}
+
+/**
+ * Fills in the fields of target (Java class Flock) from the fields of source
+ * (struct flock).
+ */
+bool FUSE26Util::fillFlock(JNIEnv *env, const struct flock *source, jobject target) {
+    CSLogTraceEnter("bool FUSE26Util::fillFlock(%p, %p, %p)", env, source, target);
+
+    bool ret = false;
+    do {
+        jclass clazz = env->GetObjectClass(target);
+        if(clazz == NULL || env->ExceptionCheck() == JNI_TRUE) {
+            CSLogError("Could not get object class!");
+            if(env->ExceptionCheck())
+                env->ExceptionDescribe();
+            break;
+        }
+
+        if(!setLongField(env, clazz, target, "l_start", source->l_start))
+            break;
+        if(!setLongField(env, clazz, target, "l_len", source->l_len))
+            break;
+        if(!setLongField(env, clazz, target, "l_pid", source->l_pid))
+            break;
+        if(!setShortField(env, clazz, target, "l_type", source->l_type))
+            break;
+        if(!setShortField(env, clazz, target, "l_whence", source->l_whence))
+            break;
+
+        ret = true;
+    } while(0);
+
+    CSLogTraceLeave("bool FUSE26Util::fillFlock(%p, %p, %p): %d", env, source, target, ret);
+    return ret;
+}
+
+/**
+ * Creates a new Flock object and fills it using the fields in
+ * <code>source</code>.
+ */
+jobject FUSE26Util::newFlock(JNIEnv *env, const struct flock *source) {
+    CSLogTraceEnter("jobject FUSE26Util::newFlock(%p, %p)", env, source);
+
+    jobject res = NULL;
+
+    jobject obj = newObject(env, FLOCK_CLASS, FLOCK_INIT_NAME, FLOCK_INIT_SIGNATURE);
+    if (obj == NULL || env->ExceptionCheck() == JNI_TRUE)
+        CSLogError("Could not create new Flock instance.");
+    else {
+        if (!fillFlock(env, source, obj))
+            CSLogError("fillFlock failed!");
+        else
+            res = obj;
+    }
+
+    if(env->ExceptionCheck() == JNI_TRUE)
+        env->ExceptionDescribe();
+
+    CSLogTraceLeave("jobject FUSE26Util::newFlock(%p, %p): %p", env, source, res);
+    return res;
+}
+
+/**
+ * Fills in the fields of target (Java class Timespec) from the fields of source
+ * (struct timespec).
+ */
+bool FUSE26Util::fillTimespec(JNIEnv *env, const struct timespec *source, jobject target) {
+    CSLogTraceEnter("bool FUSE26Util::fillTimespec(%p, %p, %p)", env, source, target);
+
+    bool ret = false;
+    do {
+        jclass clazz = env->GetObjectClass(target);
+        if(clazz == NULL || env->ExceptionCheck() == JNI_TRUE) {
+            CSLogError("Could not get object class!");
+            if(env->ExceptionCheck())
+                env->ExceptionDescribe();
+            break;
+        }
+
+        if(!setIntField(env, clazz, target, "tv_sec", source->tv_sec))
+            break;
+        if(!setIntField(env, clazz, target, "tv_nsec", source->tv_nsec))
+            break;
+        
+        ret = true;
+    } while(0);
+
+    CSLogTraceLeave("bool FUSE26Util::fillTimespec(%p, %p, %p): %d", env, source, target, ret);
+    return ret;
+}
+
+/**
+ * Creates a new Timespec object and fills it using the fields in
+ * <code>source</code>.
+ */
+jobject FUSE26Util::newTimespec(JNIEnv *env, const struct timespec *source) {
+    CSLogTraceEnter("jobject FUSE26Util::newTimespec(%p, %p)", env, source);
+
+    jobject res = NULL;
+
+    jobject obj = newObject(env, TIMESPEC_CLASS, TIMESPEC_INIT_NAME, TIMESPEC_INIT_SIGNATURE);
+    if (obj == NULL || env->ExceptionCheck() == JNI_TRUE)
+        CSLogError("Could not create new Timespec instance.");
+    else {
+        if (!fillTimespec(env, source, obj))
+            CSLogError("fillTimespec failed!");
+        else
+            res = obj;
+    }
+
+    if(env->ExceptionCheck() == JNI_TRUE)
+        env->ExceptionDescribe();
+
+    CSLogTraceLeave("jobject FUSE26Util::newTimespec(%p, %p): %p", env, source, res);
+    return res;
+}
+
+/**
+ * Merges the contents of source (Java class LongRef) with the supplied
+ * uint64_t.
+ */
+bool FUSE26Util::mergeLongRef(JNIEnv *env, jobject source, uint64_t *target) {
+    CSLogTraceEnter("bool FUSE26Util::mergeLongRef(%p, %p, %p)", env, source, target);
+    bool res = false;
+    do {
+        jclass clazz = env->GetObjectClass(source);
+        if(clazz == NULL || env->ExceptionCheck() == JNI_TRUE) {
+            CSLogError("Could not get object class!");
+            if(env->ExceptionCheck())
+                env->ExceptionDescribe();
+            break;
+        }
+
+        jlong ref;
+
+        if(!getLongField(env, clazz, source, "ref", &ref))
+            break;
+
+        *target = ref;
+
+        res = true;
+    }
+    while(0);
+
+    CSLogTraceLeave("bool FUSE26Util::mergeLongRef(%p, %p, %p): %d", env, source, target, res);
+    return res;
+}
+
+/**
+ * Fills in the fields of target (Java class LongRef) from the fields of source
+ * (uint64_t).
+ */
+bool FUSE26Util::fillLongRef(JNIEnv *env, const uint64_t *source, jobject target) {
+    CSLogTraceEnter("bool FUSE26Util::fillLongRef(%p, %p, %p)", env, source, target);
+
+    bool ret = false;
+    do {
+        jclass clazz = env->GetObjectClass(target);
+        if(clazz == NULL || env->ExceptionCheck() == JNI_TRUE) {
+            CSLogError("Could not get object class!");
+            if(env->ExceptionCheck())
+                env->ExceptionDescribe();
+            break;
+        }
+
+        if(!setLongField(env, clazz, target, "ref", *source))
+            break;
+        
+        ret = true;
+    } while(0);
+
+    CSLogTraceLeave("bool FUSE26Util::fillLongRef(%p, %p, %p): %d", env, source, target, ret);
+    return ret;
+}
+
+/**
+ * Creates a new LongRef object and fills it using the fields in
+ * <code>source</code>.
+ */
+jobject FUSE26Util::newLongRef(JNIEnv *env, const uint64_t *source) {
+    CSLogTraceEnter("jobject FUSE26Util::newLongRef(%p, %p)", env, source);
+
+    jobject res = NULL;
+
+    jobject obj = newObject(env, LONGREF_CLASS, LONGREF_INIT_NAME, LONGREF_INIT_SIGNATURE);
+    if (obj == NULL || env->ExceptionCheck() == JNI_TRUE)
+        CSLogError("Could not create new LongRef instance.");
+    else {
+        if (!fillLongRef(env, source, obj))
+            CSLogError("fillLongRef failed!");
+        else
+            res = obj;
+    }
+
+    if(env->ExceptionCheck() == JNI_TRUE)
+        env->ExceptionDescribe();
+
+    CSLogTraceLeave("jobject FUSE26Util::newLongRef(%p, %p): %p", env, source, res);
+    return res;
+}

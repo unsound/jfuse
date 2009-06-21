@@ -138,6 +138,6 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_Errno_getNativeErrnoValue
     env->ReleaseStringUTFChars(errnoName, errnoNameChars);
 
     CSLogTraceLeave("jint Java_org_catacombae_jfuse_Errno_getNativeErrnoValue"
-            "(%p, %p, %p): %" PRId32 "", env, cls, errnoName, result);
+            "(%p, %p, %p): %" PRId32 "", env, cls, errnoName, (int32_t)result);
     return result;
 }

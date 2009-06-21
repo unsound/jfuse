@@ -1,19 +1,16 @@
+#include "org_catacombae_jfuse_FUSEFillDir.h"
 
 #include "common.h"
-
-#include "org_catacombae_jfuse_FUSEFillDir.h"
 #include "fuse26_module.h"
-#include "fusefilldircontext.h"
+#include "FUSEFillDirContext.h"
 #include "CSLog.h"
 #include "FUSE26Util.h"
+#include "JavaSignatures.h"
 
 #include <stdlib.h>
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 #include <fuse.h>
-
-#define FUSEFILLDIR_CLASS "org/catacombae/jfuse/FUSEFillDir"
-
 
 /*
  * Class:     org_catacombae_jfuse_FUSEFillDir
@@ -49,15 +46,16 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSEFillDir_fillNative(JNIE
 
         jsize baLength = env->GetArrayLength(ba);
         CheckForErrors(baLength != sizeof(FUSEFillDirContext*),
-                "baLength: %" PRId32 " != sizeof(fuse_fill_dir_t): %zu", baLength,
-                sizeof(fuse_fill_dir_t));
+                "baLength: %" PRId32 " != sizeof(fuse_fill_dir_t): %zu",
+                (int32_t)baLength, sizeof(fuse_fill_dir_t));
 
         FUSEFillDirContext *fill_ctx = NULL;
         env->GetByteArrayRegion(ba, 0, baLength, (jbyte*) (&fill_ctx));
         CheckForErrors(fill_ctx == NULL, "Could not get FUSEFillDirContext pointer.");
 
         jsize nameStrlen = env->GetArrayLength(name);
-        CheckForErrors(nameStrlen < 0, "Could not get array length (nameStrlen=%" PRId32 ")", nameStrlen);
+        CheckForErrors(nameStrlen < 0, "Could not get array length (nameStrlen=%"
+                PRId32 ")", (int32_t)nameStrlen);
 
         char *nameBuf = (char*) calloc(1, sizeof(char)*(nameStrlen + 1));
         CheckForErrors(nameBuf == NULL, "calloc failed for nameBuf");

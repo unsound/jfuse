@@ -17,6 +17,9 @@ public:
     static bool setBooleanField(JNIEnv *env, jclass fieldClass, jobject fieldObject,
             const char *fieldName, jboolean value);
 
+    static bool setShortField(JNIEnv *env, jclass fieldClass, jobject fieldObject,
+            const char *fieldName, jshort value);
+
     static bool setIntField(JNIEnv *env, jclass fieldClass, jobject fieldObject,
             const char *fieldName, jint value);
 
@@ -25,6 +28,9 @@ public:
 
     static bool getBooleanField(JNIEnv *env, jclass fieldClass, jobject fieldObject,
             const char *fieldName, jboolean *target);
+
+    static bool getShortField(JNIEnv *env, jclass fieldClass, jobject fieldObject,
+                const char *fieldName, jshort *target);
 
     static bool getIntField(JNIEnv *env, jclass fieldClass, jobject fieldObject,
             const char *fieldName, jint *target);
