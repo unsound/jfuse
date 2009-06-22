@@ -102,6 +102,24 @@ public:
      * <code>source</code>.
      */
     static jobject newLongRef(JNIEnv *env, const uint64_t *source);
+
+    /**
+     * Merges the contents of source (Java class FUSEConnInfo) with the supplied
+     * fuse_conn_info.
+     */
+    static bool mergeFUSEConnInfo(JNIEnv *env, jobject source, struct fuse_conn_info *target);
+
+    /**
+     * Fills in the fields of target (Java class FUSEConnInfo) from the fields
+     * of source (fuse_conn_info).
+     */
+    static bool fillFUSEConnInfo(JNIEnv *env, const struct fuse_conn_info *source, jobject target);
+
+    /**
+     * Creates a new FUSEConnInfo object and fills it using the fields in
+     * <code>source</code>.
+     */
+    static jobject newFUSEConnInfo(JNIEnv *env, const struct fuse_conn_info *source);
 };
 
 

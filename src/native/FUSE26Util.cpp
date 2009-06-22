@@ -665,3 +665,111 @@ jobject FUSE26Util::newLongRef(JNIEnv *env, const uint64_t *source) {
     CSLogTraceLeave("jobject FUSE26Util::newLongRef(%p, %p): %p", env, source, res);
     return res;
 }
+
+/**
+ * Merges the contents of source (Java class LongRef) with the supplied
+ * uint64_t.
+ */
+bool FUSE26Util::mergeFUSEConnInfo(JNIEnv *env, jobject source, struct fuse_conn_info *target) {
+    CSLogTraceEnter("bool FUSE26Util::mergeFUSEConnInfo(%p, %p, %p)", env, source, target);
+    bool res = false;
+    do {
+        jclass clazz = env->GetObjectClass(source);
+        if(clazz == NULL || env->ExceptionCheck() == JNI_TRUE) {
+            CSLogError("Could not get object class!");
+            if(env->ExceptionCheck())
+                env->ExceptionDescribe();
+            break;
+        }
+
+        jlong proto_major;
+        jlong proto_minor;
+        jboolean async_read;
+        jlong max_write;
+        jlong max_readahead;
+
+        if(!getLongField(env, clazz, source, "proto_major", &proto_major))
+            break;
+        if(!getLongField(env, clazz, source, "proto_minor", &proto_minor))
+            break;
+        if(!getBooleanField(env, clazz, source, "async_read", &async_read))
+            break;
+        if(!getLongField(env, clazz, source, "max_write", &max_write))
+            break;
+        if(!getLongField(env, clazz, source, "max_readahead", &max_readahead))
+            break;
+
+        target->proto_major = proto_major;
+        target->proto_minor = proto_minor;
+        target->async_read = (async_read == JNI_TRUE ? 1 : 0);
+        target->max_write = max_write;
+        target->max_readahead = max_readahead;
+
+        res = true;
+    }
+    while(0);
+
+    CSLogTraceLeave("bool FUSE26Util::mergeFUSEConnInfo(%p, %p, %p): %d", env, source, target, res);
+    return res;
+}
+
+/**
+ * Fills in the fields of target (Java class LongRef) from the fields of source
+ * (uint64_t).
+ */
+bool FUSE26Util::fillFUSEConnInfo(JNIEnv *env, const struct fuse_conn_info *source, jobject target) {
+    CSLogTraceEnter("bool FUSE26Util::fillFUSEConnInfo(%p, %p, %p)", env, source, target);
+
+    bool ret = false;
+    do {
+        jclass clazz = env->GetObjectClass(target);
+        if(clazz == NULL || env->ExceptionCheck() == JNI_TRUE) {
+            CSLogError("Could not get object class!");
+            if(env->ExceptionCheck())
+                env->ExceptionDescribe();
+            break;
+        }
+
+        if(!setLongField(env, clazz, target, "proto_major", source->proto_major))
+            break;
+        if(!setLongField(env, clazz, target, "proto_minor", source->proto_minor))
+            break;
+        if(!setBooleanField(env, clazz, target, "async_read", (source->async_read ? JNI_TRUE : JNI_FALSE)))
+            break;
+        if(!setLongField(env, clazz, target, "max_write", source->max_write))
+            break;
+        if(!setLongField(env, clazz, target, "max_readahead", source->max_readahead))
+            break;
+
+        ret = true;
+    } while(0);
+
+    CSLogTraceLeave("bool FUSE26Util::fillFUSEConnInfo(%p, %p, %p): %d", env, source, target, ret);
+    return ret;
+}
+
+/**
+ * Creates a new LongRef object and fills it using the fields in
+ * <code>source</code>.
+ */
+jobject FUSE26Util::newFUSEConnInfo(JNIEnv *env, const struct fuse_conn_info *source) {
+    CSLogTraceEnter("jobject FUSE26Util::newFUSEConnInfo(%p, %p)", env, source);
+
+    jobject res = NULL;
+
+    jobject obj = newObject(env, FUSECONNINFO_CLASS, FUSECONNINFO_INIT_NAME, FUSECONNINFO_INIT_SIGNATURE);
+    if (obj == NULL || env->ExceptionCheck() == JNI_TRUE)
+        CSLogError("Could not create new FUSEConnInfo instance.");
+    else {
+        if (!fillFUSEConnInfo(env, source, obj))
+            CSLogError("fillFUSEConnInfo failed!");
+        else
+            res = obj;
+    }
+
+    if(env->ExceptionCheck() == JNI_TRUE)
+        env->ExceptionDescribe();
+
+    CSLogTraceLeave("jobject FUSE26Util::newFUSEConnInfo(%p, %p): %p", env, source, res);
+    return res;
+}
