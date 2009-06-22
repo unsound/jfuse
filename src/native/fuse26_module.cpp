@@ -12,6 +12,7 @@
 
 #include <fuse.h>
 #include <fuse/fuse_common.h>
+#include <fuse/fuse.h>
 
 #include "JavaSignatures.h"
 
@@ -94,6 +95,15 @@ static inline jFUSEContext* getjFUSEContext() {
         CSPanicWithMessage("Could not create new LongRef."); \
     }
 
+#define JAVA_ARG_FUSE_CONN_INFO(num, conn) \
+    CSLogDebug("Processing argument %d (%s) of type uint64_t*...", num, #conn); \
+    jobject java_arg##num = FUSE26Util::newFUSEConnInfo(env, conn); \
+    if(java_arg##num == NULL) { \
+        if(env->ExceptionCheck() == JNI_TRUE) \
+            env->ExceptionDescribe(); \
+        CSPanicWithMessage("Could not create new FUSEConnInfo."); \
+    }
+
 #define JAVA_ARG_CLEANUP(num) \
     env->DeleteLocalRef(java_arg##num)
 
@@ -150,14 +160,25 @@ static inline jFUSEContext* getjFUSEContext() {
             retval = jretval;
 
 #define JFUSE_OPERATION_INIT() \
-        int retval = -EIO; \
         jFUSEContext *context = getjFUSEContext(); \
-        \
         JNIEnv *env = context->getJNIEnv(); \
         jobject obj = context->getFSProvider();
 
 #define JFUSE_FS_PROVIDER_CALL(...) \
         jint jretval = env->CallIntMethod(obj, JFUSE_FS_PROVIDER_MID, __VA_ARGS__);
+
+#define JFUSE_FS_INIT_CALL(...) \
+        jobject jretval = env->CallObjectMethod(obj, JFUSE_FS_PROVIDER_MID, __VA_ARGS__);
+
+#define JFUSE_FS_DESTROY_CALL(...) \
+        env->CallVoidMethod(obj, JFUSE_FS_PROVIDER_MID, __VA_ARGS__);
+
+#define JFUSE_HANDLE_INIT_RETVAL() \
+        if(env->ExceptionCheck() == JNI_FALSE) { \
+            context->setPrivateData(jretval); \
+            if(jretval != NULL) \
+                env->DeleteLocalRef(jretval); \
+        }
 
 
 int jfuse_getattr(const char *path, struct stat *stbuf) {
@@ -165,8 +186,8 @@ int jfuse_getattr(const char *path, struct stat *stbuf) {
             path, stbuf);
     CSLogTrace("  path=\"%s\"", path);
 
+    int retval = -EIO;
     JFUSE_OPERATION_INIT();
-
     JAVA_ARG_CSTRING(1, path);
     JAVA_ARG_STAT(2, stbuf);
 
@@ -341,6 +362,7 @@ int jfuse_open(const char *path, struct fuse_file_info *fi) {
             path, fi);
     CSLogTrace("  path=\"%s\"", path);
 
+    int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
     JAVA_ARG_CSTRING(1, path);
@@ -371,6 +393,7 @@ int jfuse_read(const char *path, char *targetbuf, size_t targetbuf_len, off_t fi
             path, targetbuf, targetbuf_len, file_off, fi);
     CSLogTrace("  path=\"%s\"", path);
 
+    int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
     JAVA_ARG_CSTRING(1, path);
@@ -558,6 +581,7 @@ int jfuse_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
             path, buf, filler, offset, fi);
     CSLogTrace("  path=\"%s\"", path);
 
+    int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
     JAVA_ARG_CSTRING(1, path);
@@ -609,7 +633,20 @@ int jfuse_fsyncdir(const char *path, int datasync, struct fuse_file_info *fi) {
 void* jfuse_init(struct fuse_conn_info *conn) {
     CSLogTraceEnter("int jfuse_init(%p)", conn);
 
-    void *retval = NULL;
+    JFUSE_OPERATION_INIT();
+    void *retval = context;
+
+    JAVA_ARG_FUSE_CONN_INFO(1, conn);
+
+    JFUSE_FS_PROVIDER_MID_OK(OPS_INIT_NAME, OPS_INIT_SIGNATURE) {
+        JFUSE_FS_INIT_CALL(JAVA_ARG(1));
+
+        JFUSE_HANDLE_INIT_RETVAL();
+    }
+
+    JAVA_ARG_CLEANUP(1);
+
+    JAVA_EXCEPTION_CHECK("jfuse_init");
 
     CSLogTraceLeave("int jfuse_init(%p): %p",
                 conn, retval);
@@ -619,6 +656,18 @@ void* jfuse_init(struct fuse_conn_info *conn) {
 void jfuse_destroy(void *private_data) {
     CSLogTraceEnter("int jfuse_destroy(%p)", private_data);
 
+    JFUSE_OPERATION_INIT();
+
+    if(private_data != fuse_get_context()->private_data)
+        CSLogPrint("jfuse_destroy: private_data assertion failed. %p != %p",
+                private_data, fuse_get_context()->private_data);
+
+    JFUSE_FS_PROVIDER_MID_OK(OPS_DESTROY_NAME, OPS_DESTROY_SIGNATURE) {
+        JFUSE_FS_DESTROY_CALL(context->getPrivateData());
+    }
+
+    JAVA_EXCEPTION_CHECK("jfuse_destroy");
+
     CSLogTraceLeave("int jfuse_destroy(%p)", private_data);
 }
 
@@ -626,6 +675,7 @@ int jfuse_access(const char *path, int amode) {
     CSLogTraceEnter("int jfuse_access(%p, %d)", path, amode);
     CSLogTrace("  path=\"%s\"", path);
 
+    int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
     JAVA_ARG_CSTRING(1, path);
@@ -649,6 +699,7 @@ int jfuse_create(const char *path, mode_t crmode, struct fuse_file_info *fi) {
     CSLogTraceEnter("int jfuse_create(%p, %d, %p)", path, crmode, fi);
     CSLogTrace("  path=\"%s\"", path);
 
+    int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
     JAVA_ARG_CSTRING(1, path);
@@ -676,6 +727,7 @@ int jfuse_ftruncate(const char *path, off_t size, struct fuse_file_info *fi) {
     CSLogTraceEnter("int jfuse_ftruncate(%p, %" PRId64 ", %p)", path, size, fi);
     CSLogTrace("  path=\"%s\"", path);
 
+    int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
     JAVA_ARG_CSTRING(1, path);
@@ -703,6 +755,7 @@ int jfuse_fgetattr(const char *path, struct stat *stbuf, struct fuse_file_info *
     CSLogTraceEnter("int jfuse_fgetattr(%p, %p, %p)", path, stbuf, fi);
     CSLogTrace("  path=\"%s\"", path);
 
+    int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
     JAVA_ARG_CSTRING(1, path);
@@ -734,6 +787,7 @@ int jfuse_lock(const char *path, struct fuse_file_info *fi, int cmd,
     CSLogTraceEnter("int jfuse_lock(%p, %p, %d, %p)", path, fi, cmd, flk);
     CSLogTrace("  path=\"%s\"", path);
 
+    int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
     JAVA_ARG_CSTRING(1, path);
@@ -764,6 +818,7 @@ int jfuse_utimens(const char *path, const struct timespec tv[2]) {
     CSLogTraceEnter("int jfuse_utimens(%p, %p)", path, tv);
     CSLogTrace("  path=\"%s\"", path);
 
+    int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
     JAVA_ARG_CSTRING(1, path);
@@ -791,6 +846,7 @@ int jfuse_bmap(const char *path, size_t blocksize, uint64_t *idx) {
     CSLogTraceEnter("int jfuse_bmap(%p, %zu, %p)", path, blocksize, idx);
     CSLogTrace("  path=\"%s\"", path);
 
+    int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
     JAVA_ARG_CSTRING(1, path);
