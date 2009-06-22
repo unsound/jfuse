@@ -662,11 +662,11 @@ public interface FUSE26Operations extends FUSEErrorValues {
      * </pre>
      *
      * @param conn <b>(struct fuse_conn_info*)</b>
-     * @return (optional) a return value that will be bassed in the private_data
+     * @return (optional) a return value that will be passed in the private_data
      * field of fuse_context to all file operations and as a parameter to the
      * destroy() method.
      */
-    public byte[] init(byte[] conn);
+    public Object init(FUSEConnInfo conn);
 
     /**
      * <pre>
@@ -677,7 +677,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
      * Introduced in version 2.3
      * </pre>
      */
-    public void destroy();
+    public void destroy(Object o);
 
     /**
      * <pre>

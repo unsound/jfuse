@@ -185,12 +185,12 @@ public abstract class FUSE26FileSystemAdapter implements FUSEFileSystem {
     }
 
     @Override
-    public byte[] init(byte[] conn) {
+    public Object init(FUSEConnInfo conn) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     @Override
-    public void destroy() {
+    public void destroy(Object o) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
