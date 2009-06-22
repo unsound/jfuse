@@ -18,9 +18,12 @@ public:
     JNIEnv* getJNIEnv();
     jobject getFSProvider();
     jmethodID getFSProviderMethod(const char *name, const char *descriptor);
+    jobject getPrivateData();
+    void setPrivateData(jobject obj);
 protected:
     JNIEnv *env;
     jobject fsProvider;
+    jobject privateData;
 };
 
 #endif	/* _JFUSECONTEXT_H */

@@ -11,10 +11,11 @@ jFUSEContext::jFUSEContext(JNIEnv* env, jobject fsProvider) {
     
     this->env = env;
     this->fsProvider = fsProvider;
+    this->privateData = NULL;
 }
 
 jFUSEContext::~jFUSEContext() {
-
+    setPrivateData(NULL); // Cleans up global ref.
 }
 
 JNIEnv* jFUSEContext::getJNIEnv() {
@@ -45,4 +46,17 @@ jmethodID jFUSEContext::getFSProviderMethod(const char *name, const char *signat
         env->DeleteLocalRef(cls);
 
     return result;
+}
+
+jobject jFUSEContext::getPrivateData() {
+    return this->privateData;
+}
+void jFUSEContext::setPrivateData(jobject obj) {
+    jobject globj = NULL;
+    if(obj != NULL)
+        globj = env->NewGlobalRef(obj);
+    if(this->privateData != NULL)
+        env->DeleteGlobalRef(this->privateData);
+
+    this->privateData = globj;
 }
