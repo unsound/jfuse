@@ -20,6 +20,10 @@
 #define OPS_READ_SIGNATURE      "([B[BIJ" JFUSE_CLASS(FUSEFileInfo) ")I" // (byte[], byte[], int, long, FUSEFileInfo)->int
 #define OPS_READDIR_NAME        "readdir"
 #define OPS_READDIR_SIGNATURE   "([B" JFUSE_CLASS(FUSEFillDir) "J" JFUSE_CLASS(FUSEFileInfo) ")I" // (byte[], FUSEFillDir, long, FUSEFileInfo)->int
+#define OPS_INIT_NAME           "init"
+#define OPS_INIT_SIGNATURE      "(" JFUSE_CLASS(FUSEConnInfo) ")Ljava/lang/Object;"
+#define OPS_DESTROY_NAME        "destroy"
+#define OPS_DESTROY_SIGNATURE   "(Ljava/lang/Object;)V"
 #define OPS_ACCESS_NAME         "access"
 #define OPS_ACCESS_SIGNATURE    "([BI)I"
 #define OPS_CREATE_NAME         "create"
@@ -73,6 +77,10 @@
 #define LONGREF_CLASS               JFUSE_PACKAGE "/LongRef"
 #define LONGREF_INIT_NAME           "<init>"
 #define LONGREF_INIT_SIGNATURE      "()V"
+
+#define FUSECONNINFO_CLASS          JFUSE_PACKAGE "/FUSEConnInfo"
+#define FUSECONNINFO_INIT_NAME      "<init>"
+#define FUSECONNINFO_INIT_SIGNATURE "()V"
 
 #endif	/* _JAVASIGNATURES_H */
 
