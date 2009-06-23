@@ -24,11 +24,56 @@
 package org.catacombae.jfuse;
 
 /** Used by deprecated getdir() method */
-public interface FUSEDirFil {
-    public long fill(byte[] struct_fuse_dirhandlep_h,
-		     byte[] const_charp_name,
-		     int int_type,
-		     byte[] ino_t_ino);
+public class FUSEDirFil {
+    static {
+        JNILoader.ensureLoaded();
+    }
+
+    public final byte[] nativeContextPointer;
+
+    public FUSEDirFil(byte[] nativeContextPointer) {
+        if(nativeContextPointer == null)
+            throw new IllegalArgumentException("null nativeContextPointer not allowed.");
+
+        this.nativeContextPointer = new byte[nativeContextPointer.length];
+        System.arraycopy(nativeContextPointer, 0, this.nativeContextPointer, 0,
+                this.nativeContextPointer.length);
+    }
+
+    @Override
+    public void finalize() throws Throwable {
+        freeNative(nativeContextPointer);
+    }
+
+    /**
+     * Fills a directory entry in a getdir operation.
+     *
+     * @param name  the name of the directory entry.
+     * @param type  file type. See sys/dirent.h. Valid values are the DT_
+     *              constants. (Set this to DT_UNKNOWN (0) if you're lazy.)
+     * @param ino   inode number. This is limited to 32 bits on most systems,
+     *              but 64-bit inode numbers do exist. As such, we use the long
+     *              data type. (Set this to 0 if you're lazy.)
+     * @return      1 if the buffer is full (?), 0 otherwise (?). (I'm unsure
+     *              about this... it's undocumented in fuse.h.)
+     */
+    public int fill(byte[] name,
+		     int type,
+		     long ino) {
+        return fillNative(nativeContextPointer, name, type, ino);
+    }
+
+    public static native int fillNative(byte[] nativeContextPointer,
+            byte[] name, int type, long ino);
+
+    /**
+     * Frees a native pointer value, stored in the byte array
+     * <code>nativeContextPointer</code>.<br>
+     * TODO: Move this to a general utility class.
+     *
+     * @param nativeContextPointer a byte array containing the pointer value.
+     */
+    public static native void freeNative(byte[] nativeContextPointer);
 }
 
 // /* Used by deprecated getdir() method */

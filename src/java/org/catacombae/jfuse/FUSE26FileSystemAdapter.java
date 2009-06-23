@@ -35,12 +35,12 @@ public abstract class FUSE26FileSystemAdapter implements FUSEFileSystem {
     }
 
     @Override
-    public int readlink(byte[] path, byte[] buffer, long bufferSize) {
+    public int readlink(byte[] path, byte[] buffer) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     @Override
-    public int getdir(byte[] path, byte[] dirh, FUSEDirFil filler) {
+    public int getdir(byte[] path, FUSEDirFil filler) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
@@ -85,17 +85,17 @@ public abstract class FUSE26FileSystemAdapter implements FUSEFileSystem {
     }
 
     @Override
-    public int chown(byte[] path, byte[] userId, byte[] groupId) {
+    public int chown(byte[] path, long userId, long groupId) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     @Override
-    public int truncate(byte[] path, byte[] newSize) {
+    public int truncate(byte[] path, long newSize) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     @Override
-    public int utime(byte[] path, byte[] struct_utimbuf) {
+    public int utime(byte[] path, Utimbuf time) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
@@ -110,12 +110,12 @@ public abstract class FUSE26FileSystemAdapter implements FUSEFileSystem {
     }
 
     @Override
-    public int write(byte[] path, byte[] source, long len, long off, FUSEFileInfo fi) {
+    public int write(byte[] path, byte[] source, long off, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     @Override
-    public int statfs(byte[] path, byte[] struct_statvfs) {
+    public int statfs(byte[] path, StatVFS stat) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
@@ -135,27 +135,27 @@ public abstract class FUSE26FileSystemAdapter implements FUSEFileSystem {
     }
 
     @Override
-    public int setxattr_BSD(byte[] path, byte[] name, byte[] value, long size, int flags, int position) {
+    public int setxattr_BSD(byte[] path, byte[] name, byte[] value, int flags, int position) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     @Override
-    public int setxattr(byte[] path, byte[] name, byte[] value, long size, int flags) {
+    public int setxattr(byte[] path, byte[] name, byte[] value, int flags) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     @Override
-    public int getxattr_BSD(byte[] path, byte[] name, byte[] value, long size, int position) {
+    public int getxattr_BSD(byte[] path, byte[] name, byte[] value, int position) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     @Override
-    public int getxattr(byte[] path, byte[] name, byte[] value, long size) {
+    public int getxattr(byte[] path, byte[] name, byte[] value) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     @Override
-    public int listxattr(byte[] path, byte[] namebuf, long size) {
+    public int listxattr(byte[] path, byte[] namebuf) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 

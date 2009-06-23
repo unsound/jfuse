@@ -60,13 +60,11 @@ public interface FUSE26Operations extends FUSEErrorValues {
      *
      * @param path <b>(const char*)</b>
      * @param buffer <b>(char*)</b>
-     * @param bufferSize <b>(size_t)</b>
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
     public int readlink(byte[] path,
-			 byte[] buffer,
-			 long bufferSize);
+			 byte[] buffer);
 
     /**
      * <pre>
@@ -74,14 +72,12 @@ public interface FUSE26Operations extends FUSEErrorValues {
      * </pre>
      *
      * @param path <b>(const char*)</b>
-     * @param dirh <b>(fuse_dirh_t)</b>
      * @param filler <b>(fuse_dirfil_t)</b>
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      * @deprecated
      */
     public int getdir(byte[] path,
-		       byte[] dirh,
 		       FUSEDirFil filler);
 
     /**
@@ -203,8 +199,8 @@ public interface FUSE26Operations extends FUSEErrorValues {
      * otherwise.
      */
     public int chown(byte[] path,
-		      byte[] userId,
-		      byte[] groupId);
+		      long userId,
+		      long groupId);
 
     /**
      * <pre>
@@ -218,7 +214,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
      * otherwise.
      */
     public int truncate(byte[] path,
-			 byte[] newSize);
+			 long newSize);
 
     /**
      * <pre>
@@ -235,7 +231,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
      * @deprecated
      */
     public int utime(byte[] path,
-		      byte[] time);
+		      Utimbuf time);
 
     /**
      * <pre>
@@ -301,15 +297,13 @@ public interface FUSE26Operations extends FUSEErrorValues {
      * @param path <b>(const char*)</b> the path to the file system node on
      * which the operation is to be applied.
      * @param data <b>(const char*)</b> the data to write.
-     * @param len <b>(size_t)</b> number of bytes to write.
-     * @param off <b>(off_t)</b> offset in <code>data</code> to start reading.
+     * @param off <b>(off_t)</b> offset in file where data should be written.
      * @param fi <b>(struct fuse_file_info*)</b>
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
     public int write(byte[] path,
 		      byte[] data,
-		      long len,
 		      long off,
 		      FUSEFileInfo fi);
 
@@ -325,12 +319,12 @@ public interface FUSE26Operations extends FUSEErrorValues {
      *
      * @param path <b>(const char*)</b> the path to the file system node on
      * which the operation is to be applied.
-     * @param struct_statvfs <b>(struct statvfs*)</b>
+     * @param stat <b>(struct statvfs*)</b>
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
     public int statfs(byte[] path,
-		       byte[] struct_statvfs);
+		       StatVFS stat);
 
     /**
      * <pre>
@@ -451,7 +445,6 @@ public interface FUSE26Operations extends FUSEErrorValues {
      * @param path <b>(const char*)</b>
      * @param name <b>(const char*)</b>
      * @param value <b>(const char*)</b>
-     * @param size <b>(size_t)</b>
      * @param flags <b>(int)</b>
      * @param position <b>(uint32_t)</b>
      * @return 0 if successful or an inverted error value from FUSEErrorValues
@@ -460,7 +453,6 @@ public interface FUSE26Operations extends FUSEErrorValues {
     public int setxattr_BSD(byte[] path,
 			 byte[] name,
 			 byte[] value,
-			 long size,
 			 int flags,
 			 int position);
 
@@ -476,7 +468,6 @@ public interface FUSE26Operations extends FUSEErrorValues {
      * @param path <b>(const char*)</b>
      * @param name <b>(const char*)</b>
      * @param value <b>(const char*)</b>
-     * @param size <b>(size_t)</b>
      * @param flags <b>(int)</b>
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
@@ -484,7 +475,6 @@ public interface FUSE26Operations extends FUSEErrorValues {
     public int setxattr(byte[] path,
             byte[] name,
             byte[] value,
-            long size,
             int flags);
     //#endif /* __FreeBSD__ >= 10 */
 
@@ -499,8 +489,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
      *
      * @param path <b>(const char*)</b>
      * @param name <b>(const char*)</b>
-     * @param value <b>(char*)</b>
-     * @param size <b>(size_t)</b>
+     * @param value <b>(char*)</b> (out)
      * @param position <b>(uint32_t)</b>
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
@@ -508,7 +497,6 @@ public interface FUSE26Operations extends FUSEErrorValues {
     public int getxattr_BSD(byte[] path,
 			 byte[] name,
 			 byte[] value,
-			 long size,
 			 int position);
 
     /**
@@ -522,15 +510,13 @@ public interface FUSE26Operations extends FUSEErrorValues {
      *
      * @param path <b>(const char*)</b>
      * @param name <b>(const char*)</b>
-     * @param value <b>(char*)</b>
-     * @param size <b>(size_t)</b>
+     * @param value <b>(char*)</b> (out)
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
     public int getxattr(byte[] path,
             byte[] name,
-            byte[] value,
-            long size);
+            byte[] value);
 
     /**
      * <pre>
@@ -538,14 +524,12 @@ public interface FUSE26Operations extends FUSEErrorValues {
      * </pre>
      *
      * @param path <b>(const char*)</b>
-     * @param namebuf <b>(char*)</b>
-     * @param size <b>size_t</b>
+     * @param namebuf <b>(char*)</b> the buffer where we store the result.
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
     public int listxattr(byte[] path,
-			  byte[] namebuf,
-			  long size);
+			  byte[] namebuf);
 
     /**
      * <pre>

@@ -32,6 +32,7 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSEFillDir_fillNative(JNIE
             "%p, %p, %p, %lld)", env, thisObject, name, statObject, off);
     jboolean res = JNI_FALSE;
     bool throwException = false;
+    char *nameBuf = NULL;
 
     do {
         jclass fuseFillDirClass = env->FindClass(FUSEFILLDIR_CLASS);
@@ -57,7 +58,7 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSEFillDir_fillNative(JNIE
         CheckForErrors(nameStrlen < 0, "Could not get array length (nameStrlen=%"
                 PRId32 ")", (int32_t)nameStrlen);
 
-        char *nameBuf = (char*) calloc(1, sizeof(char)*(nameStrlen + 1));
+        nameBuf = (char*) calloc(1, sizeof(char)*(nameStrlen + 1));
         CheckForErrors(nameBuf == NULL, "calloc failed for nameBuf");
 
         env->GetByteArrayRegion(name, 0, nameStrlen, (signed char*) nameBuf);
@@ -87,6 +88,9 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSEFillDir_fillNative(JNIE
         }
     }
     while(0);
+
+    if(nameBuf != NULL)
+        free(nameBuf);
 
     if(throwException) {
         throwByName(env, "java/lang/RuntimeException", "Exception in native "

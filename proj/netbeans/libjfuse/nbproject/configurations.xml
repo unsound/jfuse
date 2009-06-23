@@ -8,12 +8,14 @@
       <itemPath>../../../src/native/CSLog.h</itemPath>
       <itemPath>../../../src/native/fuse26_module.h</itemPath>
       <itemPath>../../../src/native/FUSE26Util.h</itemPath>
+      <itemPath>../../../src/native/FUSEDirFilContext.h</itemPath>
       <itemPath>../../../src/native/FUSEFillDirContext.h</itemPath>
       <itemPath>../../../src/native/JavaSignatures.h</itemPath>
       <itemPath>../../../src/native/jFUSEContext.h</itemPath>
       <itemPath>../../../src/native/JNIUtil.h</itemPath>
       <itemPath>../../../src/native/org_catacombae_jfuse_Errno.h</itemPath>
       <itemPath>../../../src/native/org_catacombae_jfuse_FUSE.h</itemPath>
+      <itemPath>../../../src/native/org_catacombae_jfuse_FUSEDirFil.h</itemPath>
       <itemPath>../../../src/native/org_catacombae_jfuse_FUSEFillDir.h</itemPath>
       <itemPath>../../../src/native/org_catacombae_jfuse_StatConstant.h</itemPath>
     </logicalFolder>
@@ -27,11 +29,13 @@
       <itemPath>../../../src/native/common.cpp</itemPath>
       <itemPath>../../../src/native/fuse26_module.cpp</itemPath>
       <itemPath>../../../src/native/FUSE26Util.cpp</itemPath>
+      <itemPath>../../../src/native/FUSEDirFilContext.cpp</itemPath>
       <itemPath>../../../src/native/FUSEFillDirContext.cpp</itemPath>
       <itemPath>../../../src/native/jFUSEContext.cpp</itemPath>
       <itemPath>../../../src/native/JNIUtil.cpp</itemPath>
       <itemPath>../../../src/native/org_catacombae_jfuse_Errno.cpp</itemPath>
       <itemPath>../../../src/native/org_catacombae_jfuse_FUSE_26.cpp</itemPath>
+      <itemPath>../../../src/native/org_catacombae_jfuse_FUSEDirFil.cpp</itemPath>
       <itemPath>../../../src/native/org_catacombae_jfuse_FUSEFillDir.cpp</itemPath>
       <itemPath>../../../src/native/org_catacombae_jfuse_StatConstant.cpp</itemPath>
     </logicalFolder>
@@ -58,6 +62,7 @@
           <includeDirectories>
             <directoryPath>/System/Library/Frameworks/JavaVM.framework/Headers</directoryPath>
           </includeDirectories>
+          <commandLine>-mmacosx-version-min=10.4 -arch i386 -arch ppc -arch x86_64 -arch ppc64</commandLine>
           <preprocessorList>
             <Elem>_FILE_OFFSET_BITS=64</Elem>
           </preprocessorList>
@@ -88,6 +93,12 @@
         <itemTool>1</itemTool>
       </item>
       <item path="../../../src/native/FUSE26Util.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="../../../src/native/FUSEDirFilContext.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../src/native/FUSEDirFilContext.h">
         <itemTool>3</itemTool>
       </item>
       <item path="../../../src/native/FUSEFillDirContext.cpp">
@@ -130,6 +141,12 @@
         <itemTool>3</itemTool>
       </item>
       <item path="../../../src/native/org_catacombae_jfuse_FUSE.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="../../../src/native/org_catacombae_jfuse_FUSEDirFil.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../src/native/org_catacombae_jfuse_FUSEDirFil.h">
         <itemTool>3</itemTool>
       </item>
       <item path="../../../src/native/org_catacombae_jfuse_FUSEFillDir.cpp">
@@ -178,6 +195,12 @@
       <item path="../../../src/native/FUSE26Util.h">
         <itemTool>3</itemTool>
       </item>
+      <item path="../../../src/native/FUSEDirFilContext.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../src/native/FUSEDirFilContext.h">
+        <itemTool>3</itemTool>
+      </item>
       <item path="../../../src/native/FUSEFillDirContext.cpp">
         <itemTool>1</itemTool>
       </item>
@@ -218,6 +241,12 @@
         <itemTool>3</itemTool>
       </item>
       <item path="../../../src/native/org_catacombae_jfuse_FUSE.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="../../../src/native/org_catacombae_jfuse_FUSEDirFil.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../src/native/org_catacombae_jfuse_FUSEDirFil.h">
         <itemTool>3</itemTool>
       </item>
       <item path="../../../src/native/org_catacombae_jfuse_FUSEFillDir.cpp">

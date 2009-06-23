@@ -28,17 +28,23 @@ public class FUSEFillDir {
         JNILoader.ensureLoaded();
     }
 
-    private final byte[] nativeFunctionPointer;
+    private final byte[] nativeContextPointer;
 
-    public FUSEFillDir(byte[] nativeFunctionPointer) {
-        if(nativeFunctionPointer == null)
-            throw new IllegalArgumentException("null nativeFunctionPointer not allowed.");
+    public FUSEFillDir(byte[] nativeContextPointer) {
+        if(nativeContextPointer == null)
+            throw new IllegalArgumentException("null nativeContextPointer not allowed.");
 
-        this.nativeFunctionPointer = new byte[nativeFunctionPointer.length];
-        System.arraycopy(nativeFunctionPointer, 0, this.nativeFunctionPointer, 0,
-                this.nativeFunctionPointer.length);
+        this.nativeContextPointer = new byte[nativeContextPointer.length];
+        System.arraycopy(nativeContextPointer, 0, this.nativeContextPointer, 0,
+                this.nativeContextPointer.length);
     }
-    
+
+
+    @Override
+    public void finalize() throws Throwable {
+        FUSEDirFil.freeNative(nativeContextPointer);
+    }
+
     //* @param voidp_buf the buffer passed to the readdir() operation
     /**
      * Function to add an entry in a readdir() operation

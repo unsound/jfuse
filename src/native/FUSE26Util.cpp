@@ -2,6 +2,7 @@
 
 #include "CSLog.h"
 #include "FUSEFillDirContext.h"
+#include "FUSEDirFilContext.h"
 #include "JavaSignatures.h"
 
 #define __STDC_FORMAT_MACROS
@@ -39,8 +40,34 @@ static inline jobject newObject(JNIEnv *env, const char *className, const char *
     return res;
 }
 
-jobject FUSE26Util::createFUSEFillDir(JNIEnv *env, fuse_fill_dir_t filler, void *buf) {
-    CSLogTraceEnter("jobject FUSE26Util::createFUSEFillDir(%p, %p, %p)", env, filler, buf);
+static inline jobject newObjectWithObjectArg(JNIEnv *env, const char *className,
+        const char *initName, const char *initSignature, jobject arg) {
+
+    jobject res = NULL;
+
+    jclass clazz = env->FindClass(className);
+    if(clazz == NULL || env->ExceptionCheck() == JNI_TRUE)
+        CSLogError("Could not find class \"%s\"", className);
+    else {
+        jmethodID constructor = env->GetMethodID(clazz, initName,
+                initSignature);
+        if(constructor == NULL || env->ExceptionCheck() == JNI_TRUE)
+            CSLogError("Could not find method \"%s\" with signature %s.", initName,
+                initSignature);
+        else {
+            jobject obj = env->NewObject(clazz, constructor, arg);
+            if(obj == NULL || env->ExceptionCheck() == JNI_TRUE)
+                CSLogError("Could not create new FUSEFileInfo instance.");
+            else
+                res = obj;
+        }
+    }
+
+    return res;
+}
+
+jobject FUSE26Util::newFUSEFillDir(JNIEnv *env, fuse_fill_dir_t filler, void *buf) {
+    CSLogTraceEnter("jobject FUSE26Util::newFUSEFillDir(%p, %p, %p)", env, filler, buf);
 
     jobject result = NULL;
     FUSEFillDirContext *ctx = new FUSEFillDirContext(filler, buf);
@@ -94,7 +121,57 @@ jobject FUSE26Util::createFUSEFillDir(JNIEnv *env, fuse_fill_dir_t filler, void 
     if(env->ExceptionCheck() == JNI_TRUE)
         env->ExceptionDescribe();
 
-    CSLogTraceEnter("jobject FUSE26Util::createFUSEFillDir(%p, %p, %p): %p", env, filler, buf, result);
+    CSLogTraceLeave("jobject FUSE26Util::newFUSEFillDir(%p, %p, %p): %p", env, filler, buf, result);
+    return result;
+}
+
+/**
+ * Creates a new FUSEDirFil object using <code>dirfil</code> and
+ * <code>dirh</code> internally.
+ */
+jobject FUSE26Util::newFUSEDirFil(JNIEnv *env, fuse_dirfil_t dirfil,
+        fuse_dirh_t dirh) {
+    CSLogTraceEnter("jobject FUSE26Util::newFUSEDirFil(%p, %p, %p)", env,
+            dirfil, dirh);
+
+    jobject result = NULL;
+    FUSEDirFilContext *ctx = new FUSEDirFilContext(dirfil, dirh);
+
+    // Create pointer array to be passed as constructor argument.
+    jsize pointerArrayLength = sizeof (ctx);
+    jbyteArray pointerArray = env->NewByteArray(pointerArrayLength);
+    if(pointerArray == NULL || env->ExceptionCheck() == JNI_TRUE) {
+        CSLogError("Could not create new Java byte array with length %"
+                PRId32, (uint32_t) pointerArrayLength);
+    }
+    else {
+        // Fill pointer array with pointer data.
+        env->SetByteArrayRegion(pointerArray, 0, pointerArrayLength,
+                (signed char*) (&ctx));
+        if(env->ExceptionCheck() == JNI_TRUE) {
+            CSLogError("Could not fill array with pointer data.");
+        }
+        else {
+            // Create the object.
+            jobject instance = newObjectWithObjectArg(env, FUSEDIRFIL_CLASS,
+                    FUSEDIRFIL_INIT_NAME, FUSEDIRFIL_INIT_SIGNATURE,
+                    pointerArray);
+            if(instance == NULL || env->ExceptionCheck() == JNI_TRUE) {
+                CSLogError("Could not create new FUSEDirFil instance.");
+            }
+            else
+                result = instance;
+        }
+    }
+
+    if(pointerArray != NULL)
+        env->DeleteLocalRef(pointerArray);
+
+    if(env->ExceptionCheck() == JNI_TRUE)
+        env->ExceptionDescribe();
+
+    CSLogTraceLeave("jobject FUSE26Util::newFUSEDirFil(%p, %p, %p): %p", env,
+            dirfil, dirh, result);
     return result;
 }
 
@@ -771,5 +848,239 @@ jobject FUSE26Util::newFUSEConnInfo(JNIEnv *env, const struct fuse_conn_info *so
         env->ExceptionDescribe();
 
     CSLogTraceLeave("jobject FUSE26Util::newFUSEConnInfo(%p, %p): %p", env, source, res);
+    return res;
+}
+
+/**
+ * Merges the contents of source (Java class Utimbuf) with the supplied
+ * struct utimbuf.
+ */
+bool FUSE26Util::mergeUtimbuf(JNIEnv *env, jobject source, struct utimbuf *target) {
+    CSLogTraceEnter("bool FUSE26Util::mergeUtimbuf(%p, %p, %p)", env, source, target);
+    bool res = false;
+    do {
+        jclass clazz = env->GetObjectClass(source);
+        if(clazz == NULL || env->ExceptionCheck() == JNI_TRUE) {
+            CSLogError("Could not get object class!");
+            if(env->ExceptionCheck())
+                env->ExceptionDescribe();
+            break;
+        }
+
+        jlong actime;
+        jlong modtime;
+
+        if(!getLongField(env, clazz, source, "actime", &actime))
+            break;
+        if(!getLongField(env, clazz, source, "modtime", &modtime))
+            break;
+
+        target->actime = actime;
+        target->modtime = modtime;
+
+        res = true;
+    }
+    while(0);
+
+    CSLogTraceLeave("bool FUSE26Util::mergeUtimbuf(%p, %p, %p): %d", env, source, target, res);
+    return res;
+}
+
+/**
+ * Fills in the fields of target (Java class Utimbuf) from the fields of source
+ * (struct utimbuf).
+ */
+bool FUSE26Util::fillUtimbuf(JNIEnv *env, const struct utimbuf *source, jobject target) {
+    CSLogTraceEnter("bool FUSE26Util::fillUtimbuf(%p, %p, %p)", env, source, target);
+
+    bool ret = false;
+    do {
+        jclass clazz = env->GetObjectClass(target);
+        if(clazz == NULL || env->ExceptionCheck() == JNI_TRUE) {
+            CSLogError("Could not get object class!");
+            if(env->ExceptionCheck())
+                env->ExceptionDescribe();
+            break;
+        }
+
+        if(!setLongField(env, clazz, target, "actime", source->actime))
+            break;
+        if(!setLongField(env, clazz, target, "modtime", source->modtime))
+            break;
+
+        ret = true;
+    } while(0);
+
+    CSLogTraceLeave("bool FUSE26Util::fillUtimbuf(%p, %p, %p): %d", env, source, target, ret);
+    return ret;
+}
+
+/**
+ * Creates a new Utimbuf object and fills it using the fields in
+ * <code>source</code>.
+ */
+jobject FUSE26Util::newUtimbuf(JNIEnv *env, const struct utimbuf *source) {
+    CSLogTraceEnter("jobject FUSE26Util::newUtimbuf(%p, %p)", env, source);
+
+    jobject res = NULL;
+
+    jobject obj = newObject(env, UTIMBUF_CLASS, UTIMBUF_INIT_NAME, UTIMBUF_INIT_SIGNATURE);
+    if (obj == NULL || env->ExceptionCheck() == JNI_TRUE)
+        CSLogError("Could not create new Utimbuf instance.");
+    else {
+        if (!fillUtimbuf(env, source, obj))
+            CSLogError("fillUtimbuf failed!");
+        else
+            res = obj;
+    }
+
+    if(env->ExceptionCheck() == JNI_TRUE)
+        env->ExceptionDescribe();
+
+    CSLogTraceLeave("jobject FUSE26Util::newUtimbuf(%p, %p): %p", env, source, res);
+    return res;
+}
+
+/**
+ * Merges the contents of source (Java class StatVFS) with the supplied
+ * struct statvfs.
+ */
+bool FUSE26Util::mergeStatVFS(JNIEnv *env, jobject source, struct statvfs *target) {
+    CSLogTraceEnter("bool FUSE26Util::mergeStatVFS(%p, %p, %p)", env, source, target);
+    bool res = false;
+    do {
+        jclass clazz = env->GetObjectClass(source);
+        if(clazz == NULL || env->ExceptionCheck() == JNI_TRUE) {
+            CSLogError("Could not get object class!");
+            if(env->ExceptionCheck())
+                env->ExceptionDescribe();
+            break;
+        }
+
+        jlong f_bsize;
+        jlong f_frsize;
+        jlong f_blocks;
+        jlong f_bfree;
+        jlong f_bavail;
+        jlong f_files;
+        jlong f_ffree;
+        jlong f_favail;
+        jlong f_fsid;
+        jlong f_flag;
+        jlong f_namemax;
+
+        if(!getLongField(env, clazz, source, "f_bsize", &f_bsize))
+            break;
+        if(!getLongField(env, clazz, source, "f_frsize", &f_frsize))
+            break;
+        if(!getLongField(env, clazz, source, "f_blocks", &f_blocks))
+            break;
+        if(!getLongField(env, clazz, source, "f_bfree", &f_bfree))
+            break;
+        if(!getLongField(env, clazz, source, "f_bavail", &f_bavail))
+            break;
+        if(!getLongField(env, clazz, source, "f_files", &f_files))
+            break;
+        if(!getLongField(env, clazz, source, "f_ffree", &f_ffree))
+            break;
+        if(!getLongField(env, clazz, source, "f_favail", &f_favail))
+            break;
+        if(!getLongField(env, clazz, source, "f_fsid", &f_fsid))
+            break;
+        if(!getLongField(env, clazz, source, "f_flag", &f_flag))
+            break;
+        if(!getLongField(env, clazz, source, "f_namemax", &f_namemax))
+            break;
+
+        target->f_bsize = f_bsize;
+        target->f_frsize = f_frsize;
+        target->f_blocks = f_blocks;
+        target->f_bfree = f_bfree;
+        target->f_bavail = f_bavail;
+        target->f_files = f_files;
+        target->f_ffree = f_ffree;
+        target->f_favail = f_favail;
+        target->f_fsid = f_fsid;
+        target->f_flag = f_flag;
+        target->f_namemax = f_namemax;
+
+        res = true;
+    }
+    while(0);
+
+    CSLogTraceLeave("bool FUSE26Util::mergeStatVFS(%p, %p, %p): %d", env, source, target, res);
+    return res;
+}
+
+/**
+ * Fills in the fields of target (Java class StatVFS) from the fields of source
+ * (struct statvfs).
+ */
+bool FUSE26Util::fillStatVFS(JNIEnv *env, const struct statvfs *source, jobject target) {
+    CSLogTraceEnter("bool FUSE26Util::fillStatVFS(%p, %p, %p)", env, source, target);
+
+    bool ret = false;
+    do {
+        jclass clazz = env->GetObjectClass(target);
+        if(clazz == NULL || env->ExceptionCheck() == JNI_TRUE) {
+            CSLogError("Could not get object class!");
+            if(env->ExceptionCheck())
+                env->ExceptionDescribe();
+            break;
+        }
+
+        if(!setLongField(env, clazz, target, "f_bsize", source->f_bsize))
+            break;
+        if(!setLongField(env, clazz, target, "f_frsize", source->f_frsize))
+            break;
+        if(!setLongField(env, clazz, target, "f_blocks", source->f_blocks))
+            break;
+        if(!setLongField(env, clazz, target, "f_bfree", source->f_bfree))
+            break;
+        if(!setLongField(env, clazz, target, "f_bavail", source->f_bavail))
+            break;
+        if(!setLongField(env, clazz, target, "f_files", source->f_files))
+            break;
+        if(!setLongField(env, clazz, target, "f_ffree", source->f_ffree))
+            break;
+        if(!setLongField(env, clazz, target, "f_favail", source->f_favail))
+            break;
+        if(!setLongField(env, clazz, target, "f_fsid", source->f_fsid))
+            break;
+        if(!setLongField(env, clazz, target, "f_flag", source->f_flag))
+            break;
+        if(!setLongField(env, clazz, target, "f_namemax", source->f_namemax))
+            break;
+
+        ret = true;
+    } while(0);
+
+    CSLogTraceLeave("bool FUSE26Util::fillStatVFS(%p, %p, %p): %d", env, source, target, ret);
+    return ret;
+}
+
+/**
+ * Creates a new StatVFS object and fills it using the fields in
+ * <code>source</code>.
+ */
+jobject FUSE26Util::newStatVFS(JNIEnv *env, const struct statvfs *source) {
+    CSLogTraceEnter("jobject FUSE26Util::newStatVFS(%p, %p)", env, source);
+
+    jobject res = NULL;
+
+    jobject obj = newObject(env, STATVFS_CLASS, STATVFS_INIT_NAME, STATVFS_INIT_SIGNATURE);
+    if (obj == NULL || env->ExceptionCheck() == JNI_TRUE)
+        CSLogError("Could not create new StatVFS instance.");
+    else {
+        if (!fillStatVFS(env, source, obj))
+            CSLogError("fillStatVFS failed!");
+        else
+            res = obj;
+    }
+
+    if(env->ExceptionCheck() == JNI_TRUE)
+        env->ExceptionDescribe();
+
+    CSLogTraceLeave("jobject FUSE26Util::newStatVFS(%p, %p): %p", env, source, res);
     return res;
 }

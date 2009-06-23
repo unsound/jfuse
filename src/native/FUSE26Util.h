@@ -18,7 +18,17 @@
 
 class FUSE26Util : JNIUtil {
 public:
-    static jobject createFUSEFillDir(JNIEnv *env, fuse_fill_dir_t filler, void *buf);
+    /**
+     * Creates a new FUSEFillDir object using <code>filler</code> and
+     * <code>buf</code> internally.
+     */
+    static jobject newFUSEFillDir(JNIEnv *env, fuse_fill_dir_t filler, void *buf);
+
+    /**
+     * Creates a new FUSEDirFil object using <code>dirfil</code> and
+     * <code>dirh</code> internally.
+     */
+    static jobject newFUSEDirFil(JNIEnv *env, fuse_dirfil_t dirfil, fuse_dirh_t dirh);
 
     /**
      * Merges the contents of statObject into the struct stat target.
@@ -120,6 +130,42 @@ public:
      * <code>source</code>.
      */
     static jobject newFUSEConnInfo(JNIEnv *env, const struct fuse_conn_info *source);
+
+    /**
+     * Merges the contents of source (Java class Utimbuf) with the supplied
+     * struct utimbuf.
+     */
+    static bool mergeUtimbuf(JNIEnv *env, jobject source, struct utimbuf *target);
+
+    /**
+     * Fills in the fields of target (Java class Utimbuf) from the fields
+     * of source (struct utimbuf).
+     */
+    static bool fillUtimbuf(JNIEnv *env, const struct utimbuf *source, jobject target);
+
+    /**
+     * Creates a new Utimbuf object and fills it using the fields in
+     * <code>source</code>.
+     */
+    static jobject newUtimbuf(JNIEnv *env, const struct utimbuf *source);
+
+    /**
+     * Merges the contents of source (Java class StatVFS) with the supplied
+     * struct statvfs.
+     */
+    static bool mergeStatVFS(JNIEnv *env, jobject source, struct statvfs *target);
+
+    /**
+     * Fills in the fields of target (Java class StatVFS) from the fields
+     * of source (struct statvfs).
+     */
+    static bool fillStatVFS(JNIEnv *env, const struct statvfs *source, jobject target);
+
+    /**
+     * Creates a new StatVFS object and fills it using the fields in
+     * <code>source</code>.
+     */
+    static jobject newStatVFS(JNIEnv *env, const struct statvfs *source);
 };
 
 

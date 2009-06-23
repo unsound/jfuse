@@ -1,5 +1,5 @@
 /* 
- * File:   fusefilldircontext.h
+ * File:   FUSEFillDirContext.h
  * Author: erik
  *
  * Created on den 30 januari 2009, 13:36

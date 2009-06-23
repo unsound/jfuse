@@ -1,10 +1,3 @@
-/* 
- * File:   fusefilldircontext.cpp
- * Author: erik
- * 
- * Created on den 30 januari 2009, 13:36
- */
-
 #include "FUSEFillDirContext.h"
 
 FUSEFillDirContext::FUSEFillDirContext(fuse_fill_dir_t filler, void *buf) {
