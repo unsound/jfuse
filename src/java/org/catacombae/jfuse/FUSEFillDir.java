@@ -55,10 +55,11 @@ public class FUSEFillDir {
      * @return true if buffer is full, false otherwise
      */
     public boolean fill(byte[] name, Stat stat, long off) {
-        return fillNative(name, stat, off);
+        return fillNative(nativeContextPointer, name, stat, off);
     }
 
-    private native boolean fillNative(byte[] name, Stat stat, long off);
+    private static native boolean fillNative(byte[] nativeContextPointer,
+            byte[] name, Stat stat, long off);
 }
 
 // /** Function to add an entry in a readdir() operation

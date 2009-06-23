@@ -14,12 +14,17 @@
 
 /*
  * Class:     org_catacombae_jfuse_FUSEFillDir
- * Method:    fill
- * Signature: ([BLorg/catacombae/jfuse/Stat;J)Z
+ * Method:    fillNative
+ * Signature: ([B[BLorg/catacombae/jfuse/Stat;J)Z
  */
-JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSEFillDir_fillNative(JNIEnv *env,
-        jobject thisObject, jbyteArray name, jobject statObject, jlong off) {
+JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSEFillDir_fillNative
+  (JNIEnv *env, jclass cls, jbyteArray nativeContextPointer, jbyteArray name,
+        jobject statObject, jlong off) {
     
+    CSLogTraceEnter("jboolean Java_org_catacombae_jfuse_FUSEFillDir_fillNative("
+            "%p, %p, %p, %p, %p, %lld)", env, cls, nativeContextPointer, name,
+            statObject, off);
+
 #define CheckForErrors(a, b, ...) \
     if((a) || env->ExceptionCheck() == JNI_TRUE) { \
         CSLogError(b, ##__VA_ARGS__); \
@@ -28,22 +33,12 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSEFillDir_fillNative(JNIE
         break; \
     }
 
-    CSLogTraceEnter("jboolean Java_org_catacombae_jfuse_FUSEFillDir_fill(%p, "
-            "%p, %p, %p, %lld)", env, thisObject, name, statObject, off);
     jboolean res = JNI_FALSE;
     bool throwException = false;
     char *nameBuf = NULL;
 
     do {
-        jclass fuseFillDirClass = env->FindClass(FUSEFILLDIR_CLASS);
-        CheckForErrors(fuseFillDirClass == NULL, "Could not find FUSEFillDir class! (%s)", FUSEFILLDIR_CLASS);
-
-        jfieldID pointerFieldID = env->GetFieldID(fuseFillDirClass, "nativeFunctionPointer", "[B");
-        CheckForErrors(pointerFieldID == NULL, "Could not find field FUSEFillDir.nativeFunctionPointer!");
-
-        // TODO: Check how to ensure valid jbyteArray cast.
-        jbyteArray ba = (jbyteArray) env->GetObjectField(thisObject, pointerFieldID);
-        CheckForErrors(false, "Could not get field FUSEFillDir.nativeFunctionPointer!");
+        jbyteArray ba = nativeContextPointer;
 
         jsize baLength = env->GetArrayLength(ba);
         CheckForErrors(baLength != sizeof(FUSEFillDirContext*),
@@ -97,10 +92,11 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSEFillDir_fillNative(JNIE
                 "method Java_org_catacombae_jfuse_FUSEFillDir_fill.");
     }
 
-    CSLogTraceLeave("jboolean Java_org_catacombae_jfuse_FUSEFillDir_fill(%p, "
-            "%p, %p, %p, %lld): %d", env, thisObject, name, statObject, off, res);
-    return res;
-
 #undef CheckForErrors
+
+    CSLogTraceLeave("jboolean Java_org_catacombae_jfuse_FUSEFillDir_fillNative("
+            "%p, %p, %p, %p, %p, %lld): %d", env, cls, nativeContextPointer,
+            name, statObject, off, res);
+    return res;
 }
 

@@ -9,11 +9,11 @@ extern "C" {
 #endif
 /*
  * Class:     org_catacombae_jfuse_FUSEFillDir
- * Method:    fill
- * Signature: ([BLorg/catacombae/jfuse/Stat;J)Z
+ * Method:    fillNative
+ * Signature: ([B[BLorg/catacombae/jfuse/Stat;J)Z
  */
 JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSEFillDir_fillNative
-  (JNIEnv *, jobject, jbyteArray, jobject, jlong);
+  (JNIEnv *, jclass, jbyteArray, jbyteArray, jobject, jlong);
 
 #ifdef __cplusplus
 }
