@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #define __STDC_FORMAT_MACROS
+#include <inttypes.h>
 #include <fuse.h>
 
 static bool getPointerFromByteArray(JNIEnv *env,
@@ -40,7 +41,8 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_FUSEDirFil_fillNative
   (JNIEnv *env, jclass cls, jbyteArray nativeContextPointer, jbyteArray name,
         jint type, jlong ino) {
     CSLogTraceEnter("jint Java_org_catacombae_jfuse_FUSEDirFil_fillNative(%p, "
-            "%p, %p, %d, %lld)", env, nativeContextPointer, name, type, ino);
+            "%p, %p, %p, %" PRId32 ", %lld)", env, cls, nativeContextPointer,
+            name, (uint32_t)type, ino);
 
 #define CheckForErrors(a, b, ...) \
     if((a) || env->ExceptionCheck() == JNI_TRUE) { \
@@ -59,7 +61,7 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_FUSEDirFil_fillNative
         FUSEDirFilContext *fill_ctx;
 
         bool gpres =
-                getPointerFromByteArray(env, nativeContextPointer, &fill_ctx);
+                getPointerFromByteArray(env, nativeContextPointer, (void**)(&fill_ctx));
         CheckForErrors(gpres == false || fill_ctx == NULL,
                 "getPointerFromByteArray failed! gpres=%d fill_ctx=%p",
                 gpres, fill_ctx);
@@ -81,9 +83,9 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_FUSEDirFil_fillNative
         fuse_dirh_t handle = fill_ctx->getHandle();
         CSLogDebug("getHandle() = %p", handle);
 
-        CSLogDebug("invoking filler(%p, \"%s\", %d, %" PRId64 ")", handle,
-                nameBuf, type, ino);
-        int fillRes = filler(buf, nameBuf, type, ino);
+        CSLogDebug("invoking filler(%p, \"%s\", %" PRId32 ", %" PRId64 ")",
+                handle, nameBuf, (uint32_t)type, ino);
+        int fillRes = filler(handle, nameBuf, type, ino);
         CSLogDebug("fillRes = %d", fillRes);
 
         res = fillRes;
@@ -100,8 +102,8 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_FUSEDirFil_fillNative
 #undef CheckForErrors
 
     CSLogTraceLeave("jint Java_org_catacombae_jfuse_FUSEDirFil_fillNative(%p, "
-            "%p, %p, %d, %lld): %d", env, nativeFunctionPointer, name, type,
-            ino, res);
+            "%p, %p, %p, %" PRId32 ", %lld): %" PRId32, env, cls,
+            nativeContextPointer, name, (uint32_t)type, ino, (uint32_t)res);
     return res;
 }
 
@@ -112,10 +114,20 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_FUSEDirFil_fillNative
  */
 JNIEXPORT void JNICALL Java_org_catacombae_jfuse_FUSEDirFil_freeNative
   (JNIEnv *env, jclass cls, jbyteArray nativePointer) {
+    CSLogTraceEnter("void Java_org_catacombae_jfuse_FUSEDirFil_freeNative(%p, "
+            "%p, %p)", env, cls, nativePointer);
 
-    void *ptr = getPointerFromByteArray(env, nativePointer);
-    if(ptr != NULL && env->ExceptionCheck() != JNI_TRUE)
-        free(ptr);
+    void *ptr = NULL;
+    if(getPointerFromByteArray(env, nativePointer, &ptr)) {
+        if(ptr != NULL && env->ExceptionCheck() != JNI_TRUE)
+            free(ptr);
+    }
+    else {
+        CSLogError("Could not get pointer from byte array.");
+        throwRuntimeException(env, "freeNative: Could not get pointer from byte array.");
+    }
     
+    CSLogTraceLeave("void Java_org_catacombae_jfuse_FUSEDirFil_freeNative(%p, "
+            "%p, %p)", env, cls, nativePointer);
 }
 

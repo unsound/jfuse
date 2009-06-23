@@ -18,5 +18,9 @@
  */
 bool throwByName(JNIEnv *env, const char *name, const char *msg);
 
+static inline bool throwRuntimeException(JNIEnv *env, const char *msg){
+    return throwByName(env, "java/lang/RuntimeException", msg);
+}
+
 #endif	/* _COMMON_H */
 
