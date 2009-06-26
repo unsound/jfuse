@@ -7,6 +7,7 @@
 
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
+#include <sys/stat.h>
 
 /**
  * Creates a new Java object from the specified class, init name and init
@@ -258,17 +259,28 @@ bool FUSE26Util::mergeStat(JNIEnv *env, jobject statObject, struct stat *target)
         target->st_uid = jl_uid;
         target->st_gid = jl_gid;
         target->st_rdev = jl_rdev;
+#ifdef __linux__
+        target->st_atim.tv_sec = jl_atimespec_sec;
+        target->st_atim.tv_nsec = jl_atimespec_nsec;
+        target->st_mtim.tv_sec = jl_mtimespec_sec;
+        target->st_mtim.tv_nsec = jl_mtimespec_nsec;
+        target->st_ctim.tv_sec = jl_ctimespec_sec;
+        target->st_ctim.tv_nsec = jl_ctimespec_nsec;
+#else
         target->st_atimespec.tv_sec = jl_atimespec_sec;
         target->st_atimespec.tv_nsec = jl_atimespec_nsec;
         target->st_mtimespec.tv_sec = jl_mtimespec_sec;
         target->st_mtimespec.tv_nsec = jl_mtimespec_nsec;
         target->st_ctimespec.tv_sec = jl_ctimespec_sec;
         target->st_ctimespec.tv_nsec = jl_ctimespec_nsec;
+#endif
         target->st_size = jl_size;
         target->st_blocks = jl_blocks;
         target->st_blksize = jl_blocksize;
+#ifndef __linux__
         target->st_flags = jl_flags;
         target->st_gen = jl_gen;
+#endif
 
         res = true;
     }
@@ -305,6 +317,20 @@ bool FUSE26Util::fillStat(JNIEnv *env, const struct stat *st, jobject statObject
             break;
         if(!setLongField(env, statClass, statObject, "st_rdev", st->st_rdev))
             break;
+#ifdef __linux__
+        if(!setLongField(env, statClass, statObject, "st_atimespec_sec", st->st_atim.tv_sec))
+            break;
+        if(!setLongField(env, statClass, statObject, "st_atimespec_nsec", st->st_atim.tv_nsec))
+            break;
+        if(!setLongField(env, statClass, statObject, "st_mtimespec_sec", st->st_mtim.tv_sec))
+            break;
+        if(!setLongField(env, statClass, statObject, "st_mtimespec_nsec", st->st_mtim.tv_nsec))
+            break;
+        if(!setLongField(env, statClass, statObject, "st_ctimespec_sec", st->st_ctim.tv_sec))
+            break;
+        if(!setLongField(env, statClass, statObject, "st_ctimespec_nsec", st->st_ctim.tv_nsec))
+            break;
+#else
         if(!setLongField(env, statClass, statObject, "st_atimespec_sec", st->st_atimespec.tv_sec))
             break;
         if(!setLongField(env, statClass, statObject, "st_atimespec_nsec", st->st_atimespec.tv_nsec))
@@ -317,17 +343,20 @@ bool FUSE26Util::fillStat(JNIEnv *env, const struct stat *st, jobject statObject
             break;
         if(!setLongField(env, statClass, statObject, "st_ctimespec_nsec", st->st_ctimespec.tv_nsec))
             break;
+#endif
         if(!setLongField(env, statClass, statObject, "st_size", st->st_size))
             break;
         if(!setLongField(env, statClass, statObject, "st_blocks", st->st_blocks))
             break;
         if(!setLongField(env, statClass, statObject, "st_blocksize", st->st_blksize))
             break;
+#ifndef __linux__
         if(!setLongField(env, statClass, statObject, "st_flags", st->st_flags))
             break;
         if(!setLongField(env, statClass, statObject, "st_gen", st->st_gen))
             break;
-
+#endif
+        
         ret = true;
     } while(0);
 
