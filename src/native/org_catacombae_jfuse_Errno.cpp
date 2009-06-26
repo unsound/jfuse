@@ -91,33 +91,33 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_Errno_getNativeErrnoValue
     iferrno(EHOSTDOWN);
     iferrno(EHOSTUNREACH);
     iferrno(ENOTEMPTY);
-    iferrno(EPROCLIM);
+    //iferrno(EPROCLIM);
     iferrno(EUSERS);
     iferrno(EDQUOT);
     iferrno(ESTALE);
     iferrno(EREMOTE);
-    iferrno(EBADRPC);
-    iferrno(ERPCMISMATCH);
-    iferrno(EPROGUNAVAIL);
-    iferrno(EPROGMISMATCH);
-    iferrno(EPROCUNAVAIL);
+    //iferrno(EBADRPC);
+    //iferrno(ERPCMISMATCH);
+    //iferrno(EPROGUNAVAIL);
+    //iferrno(EPROGMISMATCH);
+    //iferrno(EPROCUNAVAIL);
     iferrno(ENOLCK);
     iferrno(ENOSYS);
-    iferrno(EFTYPE);
-    iferrno(EAUTH);
-    iferrno(ENEEDAUTH);
-    iferrno(EPWROFF);
-    iferrno(EDEVERR);
+    //iferrno(EFTYPE);
+    //iferrno(EAUTH);
+    //iferrno(ENEEDAUTH);
+    //iferrno(EPWROFF);
+    //iferrno(EDEVERR);
     iferrno(EOVERFLOW);
-    iferrno(EBADEXEC);
-    iferrno(EBADARCH);
-    iferrno(ESHLIBVERS);
-    iferrno(EBADMACHO);
+    //iferrno(EBADEXEC);
+    //iferrno(EBADARCH);
+    //iferrno(ESHLIBVERS);
+    //iferrno(EBADMACHO);
     iferrno(ECANCELED);
     iferrno(EIDRM);
     iferrno(ENOMSG);
     iferrno(EILSEQ);
-    iferrno(ENOATTR);
+    //iferrno(ENOATTR);
     iferrno(EBADMSG);
     iferrno(EMULTIHOP);
     iferrno(ENODATA);
@@ -126,7 +126,7 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_Errno_getNativeErrnoValue
     iferrno(ENOSTR);
     iferrno(EPROTO);
     iferrno(ETIME);
-    iferrno(ELAST);
+    //iferrno(ELAST);
 
 #undef iferrno
     else {
