@@ -169,7 +169,7 @@ public interface FUSEErrorValues {
 
 /* quotas & mush */
      /** Too many processes */
-    public static final int EPROCLIM = Errno.EPROCLIM.getNativeErrnoValue();
+    //public static final int EPROCLIM = Errno.EPROCLIM.getNativeErrnoValue();
      /** Too many users */
     public static final int EUSERS = Errno.EUSERS.getNativeErrnoValue();
      /** Disc quota exceeded */
@@ -181,15 +181,15 @@ public interface FUSEErrorValues {
      /** Too many levels of remote in path */
     public static final int EREMOTE = Errno.EREMOTE.getNativeErrnoValue();
      /** RPC struct is bad */
-    public static final int EBADRPC = Errno.EBADRPC.getNativeErrnoValue();
+    //public static final int EBADRPC = Errno.EBADRPC.getNativeErrnoValue();
      /** RPC version wrong */
-    public static final int ERPCMISMATCH = Errno.ERPCMISMATCH.getNativeErrnoValue();
+    //public static final int ERPCMISMATCH = Errno.ERPCMISMATCH.getNativeErrnoValue();
      /** RPC prog. not avail */
-    public static final int EPROGUNAVAIL = Errno.EPROGUNAVAIL.getNativeErrnoValue();
+    //public static final int EPROGUNAVAIL = Errno.EPROGUNAVAIL.getNativeErrnoValue();
      /** Program version wrong */
-    public static final int EPROGMISMATCH = Errno.EPROGMISMATCH.getNativeErrnoValue();
+    //public static final int EPROGMISMATCH = Errno.EPROGMISMATCH.getNativeErrnoValue();
      /** Bad procedure for program */
-    public static final int EPROCUNAVAIL = Errno.EPROCUNAVAIL.getNativeErrnoValue();
+    //public static final int EPROCUNAVAIL = Errno.EPROCUNAVAIL.getNativeErrnoValue();
 
  /** No locks available */
     public static final int ENOLCK = Errno.ENOLCK.getNativeErrnoValue();
@@ -197,17 +197,17 @@ public interface FUSEErrorValues {
     public static final int ENOSYS = Errno.ENOSYS.getNativeErrnoValue();
 
      /** Inappropriate file type or format */
-    public static final int EFTYPE = Errno.EFTYPE.getNativeErrnoValue();
+    //public static final int EFTYPE = Errno.EFTYPE.getNativeErrnoValue();
      /** Authentication error */
-    public static final int EAUTH = Errno.EAUTH.getNativeErrnoValue();
+    //public static final int EAUTH = Errno.EAUTH.getNativeErrnoValue();
      /** Need authenticator */
-    public static final int ENEEDAUTH = Errno.ENEEDAUTH.getNativeErrnoValue();
+    //public static final int ENEEDAUTH = Errno.ENEEDAUTH.getNativeErrnoValue();
 
 /* Intelligent device errors */
      /** Device power is off */
-    public static final int EPWROFF = Errno.EPWROFF.getNativeErrnoValue();
+    //public static final int EPWROFF = Errno.EPWROFF.getNativeErrnoValue();
      /** Device error, e.g. paper out */
-    public static final int EDEVERR = Errno.EDEVERR.getNativeErrnoValue();
+    //public static final int EDEVERR = Errno.EDEVERR.getNativeErrnoValue();
 
      /** Value too large to be stored in data type */
     public static final int EOVERFLOW = Errno.EOVERFLOW.getNativeErrnoValue();
@@ -215,13 +215,13 @@ public interface FUSEErrorValues {
 /* Program loading errors */
 
      /** Bad executable */
-    public static final int EBADEXEC = Errno.EBADEXEC.getNativeErrnoValue();
+    //public static final int EBADEXEC = Errno.EBADEXEC.getNativeErrnoValue();
      /** Bad CPU type in executable */
-    public static final int EBADARCH = Errno.EBADARCH.getNativeErrnoValue();
+    //public static final int EBADARCH = Errno.EBADARCH.getNativeErrnoValue();
      /** Shared library version mismatch */
-    public static final int ESHLIBVERS = Errno.ESHLIBVERS.getNativeErrnoValue();
+    //public static final int ESHLIBVERS = Errno.ESHLIBVERS.getNativeErrnoValue();
      /** Malformed Macho file */
-    public static final int EBADMACHO = Errno.EBADMACHO.getNativeErrnoValue();
+    //public static final int EBADMACHO = Errno.EBADMACHO.getNativeErrnoValue();
  /** Operation canceled */
     public static final int ECANCELED = Errno.ECANCELED.getNativeErrnoValue();
      /** Identifier removed */
@@ -231,7 +231,7 @@ public interface FUSEErrorValues {
      /** Illegal byte sequence */
     public static final int EILSEQ = Errno.EILSEQ.getNativeErrnoValue();
      /** Attribute not found */
-    public static final int ENOATTR = Errno.ENOATTR.getNativeErrnoValue();
+    //public static final int ENOATTR = Errno.ENOATTR.getNativeErrnoValue();
      /** Bad message */
     public static final int EBADMSG = Errno.EBADMSG.getNativeErrnoValue();
      /** Reserved */
@@ -249,5 +249,5 @@ public interface FUSEErrorValues {
      /** STREAM ioctl timeout */
     public static final int ETIME = Errno.ETIME.getNativeErrnoValue();
      /** Must be equal largest errno */
-    public static final int ELAST = Errno.ELAST.getNativeErrnoValue();
+    //public static final int ELAST = Errno.ELAST.getNativeErrnoValue();
 }

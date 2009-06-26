@@ -167,7 +167,7 @@ public enum Errno {
     ENOTEMPTY,
     /* quotas & mush */
     /** Too many processes */
-    EPROCLIM,
+    //EPROCLIM,
     /** Too many users */
     EUSERS,
     /** Disc quota exceeded */
@@ -178,41 +178,41 @@ public enum Errno {
     /** Too many levels of remote in path */
     EREMOTE,
     /** RPC struct is bad */
-    EBADRPC,
+    //EBADRPC,
     /** RPC version wrong */
-    ERPCMISMATCH,
+    //ERPCMISMATCH,
     /** RPC prog. not avail */
-    EPROGUNAVAIL,
+    //EPROGUNAVAIL,
     /** Program version wrong */
-    EPROGMISMATCH,
+    //EPROGMISMATCH,
     /** Bad procedure for program */
-    EPROCUNAVAIL,
+    //EPROCUNAVAIL,
     /** No locks available */
     ENOLCK,
     /** Function not implemented */
     ENOSYS,
     /** Inappropriate file type or format */
-    EFTYPE,
+    //EFTYPE,
     /** Authentication error */
-    EAUTH,
+    //EAUTH,
     /** Need authenticator */
-    ENEEDAUTH,
+    //ENEEDAUTH,
     /* Intelligent device errors */
     /** Device power is off */
-    EPWROFF,
+    //EPWROFF,
     /** Device error, e.g. paper out */
-    EDEVERR,
+    //EDEVERR,
     /** Value too large to be stored in data type */
     EOVERFLOW,
     /* Program loading errors */
     /** Bad executable */
-    EBADEXEC,
+    //EBADEXEC,
     /** Bad CPU type in executable */
-    EBADARCH,
+    //EBADARCH,
     /** Shared library version mismatch */
-    ESHLIBVERS,
+    //ESHLIBVERS,
     /** Malformed Mach-O file */
-    EBADMACHO,
+    //EBADMACHO,
     /** Operation canceled */
     ECANCELED,
     /** Identifier removed */
@@ -222,7 +222,7 @@ public enum Errno {
     /** Illegal byte sequence */
     EILSEQ,
     /** Attribute not found */
-    ENOATTR,
+    //ENOATTR,
     /** Bad message */
     EBADMSG,
     /** Reserved */
@@ -238,9 +238,9 @@ public enum Errno {
     /** Protocol error */
     EPROTO,
     /** STREAM ioctl timeout */
-    ETIME,
+    ETIME;
     /** Must be equal largest errno */
-    ELAST;
+    //ELAST;
 
     private final int nativeErrnoValue;
 
