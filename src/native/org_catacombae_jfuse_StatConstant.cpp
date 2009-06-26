@@ -33,7 +33,7 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_StatConstant_getNativeValue
     ifconstant(S_IFREG);
     ifconstant(S_IFLNK);
     ifconstant(S_IFSOCK);
-    ifconstant(S_IFWHT);
+    //ifconstant(S_IFWHT);
     ifconstant(S_ISUID);
     ifconstant(S_ISGID);
     ifconstant(S_ISVTX);
