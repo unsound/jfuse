@@ -22,8 +22,8 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSEFillDir_fillNative
         jobject statObject, jlong off) {
     
     CSLogTraceEnter("jboolean Java_org_catacombae_jfuse_FUSEFillDir_fillNative("
-            "%p, %p, %p, %p, %p, %lld)", env, cls, nativeContextPointer, name,
-            statObject, off);
+            "%p, %p, %p, %p, %p, %" PRId64 ")", env, cls, nativeContextPointer, name,
+            statObject, (int64_t)off);
 
 #define CheckForErrors(a, b, ...) \
     if((a) || env->ExceptionCheck() == JNI_TRUE) { \
@@ -95,8 +95,8 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSEFillDir_fillNative
 #undef CheckForErrors
 
     CSLogTraceLeave("jboolean Java_org_catacombae_jfuse_FUSEFillDir_fillNative("
-            "%p, %p, %p, %p, %p, %lld): %d", env, cls, nativeContextPointer,
-            name, statObject, off, res);
+            "%p, %p, %p, %p, %p, %" PRId64 "): %d", env, cls, nativeContextPointer,
+            name, statObject, (int64_t)off, res);
     return res;
 }
 
