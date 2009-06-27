@@ -6,12 +6,12 @@
 
 # Macros
 TOP=`pwd`
-PLATFORM=GNU-MacOSX
-TMPDIR=build/Release/${PLATFORM}/tmp-packaging
+PLATFORM=GNU-Linux-x86
+TMPDIR=build/linux-i386-Debug/${PLATFORM}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=dist/Release/${PLATFORM}/liblibjfuse.dylib
-OUTPUT_BASENAME=liblibjfuse.dylib
-PACKAGE_TOP_DIR=liblibjfuse.dylib/
+OUTPUT_PATH=dist/linux-i386-Debug/libjfuse.so
+OUTPUT_BASENAME=libjfuse.so
+PACKAGE_TOP_DIR=libjfuse.so/
 
 # Functions
 function checkReturnCode
@@ -50,21 +50,21 @@ function copyFileToTmpDir
 
 # Setup
 cd "${TOP}"
-mkdir -p dist/Release/${PLATFORM}/package
+mkdir -p dist/linux-i386-Debug/package
 rm -rf ${TMPDIR}
 mkdir -p ${TMPDIR}
 
 # Copy files and create directories and links
 cd "${TOP}"
-makeDirectory ${TMPDIR}/liblibjfuse.dylib/lib
+makeDirectory ${TMPDIR}/libjfuse.so/lib
 copyFileToTmpDir "${OUTPUT_PATH}" "${TMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
 
 
 # Generate tar file
 cd "${TOP}"
-rm -f dist/Release/${PLATFORM}/package/liblibjfuse.dylib.tar
+rm -f dist/linux-i386-Debug/package/libjfuse.so.tar
 cd ${TMPDIR}
-tar -vcf ../../../../dist/Release/${PLATFORM}/package/liblibjfuse.dylib.tar *
+tar -vcf ../../../../dist/linux-i386-Debug/package/libjfuse.so.tar *
 checkReturnCode
 
 # Cleanup

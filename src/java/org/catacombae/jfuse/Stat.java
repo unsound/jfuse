@@ -29,7 +29,7 @@ public class Stat {
     /** socket */
     public static final int S_IFSOCK = StatConstant.S_IFSOCK.getNativeValue();
     /** whiteout */
-    public static final int S_IFWHT = StatConstant.S_IFWHT.getNativeValue();
+    //public static final int S_IFWHT = StatConstant.S_IFWHT.getNativeValue();
     /** set user id on execution */
     public static final int S_ISUID = StatConstant.S_ISUID.getNativeValue();
     /** set group id on execution */

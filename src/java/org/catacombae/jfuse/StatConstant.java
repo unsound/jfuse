@@ -27,7 +27,7 @@ public enum StatConstant {
     /** socket */
     S_IFSOCK,
     /** whiteout */
-    S_IFWHT,
+    //S_IFWHT,
     /** set user id on execution */
     S_ISUID,
     /** set group id on execution */

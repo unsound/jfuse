@@ -41,8 +41,8 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_FUSEDirFil_fillNative
   (JNIEnv *env, jclass cls, jbyteArray nativeContextPointer, jbyteArray name,
         jint type, jlong ino) {
     CSLogTraceEnter("jint Java_org_catacombae_jfuse_FUSEDirFil_fillNative(%p, "
-            "%p, %p, %p, %" PRId32 ", %lld)", env, cls, nativeContextPointer,
-            name, (uint32_t)type, ino);
+            "%p, %p, %p, %" PRId32 ", %" PRId64 ")", env, cls,
+            nativeContextPointer, name, (int32_t)type, (int64_t)ino);
 
 #define CheckForErrors(a, b, ...) \
     if((a) || env->ExceptionCheck() == JNI_TRUE) { \
@@ -102,8 +102,9 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_FUSEDirFil_fillNative
 #undef CheckForErrors
 
     CSLogTraceLeave("jint Java_org_catacombae_jfuse_FUSEDirFil_fillNative(%p, "
-            "%p, %p, %p, %" PRId32 ", %lld): %" PRId32, env, cls,
-            nativeContextPointer, name, (uint32_t)type, ino, (uint32_t)res);
+            "%p, %p, %p, %" PRId32 ", %" PRId64 "): %" PRId32, env, cls,
+            nativeContextPointer, name, (int32_t)type, (int64_t)ino,
+            (int32_t)res);
     return res;
 }
 

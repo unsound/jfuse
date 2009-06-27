@@ -317,7 +317,7 @@ int jfuse_getdir(const char *path, fuse_dirh_t dirh, fuse_dirfil_t dirfil) {
 }
 
 int jfuse_mknod(const char *path, mode_t mode, dev_t dev) {
-    CSLogTraceEnter("int jfuse_mknod(%p, %d, %d)", path, mode, dev);
+    CSLogTraceEnter("int jfuse_mknod(%p, %d, %" PRId64 ")", path, mode, (int64_t)dev);
     CSLogTrace("  path=\"%s\"", path);
 
     int retval = -EIO;
@@ -335,8 +335,8 @@ int jfuse_mknod(const char *path, mode_t mode, dev_t dev) {
 
     JAVA_EXCEPTION_CHECK("jfuse_mknod");
 
-    CSLogTraceLeave("int jfuse_mknod(%p, %d, %d): %d",
-                path, mode, dev, retval);
+    CSLogTraceLeave("int jfuse_mknod(%p, %d, %" PRId64 "): %d",
+                path, mode, (int64_t)dev, retval);
     return retval;
 }
 

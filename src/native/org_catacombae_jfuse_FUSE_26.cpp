@@ -22,7 +22,7 @@
     } while(0)
 
 static bool getCapability(JNIEnv *env, jclass capabilitiesClass,
-        jobject capabilities, char *name, jboolean *out) {
+        jobject capabilities, const char *name, jboolean *out) {
     jfieldID fid = env->GetFieldID(capabilitiesClass, name, "Z");
     if(fid == NULL) {
         CSLogError("Could not get capability field id: %s", name);

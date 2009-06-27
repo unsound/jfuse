@@ -27,11 +27,11 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 PROJECTNAME=libjfuse
 
 # Active Configuration
-DEFAULTCONF=Debug
+DEFAULTCONF=darwin-Debug
 CONF=${DEFAULTCONF}
 
 # All Configurations
-ALLCONFS=Debug Release 
+ALLCONFS=darwin-Debug linux-amd64-Debug linux-i386-Debug 
 
 
 # build
