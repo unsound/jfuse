@@ -57,7 +57,15 @@ public class Log {
         System.err.println("TRACE: " + msg);
     }
 
+    public static void debug(String msg) {
+        System.err.println("DEBUG: " + msg);
+    }
+
     public static void warning(String msg) {
         System.err.println("WARNING: " + msg);
+    }
+
+    public static void error(String msg) {
+        System.err.println("ERROR: " + msg);
     }
 }
