@@ -1,3 +1,5 @@
+#define LOG_ENABLE_TRACE 0
+
 #include "org_catacombae_jfuse_StatConstant.h"
 
 #include "common.h"

@@ -1,3 +1,5 @@
+#define LOG_ENABLE_TRACE 0
+
 #include "org_catacombae_jfuse_Errno.h"
 #include "common.h"
 #include "CSLog.h"
