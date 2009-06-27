@@ -1,3 +1,5 @@
+#define LOG_ENABLE_TRACE 0
+
 #include "JNIUtil.h"
 #include "CSLog.h"
 #include "JavaSignatures.h"
