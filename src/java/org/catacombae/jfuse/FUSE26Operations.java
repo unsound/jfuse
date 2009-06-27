@@ -1,6 +1,6 @@
 /*-
  * jFUSE - FUSE bindings for Java
- * Copyright (C) 2008  Erik Larsson <erik82@kth.se>
+ * Copyright (C) 2008-2009  Erik Larsson <erik82@kth.se>
  *
  * Derived from:
  *   FUSE: Filesystem in Userspace
@@ -274,8 +274,17 @@ public interface FUSE26Operations extends FUSEErrorValues {
      * @param len <b>(size_t)</b> the number of bytes to read.
      * @param off <b>(off_t)</b> offset in file to start reading.
      * @param fi <b>(struct fuse_file_info*)</b> file info.
-     * @return <code>null</code> if the operation completed successfully, and an
-     * <code>int</code> value otherwise, indicating what went wrong.
+     * @return  the number of bytes read (a positive number) if the operation
+     *          completed successfully, or a negated value from
+     *          {@link FUSEErrorValues} if an error occurred.<br>
+     *          Typical error return values for read:
+     *          <ul>
+     *          <li>-{@link #EBADF EBADF}</li>
+     *          <li>-{@link #EINVAL EINVAL}</li>
+     *          <li>-{@link #EISDIR EISDIR}</li>
+     *          <li>-{@link #ENOMEM ENOMEM}</li>
+     *          <li>-{@link #EIO EIO}</li>
+     *          </ul>
      */
     public int read(byte[] path,
 		     byte[] dest,
