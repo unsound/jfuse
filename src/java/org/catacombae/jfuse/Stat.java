@@ -5,6 +5,8 @@
 
 package org.catacombae.jfuse;
 
+import java.util.Date;
+
 /**
  *
  * @author erik
@@ -55,6 +57,9 @@ public class Stat {
     public long st_gid = 0;
     /** Type: dev_t (4 bytes) */
     public long st_rdev = 0;
+
+    /* TODO: st_?timespec should be of class Timespec. */
+
     /** Type: __darwin_time_t (4 bytes (32-bit platforms), 8 bytes (64-bit platforms)) */
     public long st_atimespec_sec = 0;
     /** Type: long (4 bytes (32-bit platforms), 8 bytes (64-bit platforms)) */
@@ -100,5 +105,35 @@ public class Stat {
         st_blocksize = 0;
         st_flags = 0;
         st_gen = 0;
+    }
+
+    public void setAccessTimeToDate(Date d) {
+        long millis = d.getTime();
+        st_atimespec_sec = millis / 1000;
+        st_atimespec_nsec = (millis % 1000) * 1000000;
+    }
+
+    public void setModifyTimeToDate(Date d) {
+        long millis = d.getTime();
+        st_mtimespec_sec = millis / 1000;
+        st_mtimespec_nsec = (millis % 1000) * 1000000;
+    }
+
+    public void setStatusChangeTimeToDate(Date d) {
+        long millis = d.getTime();
+        st_ctimespec_sec = millis / 1000;
+        st_ctimespec_nsec = (millis % 1000) * 1000000;
+    }
+
+    public Date getAccessTimeAsDate() {
+        return new Date(st_atimespec_sec*1000 + st_atimespec_nsec/1000000);
+    }
+
+    public Date getModifyTimeAsDate() {
+        return new Date(st_mtimespec_sec*1000 + st_mtimespec_nsec/1000000);
+    }
+
+    public Date getStatusChangeTimeAsDate() {
+        return new Date(st_ctimespec_sec*1000 + st_ctimespec_nsec/1000000);
     }
 }
