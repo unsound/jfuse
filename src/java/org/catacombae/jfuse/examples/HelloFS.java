@@ -6,6 +6,7 @@
 package org.catacombae.jfuse.examples;
 
 import org.catacombae.jfuse.FUSE;
+import org.catacombae.jfuse.FUSEConnInfo;
 import org.catacombae.jfuse.FUSEFileInfo;
 import org.catacombae.jfuse.FUSEFileSystemAdapter;
 import org.catacombae.jfuse.FUSEFillDir;
@@ -26,6 +27,30 @@ public class HelloFS extends FUSEFileSystemAdapter {
         this.hello_str = FUSEUtil.encodeUTF8(hello);
         if(hello_str == null)
             throw new RuntimeException("Couldn't UTF-8 encode the following string: " + hello_str);
+    }
+
+    @Override
+    public Object init(FUSEConnInfo conn) {
+        Log.traceEnter("HelloFS.init", conn);
+
+        Log.trace("conn.proto_major = " + conn.proto_major);
+        Log.trace("conn.proto_minor = " + conn.proto_minor);
+        Log.trace("conn.async_read = " + conn.async_read);
+        Log.trace("conn.max_readahead = " + conn.max_readahead);
+        Log.trace("conn.max_write = " + conn.max_write);
+        Object retval = "Laban1235";
+
+        Log.traceLeave("HelloFS.init", retval, conn);
+        return retval;
+    }
+
+    @Override
+    public void destroy(Object o) {
+        Log.traceEnter("HelloFS.destroy", o);
+
+        Log.trace("Java method destroy got object: " + o);
+
+        Log.traceLeaveVoid("HelloFS.destroy", o);
     }
 
     @Override
