@@ -260,6 +260,6 @@ public interface FUSEErrorValues {
     public static final int ETIME = Errno.ETIME.getNativeErrnoValue();
     /** Must be equal largest errno */
     public static final int ELAST = Errno.ELAST.getNativeErrnoValue();
-     /** Must be equal largest errno */
+    /** Must be equal largest errno */
     //public static final int ELAST = Errno.ELAST.getNativeErrnoValue();
 }
