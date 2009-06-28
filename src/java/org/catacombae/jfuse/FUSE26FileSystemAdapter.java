@@ -29,207 +29,207 @@ import java.lang.reflect.Method;
 @SuppressWarnings("deprecation") // utime and getdir
 public abstract class FUSE26FileSystemAdapter implements FUSEFileSystem {
 
-    @Override
+    //@Override
     public int getattr(byte[] path, Stat stat) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int readlink(byte[] path, byte[] buffer) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int getdir(byte[] path, FUSEDirFil filler) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int mknod(byte[] path, short fileMode, long deviceNumber) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int mkdir(byte[] path, short createMode) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int unlink(byte[] path) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int rmdir(byte[] path) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int symlink(byte[] sourcePath, byte[] destPath) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int rename(byte[] oldPath, byte[] newPath) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int link(byte[] sourcePath, byte[] destPath) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int chmod(byte[] path, short mode_t_newMode) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int chown(byte[] path, long userId, long groupId) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int truncate(byte[] path, long newSize) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int utime(byte[] path, Utimbuf time) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int open(byte[] path, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int read(byte[] path, byte[] dest, int len, long offset, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int write(byte[] path, byte[] source, long off, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int statfs(byte[] path, StatVFS stat) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int flush(byte[] path, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int release(byte[] path, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int fsync(byte[] path, boolean datasync, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int setxattr_BSD(byte[] path, byte[] name, byte[] value, int flags, int position) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int setxattr(byte[] path, byte[] name, byte[] value, int flags) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int getxattr_BSD(byte[] path, byte[] name, byte[] value, int position) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int getxattr(byte[] path, byte[] name, byte[] value) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int listxattr(byte[] path, byte[] namebuf) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int removexattr(byte[] path, byte[] name) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int opendir(byte[] path, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int readdir(byte[] path, FUSEFillDir filler, long offset, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int releasedir(byte[] path, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int fsyncdir(byte[] path, boolean datasync, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public Object init(FUSEConnInfo conn) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public void destroy(Object o) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int access(byte[] path, int mode) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int create(byte[] path, short mode, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int ftruncate(byte[] path, long length, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int fgetattr(byte[] path, Stat stat, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int lock(byte[] path, FUSEFileInfo fi, int cmd, Flock flock) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int utimens(byte[] path, Timespec accessTime, Timespec modificationTime) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public int bmap(byte[] path, long blocksize, LongRef idx) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
-    @Override
+    //@Override
     public final FUSE26Capabilities getCapabilities() {
         FUSE26Capabilities c = new FUSE26Capabilities();
 
