@@ -11,7 +11,7 @@ TMPDIR=build/darwin-Debug/${PLATFORM}/tmp-packaging
 TMPDIRNAME=tmp-packaging
 OUTPUT_PATH=dist/Debug/${PLATFORM}/libjfuse.dylib
 OUTPUT_BASENAME=libjfuse.dylib
-PACKAGE_TOP_DIR=libjfuse/
+PACKAGE_TOP_DIR=liblibjfuse.dylib/
 
 # Functions
 function checkReturnCode
@@ -56,15 +56,15 @@ mkdir -p ${TMPDIR}
 
 # Copy files and create directories and links
 cd "${TOP}"
-makeDirectory ${TMPDIR}/libjfuse/lib
+makeDirectory ${TMPDIR}/liblibjfuse.dylib/lib
 copyFileToTmpDir "${OUTPUT_PATH}" "${TMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
 
 
 # Generate tar file
 cd "${TOP}"
-rm -f dist/darwin-Debug/${PLATFORM}/package/libjfuse.tar
+rm -f dist/darwin-Debug/${PLATFORM}/package/liblibjfuse.dylib.tar
 cd ${TMPDIR}
-tar -vcf ../../../../dist/darwin-Debug/${PLATFORM}/package/libjfuse.tar *
+tar -vcf ../../../../dist/darwin-Debug/${PLATFORM}/package/liblibjfuse.dylib.tar *
 checkReturnCode
 
 # Cleanup

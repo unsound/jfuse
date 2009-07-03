@@ -30,16 +30,16 @@ OBJECTDIR=build/darwin-Debug/${PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/FUSEDirFilContext.o \
 	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_FUSE_26.o \
+	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_types_fuse26_FUSEFillDir.o \
 	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/FUSE26Util.o \
+	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_types_fuse26_FUSEDirFil.o \
 	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/FUSEFillDirContext.o \
 	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/jFUSEContext.o \
-	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_Errno.o \
 	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/common.o \
-	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_StatConstant.o \
+	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_types_system_StatConstant.o \
 	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/fuse26_module.o \
 	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/JNIUtil.o \
-	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_FUSEDirFil.o \
-	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_FUSEFillDir.o
+	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_types_system_Errno.o
 
 # C Compiler Flags
 CFLAGS=-mmacosx-version-min=10.4 -arch i386 -arch ppc -arch x86_64 -arch ppc64
@@ -70,9 +70,17 @@ ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src
 	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
 	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -I/System/Library/Frameworks/JavaVM.framework/Headers -fPIC  -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_FUSE_26.o ../../../src/native/org_catacombae_jfuse_FUSE_26.cpp
 
+${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_types_fuse26_FUSEFillDir.o: ../../../src/native/org_catacombae_jfuse_types_fuse26_FUSEFillDir.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
+	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -I/System/Library/Frameworks/JavaVM.framework/Headers -fPIC  -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_types_fuse26_FUSEFillDir.o ../../../src/native/org_catacombae_jfuse_types_fuse26_FUSEFillDir.cpp
+
 ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/FUSE26Util.o: ../../../src/native/FUSE26Util.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
 	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -I/System/Library/Frameworks/JavaVM.framework/Headers -fPIC  -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/FUSE26Util.o ../../../src/native/FUSE26Util.cpp
+
+${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_types_fuse26_FUSEDirFil.o: ../../../src/native/org_catacombae_jfuse_types_fuse26_FUSEDirFil.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
+	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -I/System/Library/Frameworks/JavaVM.framework/Headers -fPIC  -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_types_fuse26_FUSEDirFil.o ../../../src/native/org_catacombae_jfuse_types_fuse26_FUSEDirFil.cpp
 
 ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/FUSEFillDirContext.o: ../../../src/native/FUSEFillDirContext.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
@@ -82,17 +90,13 @@ ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src
 	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
 	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -I/System/Library/Frameworks/JavaVM.framework/Headers -fPIC  -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/jFUSEContext.o ../../../src/native/jFUSEContext.cpp
 
-${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_Errno.o: ../../../src/native/org_catacombae_jfuse_Errno.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
-	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -I/System/Library/Frameworks/JavaVM.framework/Headers -fPIC  -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_Errno.o ../../../src/native/org_catacombae_jfuse_Errno.cpp
-
 ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/common.o: ../../../src/native/common.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
 	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -I/System/Library/Frameworks/JavaVM.framework/Headers -fPIC  -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/common.o ../../../src/native/common.cpp
 
-${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_StatConstant.o: ../../../src/native/org_catacombae_jfuse_StatConstant.cpp 
+${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_types_system_StatConstant.o: ../../../src/native/org_catacombae_jfuse_types_system_StatConstant.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
-	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -I/System/Library/Frameworks/JavaVM.framework/Headers -fPIC  -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_StatConstant.o ../../../src/native/org_catacombae_jfuse_StatConstant.cpp
+	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -I/System/Library/Frameworks/JavaVM.framework/Headers -fPIC  -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_types_system_StatConstant.o ../../../src/native/org_catacombae_jfuse_types_system_StatConstant.cpp
 
 ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/fuse26_module.o: ../../../src/native/fuse26_module.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
@@ -102,13 +106,9 @@ ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src
 	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
 	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -I/System/Library/Frameworks/JavaVM.framework/Headers -fPIC  -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/JNIUtil.o ../../../src/native/JNIUtil.cpp
 
-${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_FUSEDirFil.o: ../../../src/native/org_catacombae_jfuse_FUSEDirFil.cpp 
+${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_types_system_Errno.o: ../../../src/native/org_catacombae_jfuse_types_system_Errno.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
-	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -I/System/Library/Frameworks/JavaVM.framework/Headers -fPIC  -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_FUSEDirFil.o ../../../src/native/org_catacombae_jfuse_FUSEDirFil.cpp
-
-${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_FUSEFillDir.o: ../../../src/native/org_catacombae_jfuse_FUSEFillDir.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native
-	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -I/System/Library/Frameworks/JavaVM.framework/Headers -fPIC  -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_FUSEFillDir.o ../../../src/native/org_catacombae_jfuse_FUSEFillDir.cpp
+	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -I/System/Library/Frameworks/JavaVM.framework/Headers -fPIC  -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/proj/netbeans/libjfuse/../../../src/native/org_catacombae_jfuse_types_system_Errno.o ../../../src/native/org_catacombae_jfuse_types_system_Errno.cpp
 
 # Subprojects
 .build-subprojects:
