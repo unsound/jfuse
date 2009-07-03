@@ -25,6 +25,7 @@ package org.catacombae.jfuse;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
 
 @SuppressWarnings("deprecation") // utime and getdir
 public abstract class FUSE26FileSystemAdapter implements FUSEFileSystem {
@@ -105,12 +106,12 @@ public abstract class FUSE26FileSystemAdapter implements FUSEFileSystem {
     }
 
     //@Override
-    public int read(byte[] path, byte[] dest, int len, long offset, FUSEFileInfo fi) {
+    public int read(byte[] path, ByteBuffer dest, long offset, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int write(byte[] path, byte[] source, long off, FUSEFileInfo fi) {
+    public int write(byte[] path, ByteBuffer src, long off, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 

@@ -23,6 +23,8 @@
 
 package org.catacombae.jfuse;
 
+import java.nio.ByteBuffer;
+
 /**
  * All methods that return an <code>int</code> must return a negated int value from
  * {@link FUSEErrorValues} when an error condition occurs.
@@ -271,7 +273,6 @@ public interface FUSE26Operations extends FUSEErrorValues {
      *
      * @param path <b>(const char*)</b> a path to the file to read from.
      * @param dest <b>(char*)</b> the destination buffer.
-     * @param len <b>(size_t)</b> the number of bytes to read.
      * @param off <b>(off_t)</b> offset in file to start reading.
      * @param fi <b>(struct fuse_file_info*)</b> file info.
      * @return  the number of bytes read (a positive number) if the operation
@@ -287,8 +288,7 @@ public interface FUSE26Operations extends FUSEErrorValues {
      *          </ul>
      */
     public int read(byte[] path,
-		     byte[] dest,
-		     int len,
+		     ByteBuffer dest,
 		     long off,
 		     FUSEFileInfo fi);
 
@@ -305,14 +305,14 @@ public interface FUSE26Operations extends FUSEErrorValues {
      *
      * @param path <b>(const char*)</b> the path to the file system node on
      * which the operation is to be applied.
-     * @param data <b>(const char*)</b> the data to write.
+     * @param src <b>(const char*)</b> the data to write.
      * @param off <b>(off_t)</b> offset in file where data should be written.
      * @param fi <b>(struct fuse_file_info*)</b>
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
     public int write(byte[] path,
-		      byte[] data,
+		      ByteBuffer src,
 		      long off,
 		      FUSEFileInfo fi);
 

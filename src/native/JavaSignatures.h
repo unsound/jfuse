@@ -1,8 +1,24 @@
-/* 
- * File:   JavaSignatures.h
- * Author: erik
+/*-
+ * jFUSE - FUSE bindings for Java
+ * Copyright (C) 2008-2009  Erik Larsson <erik82@kth.se>
  *
- * Created on den 13 juni 2009, 15:53
+ * Derived from:
+ *   FUSE: Filesystem in Userspace
+ *   Copyright (C) 2001-2007  Miklos Szeredi <miklos@szeredi.hu>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 #ifndef _JAVASIGNATURES_H
@@ -10,6 +26,7 @@
 
 #define JFUSE_PACKAGE               "org/catacombae/jfuse"
 
+#define JAVA_CLASS(a)               "L" #a ";"
 #define JFUSE_CLASS(a)              "L" JFUSE_PACKAGE "/" #a ";"
 
 #define OPS_GETATTR_NAME            "getattr"
@@ -43,9 +60,9 @@
 #define OPS_OPEN_NAME               "open"
 #define OPS_OPEN_SIGNATURE          "([B" JFUSE_CLASS(FUSEFileInfo) ")I"
 #define OPS_READ_NAME               "read"
-#define OPS_READ_SIGNATURE          "([B[BIJ" JFUSE_CLASS(FUSEFileInfo) ")I"
+#define OPS_READ_SIGNATURE          "([B" JAVA_CLASS(java/nio/ByteBuffer) "J" JFUSE_CLASS(FUSEFileInfo) ")I"
 #define OPS_WRITE_NAME              "write"
-#define OPS_WRITE_SIGNATURE         "([B[BJJ" JFUSE_CLASS(FUSEFileInfo) ")I"
+#define OPS_WRITE_SIGNATURE         "([B" JAVA_CLASS(java/nio/ByteBuffer) "J" JFUSE_CLASS(FUSEFileInfo) ")I"
 #define OPS_STATFS_NAME             "statfs"
 #define OPS_STATFS_SIGNATURE        "([B" JFUSE_CLASS(StatVFS) ")I"
 #define OPS_FLUSH_NAME              "flush"

@@ -5,6 +5,7 @@
 
 package org.catacombae.jfuse.examples;
 
+import java.nio.ByteBuffer;
 import org.catacombae.jfuse.FUSE;
 import org.catacombae.jfuse.FUSEConnInfo;
 import org.catacombae.jfuse.FUSEFileInfo;
@@ -123,13 +124,13 @@ public class HelloFS extends FUSEFileSystemAdapter {
     }
 
     @Override
-    public int read(byte[] path, byte[] buf, int size, long offset, FUSEFileInfo fi) {
-        Log.traceEnter("int HelloFS.read", path, buf, size, offset, fi);
+    public int read(byte[] path, ByteBuffer buf, long offset, FUSEFileInfo fi) {
+        Log.traceEnter("int HelloFS.read", path, buf, offset, fi);
 
         int res = 0;
         String pathString = FUSEUtil.decodeUTF8(path);
         Log.trace("  pathString = \"" + pathString + "\"");
-        if(pathString == null) {// Invalid UTF-8 sequence.
+        if(pathString == null) { // Invalid UTF-8 sequence.
             Log.warning("Recieved byte sequence that could not be decoded.");
             res = -ENOENT;
         }
@@ -142,14 +143,15 @@ public class HelloFS extends FUSEFileSystemAdapter {
         else {
             int bytesLeftInFile = hello_str.length - (int)(offset);
             if(bytesLeftInFile > 0) {
-                res = Math.min(bytesLeftInFile, size);
-                System.arraycopy(hello_str, (int)offset, buf, 0, res);
+                int len = Math.min(bytesLeftInFile, buf.remaining());
+                buf.put(hello_str, 0, len);
+                res = len;
             }
             else
                 res = 0;
         }
 
-        Log.traceLeave("int HelloFS.read", res, path, buf, size, offset, fi);
+        Log.traceLeave("int HelloFS.read", res, path, buf, offset, fi);
         return res;
     }
 

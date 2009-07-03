@@ -1,8 +1,24 @@
-/* 
- * File:   JNIUtil.h
- * Author: erik
+/*-
+ * jFUSE - FUSE bindings for Java
+ * Copyright (C) 2008-2009  Erik Larsson <erik82@kth.se>
  *
- * Created on den 13 juni 2009, 13:27
+ * Derived from:
+ *   FUSE: Filesystem in Userspace
+ *   Copyright (C) 2001-2007  Miklos Szeredi <miklos@szeredi.hu>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 #ifndef _JNIUTIL_H
@@ -13,7 +29,13 @@
 class JNIUtil {
 public:
     static jbyteArray cstringToJByteArray(JNIEnv *env, const char *cstr);
-    static jbyteArray bytesToJByteArray(JNIEnv *env, const void *cstr, size_t cstrLength);
+    static jbyteArray bytesToJByteArray(JNIEnv *env, const void *data, jsize dataLength);
+
+    static jobject newByteBuffer(JNIEnv *env, jsize length);
+    static jobject cstringToReadonlyByteBuffer(JNIEnv *env, const char *cstr);
+    static jobject bytesToByteBuffer(JNIEnv *env, void *data, jsize dataLength);
+    static jobject bytesToReadonlyByteBuffer(JNIEnv *env, const void *data, jsize dataLength);
+    
     static bool setBooleanField(JNIEnv *env, jclass fieldClass, jobject fieldObject,
             const char *fieldName, jboolean value);
 

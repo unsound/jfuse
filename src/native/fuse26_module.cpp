@@ -1,3 +1,26 @@
+/*-
+ * jFUSE - FUSE bindings for Java
+ * Copyright (C) 2008-2009  Erik Larsson <erik82@kth.se>
+ *
+ * Derived from:
+ *   FUSE: Filesystem in Userspace
+ *   Copyright (C) 2001-2007  Miklos Szeredi <miklos@szeredi.hu>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 #include "fuse26_module.h"
 
 #include "common.h"
@@ -24,12 +47,21 @@ static inline jFUSEContext* getjFUSEContext() {
 }
 
 #define JAVA_ARG_CSTRING(num, str) \
-    CSLogDebug("Processing argument %d (%s) of type cstring...", num, #str); \
+    CSLogDebug("Processing argument %d (%s) of type byte array (from C string)...", num, #str); \
     jbyteArray java_arg##num = JNIUtil::cstringToJByteArray(env, str); \
     if(java_arg##num == NULL) { \
         if(env->ExceptionCheck() == JNI_TRUE) \
             env->ExceptionDescribe(); \
-        CSPanicWithMessage("Could not create new Java byte array from string \"%s\".", str); \
+        CSPanicWithMessage("Could not create new Java byte array from C string \"%s\".", str); \
+    }
+
+#define JAVA_ARG_CSTRING_BYTEBUFFER(num, str) \
+    CSLogDebug("Processing argument %d (%s) of type ByteBuffer (from C string)...", num, #str); \
+    jobject java_arg##num = JNIUtil::cstringToByteBuffer(env, str); \
+    if(java_arg##num == NULL) { \
+        if(env->ExceptionCheck() == JNI_TRUE) \
+            env->ExceptionDescribe(); \
+        CSPanicWithMessage("Could not create new Java ByteBuffer from C string \"%s\".", str); \
     }
 
 #define JAVA_ARG_EMPTY_BYTE_ARRAY(num, len) \
@@ -38,7 +70,16 @@ static inline jFUSEContext* getjFUSEContext() {
     if(java_arg##num == NULL) { \
         if(env->ExceptionCheck() == JNI_TRUE) \
             env->ExceptionDescribe(); \
-        CSPanicWithMessage("Could not create new Java byte array for dest."); \
+        CSPanicWithMessage("Could not create new Java byte array for java_arg" #num "."); \
+    }
+
+#define JAVA_ARG_EMPTY_BYTEBUFFER(num, len) \
+    CSLogDebug("Processing argument %d (%s) of type (new) ByteBuffer...", num, #len); \
+    jobject java_arg##num = JNIUtil::newByteBuffer(env, len); \
+    if(java_arg##num == NULL) { \
+        if(env->ExceptionCheck() == JNI_TRUE) \
+            env->ExceptionDescribe(); \
+        CSPanicWithMessage("Could not create new Java ByteBuffer for java_arg" #num "."); \
     }
 
 #define JAVA_ARG_BYTE_ARRAY(num, buf, len) \
@@ -48,6 +89,24 @@ static inline jFUSEContext* getjFUSEContext() {
         if(env->ExceptionCheck() == JNI_TRUE) \
             env->ExceptionDescribe(); \
         CSPanicWithMessage("Could not create new Java byte array from char* buffer."); \
+    }
+
+#define JAVA_ARG_BYTEBUFFER(num, buf, len) \
+    CSLogDebug("Processing argument %d (%s) of type ByteByffer...", num, #buf); \
+    jobject java_arg##num = JNIUtil::bytesToByteBuffer(env, buf, len); \
+    if(java_arg##num == NULL) { \
+        if(env->ExceptionCheck() == JNI_TRUE) \
+            env->ExceptionDescribe(); \
+        CSPanicWithMessage("Could not create new Java ByteBuffer from char* buffer."); \
+    }
+
+#define JAVA_ARG_READONLY_BYTEBUFFER(num, buf, len) \
+    CSLogDebug("Processing argument %d (%s) of type ByteByffer (read-only)...", num, #buf); \
+    jobject java_arg##num = JNIUtil::bytesToReadonlyByteBuffer(env, buf, len); \
+    if(java_arg##num == NULL) { \
+        if(env->ExceptionCheck() == JNI_TRUE) \
+            env->ExceptionDescribe(); \
+        CSPanicWithMessage("Could not create new Java read-only ByteBuffer from const char* buffer."); \
     }
 
 #define JAVA_ARG_STAT(num, stbuf) \
@@ -633,19 +692,18 @@ int jfuse_read(const char *path, char *targetbuf, size_t targetbuf_len, off_t fi
     JFUSE_OPERATION_INIT();
 
     JAVA_ARG_CSTRING(1, path);
-    JAVA_ARG_BYTE_ARRAY(2, targetbuf, targetbuf_len);
-    JAVA_ARG_FUSE_FILE_INFO(5, fi);
+    JAVA_ARG_BYTEBUFFER(2, targetbuf, targetbuf_len);
+    JAVA_ARG_FUSE_FILE_INFO(4, fi);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_READ_NAME, OPS_READ_SIGNATURE) {
-        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), targetbuf_len, file_off, JAVA_ARG(5));
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), file_off, JAVA_ARG(4));
 
-        JFUSE_MERGE_FUSE_FILE_INFO(JAVA_ARG(5), fi);
-        JFUSE_MERGE_BYTE_ARRAY(JAVA_ARG(2), targetbuf, targetbuf_len);
+        JFUSE_MERGE_FUSE_FILE_INFO(JAVA_ARG(4), fi);
 
         JFUSE_SET_RETVAL();
     }
 
-    JAVA_ARG_CLEANUP(5);
+    JAVA_ARG_CLEANUP(4);
     JAVA_ARG_CLEANUP(2);
     JAVA_ARG_CLEANUP(1);
 
@@ -666,7 +724,7 @@ int jfuse_write(const char *path, const char *buf, size_t len, off_t off,
     JFUSE_OPERATION_INIT();
 
     JAVA_ARG_CSTRING(1, path);
-    JAVA_ARG_BYTE_ARRAY(2, buf, len);
+    JAVA_ARG_READONLY_BYTEBUFFER(2, buf, len);
     JAVA_ARG_FUSE_FILE_INFO(4, fi);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_WRITE_NAME, OPS_WRITE_SIGNATURE) {
