@@ -11,7 +11,7 @@ import org.catacombae.jfuse.*;
  *
  * @author erik
  */
-public enum StatConstant {
+enum StatConstant {
     /** mask: type of file */
     S_IFMT,
     /** named pipe (fifo) */
