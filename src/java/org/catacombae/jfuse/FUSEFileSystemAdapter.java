@@ -23,6 +23,6 @@ package org.catacombae.jfuse;
  *
  * @author erik
  */
-public class FUSEFileSystemAdapter extends FUSE26FileSystemAdapter {
+public abstract class FUSEFileSystemAdapter extends FUSE26FileSystemAdapter {
 
 }
