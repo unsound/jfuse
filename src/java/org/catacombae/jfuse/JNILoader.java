@@ -9,7 +9,7 @@ package org.catacombae.jfuse;
  *
  * @author erik
  */
-class JNILoader {
+public class JNILoader {
     private static final String LIBRARY_BASE_NAME = "jfuse";
 
     /**

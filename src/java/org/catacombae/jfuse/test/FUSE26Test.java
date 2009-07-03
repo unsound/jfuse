@@ -7,8 +7,8 @@ package org.catacombae.jfuse.test;
 
 import org.catacombae.jfuse.FUSE26Capabilities;
 import org.catacombae.jfuse.FUSE26FileSystemAdapter;
-import org.catacombae.jfuse.LongRef;
-import org.catacombae.jfuse.Stat;
+import org.catacombae.jfuse.types.system.LongRef;
+import org.catacombae.jfuse.types.system.Stat;
 
 /**
  *

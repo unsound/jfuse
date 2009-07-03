@@ -3,12 +3,12 @@
  * and open the template in the editor.
  */
 
-package org.catacombae.jfuse;
+package org.catacombae.jfuse.test;
 
 /**
  * List of all the valid errno values defined in the Mac OS X 10.5 SDK version
- * of <code>errno.h</code>. Many of these are the same on all unixish systems,
- * POSIX ones in particular.
+ * of <code>errno.h</code>. Many of the constants (but not their values) are the
+ * same on all unixish systems, POSIX ones in particular.
  *
  * @author Erik Larsson
  */

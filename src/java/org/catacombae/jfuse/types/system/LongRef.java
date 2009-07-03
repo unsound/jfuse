@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package org.catacombae.jfuse;
+package org.catacombae.jfuse.types.system;
 
 /**
  * Container which holds a a long value.

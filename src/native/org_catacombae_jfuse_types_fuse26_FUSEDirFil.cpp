@@ -1,4 +1,4 @@
-#include "org_catacombae_jfuse_FUSEDirFil.h"
+#include "org_catacombae_jfuse_types_fuse26_FUSEDirFil.h"
 
 #include "CSLog.h"
 #include "common.h"
@@ -33,14 +33,15 @@ static bool getPointerFromByteArray(JNIEnv *env,
 }
 
 /*
- * Class:     org_catacombae_jfuse_FUSEDirFil
+ * Class:     org_catacombae_jfuse_types_fuse26_FUSEDirFil
  * Method:    fillNative
  * Signature: ([B[BIJ)I
  */
-JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_FUSEDirFil_fillNative
+JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_fuse26_FUSEDirFil_fillNative
   (JNIEnv *env, jclass cls, jbyteArray nativeContextPointer, jbyteArray name,
         jint type, jlong ino) {
-    CSLogTraceEnter("jint Java_org_catacombae_jfuse_FUSEDirFil_fillNative(%p, "
+#define _FNAME_ "Java_org_catacombae_jfuse_types_fuse26_FUSEDirFil_fillNative"
+    CSLogTraceEnter("jint " _FNAME_ "(%p, "
             "%p, %p, %p, %" PRId32 ", %" PRId64 ")", env, cls,
             nativeContextPointer, name, (int32_t)type, (int64_t)ino);
 
@@ -96,26 +97,28 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_FUSEDirFil_fillNative
 
     if(throwException) {
         throwByName(env, "java/lang/RuntimeException", "Exception in native "
-                "method Java_org_catacombae_jfuse_FUSEDirFil_fillNative.");
+                "method " _FNAME_ ".");
     }
 
 #undef CheckForErrors
 
-    CSLogTraceLeave("jint Java_org_catacombae_jfuse_FUSEDirFil_fillNative(%p, "
+    CSLogTraceLeave("jint " _FNAME_ "(%p, "
             "%p, %p, %p, %" PRId32 ", %" PRId64 "): %" PRId32, env, cls,
             nativeContextPointer, name, (int32_t)type, (int64_t)ino,
             (int32_t)res);
     return res;
+#undef _FNAME_
 }
 
 /*
- * Class:     org_catacombae_jfuse_FUSEDirFil
+ * Class:     org_catacombae_jfuse_types_fuse26_FUSEDirFil
  * Method:    freeNative
  * Signature: ([B)V
  */
-JNIEXPORT void JNICALL Java_org_catacombae_jfuse_FUSEDirFil_freeNative
+JNIEXPORT void JNICALL Java_org_catacombae_jfuse_types_fuse26_FUSEDirFil_freeNative
   (JNIEnv *env, jclass cls, jbyteArray nativePointer) {
-    CSLogTraceEnter("void Java_org_catacombae_jfuse_FUSEDirFil_freeNative(%p, "
+#define _FNAME_ "Java_org_catacombae_jfuse_types_fuse26_FUSEDirFil_freeNative"
+    CSLogTraceEnter("void " _FNAME_ "(%p, "
             "%p, %p)", env, cls, nativePointer);
 
     void *ptr = NULL;
@@ -125,10 +128,12 @@ JNIEXPORT void JNICALL Java_org_catacombae_jfuse_FUSEDirFil_freeNative
     }
     else {
         CSLogError("Could not get pointer from byte array.");
-        throwRuntimeException(env, "freeNative: Could not get pointer from byte array.");
+        throwRuntimeException(env, _FNAME_ ": Could not get pointer from "
+                "byte array.");
     }
     
-    CSLogTraceLeave("void Java_org_catacombae_jfuse_FUSEDirFil_freeNative(%p, "
+    CSLogTraceLeave("void " _FNAME_ "(%p, "
             "%p, %p)", env, cls, nativePointer);
+#undef _FNAME_
 }
 

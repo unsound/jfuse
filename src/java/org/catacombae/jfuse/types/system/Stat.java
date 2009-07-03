@@ -3,8 +3,9 @@
  * and open the template in the editor.
  */
 
-package org.catacombae.jfuse;
+package org.catacombae.jfuse.types.system;
 
+import org.catacombae.jfuse.*;
 import java.util.Date;
 
 /**

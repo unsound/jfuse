@@ -23,6 +23,16 @@
 
 package org.catacombae.jfuse;
 
+import org.catacombae.jfuse.types.fuse26.FUSEConnInfo;
+import org.catacombae.jfuse.types.system.Flock;
+import org.catacombae.jfuse.types.system.Stat;
+import org.catacombae.jfuse.types.system.Utimbuf;
+import org.catacombae.jfuse.types.system.StatVFS;
+import org.catacombae.jfuse.types.system.Timespec;
+import org.catacombae.jfuse.types.system.LongRef;
+import org.catacombae.jfuse.types.fuse26.FUSEFillDir;
+import org.catacombae.jfuse.types.fuse26.FUSEFileInfo;
+import org.catacombae.jfuse.types.fuse26.FUSEDirFil;
 import java.nio.ByteBuffer;
 
 /**

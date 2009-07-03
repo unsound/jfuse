@@ -19,6 +19,8 @@
 
 package org.catacombae.jfuse;
 
+import org.catacombae.jfuse.types.system.Errno;
+
 /**
  * <p>This interface contains constants taken from errno.h that can be used as
  * return values for jFUSE methods.</p>

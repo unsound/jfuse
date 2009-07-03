@@ -1,6 +1,6 @@
 #define LOG_ENABLE_TRACE 0
 
-#include "org_catacombae_jfuse_Errno.h"
+#include "org_catacombae_jfuse_types_system_Errno.h"
 #include "common.h"
 #include "CSLog.h"
 
@@ -10,14 +10,16 @@
 #include <inttypes.h>
 
 /*
- * Class:     org_catacombae_jfuse_Errno
+ * Class:     org_catacombae_jfuse_types_system_Errno
  * Method:    getNativeErrnoValue
  * Signature: (Ljava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_Errno_getNativeErrnoValue
+JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_Errno_getNativeErrnoValue
   (JNIEnv *env, jclass cls, jstring errnoName) {
-    CSLogTraceEnter("jint Java_org_catacombae_jfuse_Errno_getNativeErrnoValue"
-            "(%p, %p, %p)", env, cls, errnoName);
+#define _FNAME_ \
+    "Java_org_catacombae_jfuse_types_system_Errno_getNativeErrnoValue"
+
+    CSLogTraceEnter("jint %s(%p, %p, %p)", _FNAME_, env, cls, errnoName);
     jint result = -1;
     const char *errnoNameChars = env->GetStringUTFChars(errnoName, NULL);
 
@@ -139,7 +141,7 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_Errno_getNativeErrnoValue
 
     env->ReleaseStringUTFChars(errnoName, errnoNameChars);
 
-    CSLogTraceLeave("jint Java_org_catacombae_jfuse_Errno_getNativeErrnoValue"
-            "(%p, %p, %p): %" PRId32 "", env, cls, errnoName, (int32_t)result);
+    CSLogTraceLeave("jint %s(%p, %p, %p): %" PRId32 "", _FNAME_, env, cls,
+            errnoName, (int32_t)result);
     return result;
 }

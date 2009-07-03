@@ -1,4 +1,4 @@
-#include "org_catacombae_jfuse_FUSEFillDir.h"
+#include "org_catacombae_jfuse_types_fuse26_FUSEFillDir.h"
 
 #include "common.h"
 #include "fuse26_module.h"
@@ -13,17 +13,17 @@
 #include <fuse.h>
 
 /*
- * Class:     org_catacombae_jfuse_FUSEFillDir
+ * Class:     org_catacombae_jfuse_types_fuse26_FUSEFillDir
  * Method:    fillNative
- * Signature: ([B[BLorg/catacombae/jfuse/Stat;J)Z
+ * Signature: ([B[BLorg/catacombae/jfuse/types/system/Stat;J)Z
  */
-JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSEFillDir_fillNative
+JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_types_fuse26_FUSEFillDir_fillNative
   (JNIEnv *env, jclass cls, jbyteArray nativeContextPointer, jbyteArray name,
         jobject statObject, jlong off) {
-    
-    CSLogTraceEnter("jboolean Java_org_catacombae_jfuse_FUSEFillDir_fillNative("
-            "%p, %p, %p, %p, %p, %" PRId64 ")", env, cls, nativeContextPointer, name,
-            statObject, (int64_t)off);
+#define _FNAME_ "Java_org_catacombae_jfuse_types_fuse26_FUSEFillDir_fillNative"
+
+    CSLogTraceEnter("jboolean %s(%p, %p, %p, %p, %p, %" PRId64 ")", _FNAME_,
+            env, cls, nativeContextPointer, name, statObject, (int64_t)off);
 
 #define CheckForErrors(a, b, ...) \
     if((a) || env->ExceptionCheck() == JNI_TRUE) { \
@@ -47,11 +47,12 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSEFillDir_fillNative
 
         FUSEFillDirContext *fill_ctx = NULL;
         env->GetByteArrayRegion(ba, 0, baLength, (jbyte*) (&fill_ctx));
-        CheckForErrors(fill_ctx == NULL, "Could not get FUSEFillDirContext pointer.");
+        CheckForErrors(fill_ctx == NULL, "Could not get FUSEFillDirContext "
+                "pointer.");
 
         jsize nameStrlen = env->GetArrayLength(name);
-        CheckForErrors(nameStrlen < 0, "Could not get array length (nameStrlen=%"
-                PRId32 ")", (int32_t)nameStrlen);
+        CheckForErrors(nameStrlen < 0, "Could not get array length "
+                "(nameStrlen=%" PRId32 ")", (int32_t)nameStrlen);
 
         nameBuf = (char*) calloc(1, sizeof(char)*(nameStrlen + 1));
         CheckForErrors(nameBuf == NULL, "calloc failed for nameBuf");
@@ -62,7 +63,8 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSEFillDir_fillNative
         struct stat stbuf;
         struct stat *stp = NULL;
         if(statObject != NULL) {
-            CheckForErrors(FUSE26Util::mergeStat(env, statObject, &stbuf), "Could not merge stat object");
+            CheckForErrors(FUSE26Util::mergeStat(env, statObject, &stbuf),
+                    "Could not merge stat object");
             stp = &stbuf;
         }
 
@@ -70,7 +72,8 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSEFillDir_fillNative
         CSLogDebug("getFiller() = %p", filler);
         void *buf = fill_ctx->getBuf();
         CSLogDebug("getBuf() = %p", buf);
-        CSLogDebug("invoking filler(%p, \"%s\", %p, %" PRId64 ")", buf, nameBuf, stp, (off_t) off);
+        CSLogDebug("invoking filler(%p, \"%s\", %p, %" PRId64 ")", buf, nameBuf,
+                stp, (off_t) off);
         int fillRes = filler(buf, nameBuf, stp, (off_t) off);
         CSLogDebug("fillRes = %d", fillRes);
         if(fillRes == 0)
@@ -89,14 +92,16 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSEFillDir_fillNative
 
     if(throwException) {
         throwByName(env, "java/lang/RuntimeException", "Exception in native "
-                "method Java_org_catacombae_jfuse_FUSEFillDir_fill.");
+                "method " _FNAME_ ".");
     }
 
 #undef CheckForErrors
 
-    CSLogTraceLeave("jboolean Java_org_catacombae_jfuse_FUSEFillDir_fillNative("
-            "%p, %p, %p, %p, %p, %" PRId64 "): %d", env, cls, nativeContextPointer,
-            name, statObject, (int64_t)off, res);
+    CSLogTraceLeave("jboolean %s(%p, %p, %p, %p, %p, %" PRId64 "): %d",
+            _FNAME_, env, cls, nativeContextPointer, name, statObject,
+            (int64_t)off, res);
     return res;
+
+#undef _FNAME_
 }
 

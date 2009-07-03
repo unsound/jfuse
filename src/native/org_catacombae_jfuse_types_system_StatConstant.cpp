@@ -1,6 +1,6 @@
 #define LOG_ENABLE_TRACE 0
 
-#include "org_catacombae_jfuse_StatConstant.h"
+#include "org_catacombae_jfuse_types_system_StatConstant.h"
 
 #include "common.h"
 #include "CSLog.h"
@@ -11,15 +11,15 @@
 #include <sys/stat.h>
 
 /*
- * Class:     org_catacombae_jfuse_StatConstant
+ * Class:     org_catacombae_jfuse_types_system_StatConstant
  * Method:    getNativeValue
  * Signature: (Ljava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_StatConstant_getNativeValue
+JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_StatConstant_getNativeValue
   (JNIEnv *env, jclass cls, jstring constantName) {
+#define _FNAME_ "Java_org_catacombae_jfuse_types_system_StatConstant_getNativeValue"
 
-    CSLogTraceEnter("jint Java_org_catacombae_jfuse_StatConstant_getNativeValue"
-            "(%p, %p, %p)", env, cls, constantName);
+    CSLogTraceEnter("jint %s(%p, %p, %p)", _FNAME_, env, cls, constantName);
     jint result = -1;
     const char *constantNameChars = env->GetStringUTFChars(constantName, NULL);
 
@@ -52,8 +52,8 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_StatConstant_getNativeValue
 
     env->ReleaseStringUTFChars(constantName, constantNameChars);
 
-    CSLogTraceLeave("jint Java_org_catacombae_jfuse_StatConstant_getNativeValue"
-            "(%p, %p, %p): %" PRId32, env, cls, constantName, (int32_t)result);
+    CSLogTraceLeave("jint %s(%p, %p, %p): %" PRId32, _FNAME_, env, cls,
+            constantName, (int32_t)result);
     return result;
 
 }

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.catacombae.jfuse;
+package org.catacombae.jfuse.types.system;
 
 /**
  * Java representation of <code>struct utimbuf</code>.

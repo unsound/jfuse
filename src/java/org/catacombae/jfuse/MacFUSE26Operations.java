@@ -5,6 +5,9 @@
 
 package org.catacombae.jfuse;
 
+import org.catacombae.jfuse.types.system.Timespec;
+import org.catacombae.jfuse.types.fuse26.FUSEFileInfo;
+
 /**
  * MacFUSE extensions to FUSE 2.6 operations.
  *
