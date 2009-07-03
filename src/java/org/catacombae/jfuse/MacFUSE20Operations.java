@@ -1,19 +1,34 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/*-
+ * jFUSE - FUSE bindings for Java
+ * Copyright (C) 2008-2009  Erik Larsson <erik82@kth.se>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 package org.catacombae.jfuse;
 
+import org.catacombae.jfuse.types.macfuse20.Setattr_x;
 import org.catacombae.jfuse.types.system.Timespec;
 import org.catacombae.jfuse.types.fuse26.FUSEFileInfo;
 
 /**
- * MacFUSE extensions to FUSE 2.6 operations.
+ * MacFUSE 2.0 extensions to FUSE 2.6 operations.
  *
  * @author Erik Larsson
  */
-public interface MacFUSE26Operations extends FUSE26Operations {
+public interface MacFUSE20Operations extends FUSE26Operations {
     /**
      * See exchange(2) for more info.
      *

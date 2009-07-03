@@ -1,6 +1,6 @@
 /*-
  * jFUSE - FUSE bindings for Java
- * Copyright (C) 2008  Erik Larsson <erik82@kth.se>
+ * Copyright (C) 2008-2009  Erik Larsson <erik82@kth.se>
  *
  * Derived from:
  *   FUSE: Filesystem in Userspace

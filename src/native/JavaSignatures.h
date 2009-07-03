@@ -2,10 +2,6 @@
  * jFUSE - FUSE bindings for Java
  * Copyright (C) 2008-2009  Erik Larsson <erik82@kth.se>
  *
- * Derived from:
- *   FUSE: Filesystem in Userspace
- *   Copyright (C) 2001-2007  Miklos Szeredi <miklos@szeredi.hu>
- *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either

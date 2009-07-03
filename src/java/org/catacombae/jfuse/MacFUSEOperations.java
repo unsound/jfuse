@@ -17,24 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef _FUSEDIRFILCONTEXT_H
-#define	_FUSEDIRFILCONTEXT_H
+package org.catacombae.jfuse;
 
-#define FUSE_USE_VERSION 26
-#include <fuse.h>
+/**
+ * This interface always extends the latest version of the MacFUSE operations.
+ *
+ * @author Erik Larsson
+ */
+public interface MacFUSEOperations extends MacFUSE20Operations {
 
-class FUSEDirFilContext {
-public:
-    FUSEDirFilContext(fuse_dirfil_t dirFil, fuse_dirh_t handle);
-    FUSEDirFilContext(const FUSEDirFilContext& orig);
-    virtual ~FUSEDirFilContext();
-
-    fuse_dirfil_t getDirFil();
-    fuse_dirh_t getHandle();
-private:
-    fuse_dirfil_t dirFil;
-    fuse_dirh_t handle;
-};
-
-#endif	/* _FUSEDIRFILCONTEXT_H */
-
+}
