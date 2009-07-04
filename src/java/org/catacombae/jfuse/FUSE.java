@@ -22,7 +22,7 @@ package org.catacombae.jfuse;
 import org.catacombae.jfuse.types.fuse26.FUSEContext;
 
 /**
- * Hooks to some of the FUSE libary functions.
+ * Hooks to some of the FUSE library functions.
  *
  * @author Erik Larsson
  */
