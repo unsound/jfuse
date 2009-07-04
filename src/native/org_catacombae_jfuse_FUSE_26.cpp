@@ -31,6 +31,7 @@
 
 #include "fuse26_module.h"
 #include "CSLog.h"
+#include "JavaSignatures.h"
 
 #define errorHandling(...) \
     do { \
@@ -254,4 +255,46 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSE_mountNative26(
     CSLogTraceLeave("Java_org_catacombae_jfuse_FUSE_mountNative26(%p, %p, %p, %p, %p): %d",
             env, cls, fileSystem, mountPoint, optionStrings, JNI_TRUE);
     return JNI_TRUE;
+}
+
+/*
+ * Class:     org_catacombae_jfuse_FUSE
+ * Method:    getContextNative
+ * Signature: ()Lorg/catacombae/jfuse/types/fuse26/FUSEContext;
+ */
+JNIEXPORT jobject JNICALL Java_org_catacombae_jfuse_FUSE_getContextNative
+  (JNIEnv *env, jclass clazz) {
+#define _FNAME_ "Java_org_catacombae_jfuse_FUSE_getContextNative"
+    CSLogTraceEnter("%s (%p, %p)", _FNAME_, env, clazz);
+
+    jobject res = NULL;
+
+    fuse_context *ctx = fuse_get_context();
+    jFUSEContext *jfCtx = (jFUSEContext*)ctx->private_data;
+    
+    jclass fcClass = env->FindClass(FUSECONTEXT_CLASS);
+    if(fcClass != NULL && env->ExceptionCheck() == JNI_FALSE) {
+        jmethodID fcInitMid = env->GetMethodID(fcClass, FUSECONTEXT_INIT_NAME,
+                FUSECONTEXT_INIT_SIGNATURE);
+        if(fcInitMid != NULL && env->ExceptionCheck() == JNI_FALSE) {
+            jobject obj = env->NewObject(fcClass, fcInitMid, (jlong)ctx->uid,
+                    (jlong)ctx->gid, (jlong)ctx->pid, jfCtx->getPrivateData());
+            if(obj == NULL || env->ExceptionCheck() == JNI_TRUE)
+                CSLogError("Could not create new FUSEContext instance.");
+
+            if(obj != NULL)
+                env->DeleteLocalRef(obj);
+            
+            res = obj;
+        }
+        else
+            CSLogError("Could not get method ID for %s with signature %s.",
+                    FUSECONTEXT_INIT_NAME, FUSECONTEXT_INIT_SIGNATURE);
+    }
+    else
+        CSLogError("Could not find class %s.", FUSECONTEXT_CLASS);
+
+    CSLogTraceLeave("%s (%p, %p): %p", _FNAME_, env, clazz, res);
+    return res;
+#undef _FNAME_
 }

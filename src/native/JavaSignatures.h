@@ -22,7 +22,14 @@
 
 #define JFUSE_PACKAGE               "org/catacombae/jfuse"
 
+#define JAVA_CLASS(a)               "L" a ";"
+#define JFUSE_CLASS(a)              "L" JFUSE_PACKAGE "/" #a ";"
+
 // Class / method signatures for certain classes
+
+#define FUSECONTEXT_CLASS           JFUSE_PACKAGE "/types/fuse26/FUSEContext"
+#define FUSECONTEXT_INIT_NAME       "<init>"
+#define FUSECONTEXT_INIT_SIGNATURE  "(JJJ" JAVA_CLASS("java/lang/Object") ")V"
 
 #define FUSECONNINFO_CLASS          JFUSE_PACKAGE "/types/fuse26/FUSEConnInfo"
 #define FUSECONNINFO_INIT_NAME      "<init>"
@@ -65,9 +72,6 @@
 #define UTIMBUF_INIT_SIGNATURE      "()V"
 
 // FUSE26Operations signatures
-
-#define JAVA_CLASS(a)               "L" a ";"
-#define JFUSE_CLASS(a)              "L" JFUSE_PACKAGE "/" #a ";"
 
 #define OPS_GETATTR_NAME            "getattr"
 #define OPS_GETATTR_SIGNATURE       "([B" JAVA_CLASS(STAT_CLASS) ")I"

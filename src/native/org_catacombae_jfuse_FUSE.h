@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSE_mountNative26
   (JNIEnv *, jclass, jobject, jstring, jobjectArray);
 
+/*
+ * Class:     org_catacombae_jfuse_FUSE
+ * Method:    getContextNative
+ * Signature: ()Lorg/catacombae/jfuse/types/fuse26/FUSEContext;
+ */
+JNIEXPORT jobject JNICALL Java_org_catacombae_jfuse_FUSE_getContextNative
+  (JNIEnv *, jclass);
+
 #ifdef __cplusplus
 }
 #endif

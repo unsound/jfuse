@@ -16,14 +16,17 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
 package org.catacombae.jfuse;
 
+import org.catacombae.jfuse.types.fuse26.FUSEContext;
+
 /**
+ * Hooks to some of the FUSE libary functions.
  *
- * @author erik
+ * @author Erik Larsson
  */
 public class FUSE {
+    
     static {
         JNILoader.ensureLoaded();
     }
@@ -35,7 +38,7 @@ public class FUSE {
         if(args.length < 1)
             throw new IllegalArgumentException("You need to specify the mount point as first argument.");
         String mountPoint = args[0];
-        String[] adjustedArgs = new String[args.length-1];
+        String[] adjustedArgs = new String[args.length - 1];
         if(adjustedArgs.length > 0)
             System.arraycopy(args, 1, adjustedArgs, 0, adjustedArgs.length);
 
@@ -57,4 +60,18 @@ public class FUSE {
 
     private static native boolean mountNative26(FUSE26FileSystem fileSystem,
             String mountPoint, String[] optionStrings);
+
+    /**
+     * Get the current context
+     *
+     * The context is only valid for the duration of a filesystem
+     * operation, and thus must not be stored and used later.
+     *
+     * @return the context
+     */
+    public static FUSEContext getContext() {
+        return getContextNative();
+    }
+
+    private static native FUSEContext getContextNative();
 }
