@@ -119,7 +119,7 @@ public class HelloFS extends FUSEFileSystemAdapter {
             int bytesLeftInFile = hello_str.length - (int)(offset);
             if(bytesLeftInFile > 0) {
                 int len = Math.min(bytesLeftInFile, buf.remaining());
-                buf.put(hello_str, 0, len);
+                buf.put(hello_str, (int)offset, len);
                 return len;
             }
             else
