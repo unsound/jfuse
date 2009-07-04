@@ -46,7 +46,8 @@ jobject JNIUtil::cstringToReadonlyByteBuffer(JNIEnv *env, const char *cstr) {
 }
 
 jobject JNIUtil::newByteBuffer(JNIEnv* env, jsize length) {
-    CSLogTraceEnter("jbyteArray JNIUtil::cstringToByteBuffer(%p, %" PRId32 ")", env, length);
+    CSLogTraceEnter("jbyteArray JNIUtil::newByteBuffer(%p, %" PRId32 ")",
+            env, (int32_t)length);
 
     jobject res = NULL;
     int finalErrno = 0;
@@ -63,7 +64,8 @@ jobject JNIUtil::newByteBuffer(JNIEnv* env, jsize length) {
         finalErrno = errno;
     }
 
-    CSLogTraceLeave("jbyteArray JNIUtil::cstringToByteBuffer(%p, %" PRId32 "): %p", env, length, res);
+    CSLogTraceLeave("jbyteArray JNIUtil::cstringToByteBuffer(%p, %" PRId32 "): "
+            "%p", env, (int32_t)length, res);
     errno = finalErrno;
     return res;
 
@@ -98,7 +100,8 @@ jbyteArray JNIUtil::bytesToJByteArray(JNIEnv *env, const void *data,
 }
 
 jobject JNIUtil::bytesToByteBuffer(JNIEnv *env, void *data, jsize dataLength) {
-    CSLogTraceEnter("jbyteArray JNIUtil::bytesToByteBuffer(%p, %p, %zu)", env, data, dataLength);
+    CSLogTraceEnter("jbyteArray JNIUtil::bytesToByteBuffer(%p, %p, %" PRId32
+            ")", env, data, (int32_t)dataLength);
 
     jobject res = NULL;
     jobject dataBuffer = env->NewDirectByteBuffer(data, dataLength); // <alloc>
@@ -114,13 +117,15 @@ jobject JNIUtil::bytesToByteBuffer(JNIEnv *env, void *data, jsize dataLength) {
     if(res == NULL && dataBuffer != NULL)
         env->DeleteLocalRef(dataBuffer);
 
-    CSLogTraceLeave("jbyteArray JNIUtil::bytesToByteBuffer(%p, %p, %zu): %p", env, data, dataLength, res);
+    CSLogTraceLeave("jbyteArray JNIUtil::bytesToByteBuffer(%p, %p, %" PRId32 
+            "): %p", env, data, (int32_t)dataLength, res);
     return res;
 }
 
 jobject JNIUtil::bytesToReadonlyByteBuffer(JNIEnv *env, const void *data,
         jsize dataLength) {
-    CSLogTraceEnter("jbyteArray JNIUtil::bytesToReadonlyByteBuffer(%p, %p, %zu)", env, data, dataLength);
+    CSLogTraceEnter("jbyteArray JNIUtil::bytesToReadonlyByteBuffer(%p, %p, %"
+            PRId32 ")", env, data, (int32_t)dataLength);
 
     jobject res = NULL;
     jobject buf = bytesToByteBuffer(env, (void*)data, dataLength);
@@ -150,7 +155,8 @@ jobject JNIUtil::bytesToReadonlyByteBuffer(JNIEnv *env, const void *data,
     else
         CSLogError("bytesToByteBuffer returned with an error.");
 
-    CSLogTraceLeave("jbyteArray JNIUtil::bytesToReadonlyByteBuffer(%p, %p, %zu): %p", env, data, dataLength, res);
+    CSLogTraceLeave("jbyteArray JNIUtil::bytesToReadonlyByteBuffer(%p, %p, %"
+            PRId32 "): %p", env, data, (int32_t)dataLength, res);
     return res;
 }
 
