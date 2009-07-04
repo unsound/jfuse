@@ -24,11 +24,11 @@ import org.catacombae.jfuse.types.system.Timespec;
 import org.catacombae.jfuse.types.fuse26.FUSEFileInfo;
 
 /**
- * MacFUSE 2.0 extensions to FUSE 2.6 operations.
+ * MacFUSE 2.0 extensions to FUSE operations.
  *
  * @author Erik Larsson
  */
-public interface MacFUSE20Operations extends FUSE26Operations {
+public interface MacFUSE20Operations {
     /**
      * See exchange(2) for more info.
      *
