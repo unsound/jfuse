@@ -36,7 +36,7 @@ extern "C" {
 #endif
 
 #ifndef LOG_ENABLE_TRACE
-#define LOG_ENABLE_TRACE 1
+#define LOG_ENABLE_TRACE 0
 #endif
 
 #ifndef LOG_ENABLE_MEMORY
