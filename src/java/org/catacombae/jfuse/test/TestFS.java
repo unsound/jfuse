@@ -63,7 +63,7 @@ public class TestFS extends FUSEFileSystemAdapter {
 
     private static class Directory extends Inode {
 
-        public TreeSet<Entry> children;
+        public final TreeSet<Entry> children = new TreeSet<Entry>();
     }
 
     private static class File extends Inode {
@@ -96,7 +96,7 @@ public class TestFS extends FUSEFileSystemAdapter {
         return null;
     }
 
-    private int createInode(String path, FUSEFileInfo fi) {
+    private int createFile(String path, FUSEFileInfo fi) {
         String parentPath = path.substring(0, path.lastIndexOf('/'));
         String childName = path.substring(parentPath.length() + 1);
 
@@ -150,7 +150,11 @@ public class TestFS extends FUSEFileSystemAdapter {
         Directory rootNode = new Directory();
         rootNode.uid = ctx.uid;
         rootNode.gid = ctx.gid;
+        rootNode.nlink = 2;
+        rootNode.mode = (short)(S_IFDIR | 0777);
         fileTable.put("/", rootNode);
+
+        Log.debug("fileTable result for '/': " + lookupInode("/"));
 
         Object retval = "Laban1235";
 
@@ -213,6 +217,8 @@ public class TestFS extends FUSEFileSystemAdapter {
             if(e != null && e instanceof Directory) {
                 Directory dir = (Directory) e;
 
+                filler.fill(FUSEUtil.encodeUTF8("."), null, 0);
+                filler.fill(FUSEUtil.encodeUTF8(".."), null, 0);
                 for(Entry child : dir.children)
                     filler.fill(FUSEUtil.encodeUTF8(child.name), null, 0);
             }
@@ -266,7 +272,7 @@ public class TestFS extends FUSEFileSystemAdapter {
                 if(!fi.getFlagCreate())
                     res = -ENOENT;
                 else
-                    res = createInode(pathString, fi);
+                    res = createFile(pathString, fi);
             }
         }
 
