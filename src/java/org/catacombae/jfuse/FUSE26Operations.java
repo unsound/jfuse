@@ -23,6 +23,7 @@
 
 package org.catacombae.jfuse;
 
+import org.catacombae.jfuse.types.system.SystemConstants;
 import org.catacombae.jfuse.types.fuse26.FUSEConnInfo;
 import org.catacombae.jfuse.types.system.Flock;
 import org.catacombae.jfuse.types.system.Stat;
@@ -41,7 +42,7 @@ import java.nio.ByteBuffer;
  * 
  * @author Erik Larsson
  */
-public interface FUSE26Operations extends FUSEErrorValues {
+public interface FUSE26Operations extends SystemConstants {
     /**
      * <pre>
      * Get file attributes.
