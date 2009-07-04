@@ -55,12 +55,21 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_StatConstant_getNa
     ifconstant(S_IFLNK);
     ifconstant(S_IFSOCK);
     //ifconstant(S_IFWHT);
-    ifconstant(S_ISUID);
-    ifconstant(S_ISGID);
-    ifconstant(S_ISVTX);
+    ifconstant(S_IRWXU);
     ifconstant(S_IRUSR);
     ifconstant(S_IWUSR);
     ifconstant(S_IXUSR);
+    ifconstant(S_IRWXG);
+    ifconstant(S_IRGRP);
+    ifconstant(S_IWGRP);
+    ifconstant(S_IXGRP);
+    ifconstant(S_IRWXO);
+    ifconstant(S_IROTH);
+    ifconstant(S_IWOTH);
+    ifconstant(S_IXOTH);
+    ifconstant(S_ISUID);
+    ifconstant(S_ISGID);
+    ifconstant(S_ISVTX);
 
 #undef ifconstant
     else {

@@ -43,19 +43,38 @@ enum StatConstant {
     /** socket */
     S_IFSOCK,
     /** whiteout */
-    //S_IFWHT,
+    //S_IFWHT, // Not portable.
+    /** RWX mask for owner. */
+    S_IRWXU,
+    /** read permission, owner */
+    S_IRUSR,
+    /** write permission, owner */
+    S_IWUSR,
+    /** execute/search permission, owner */
+    S_IXUSR,
+    /** RWX mask for group. */
+    S_IRWXG,
+    /** read permission, group */
+    S_IRGRP,
+    /** write permission, group */
+    S_IWGRP,
+    /** execute/search permission, group */
+    S_IXGRP,
+    /** RWX mask for other. */
+    S_IRWXO,
+    /** read permission, other */
+    S_IROTH,
+    /** write permission, other */
+    S_IWOTH,
+    /** execute/search permission, other */
+    S_IXOTH,
     /** set user id on execution */
     S_ISUID,
     /** set group id on execution */
     S_ISGID,
     /** save swapped text even after use */
     S_ISVTX,
-    /** read permission, owner */
-    S_IRUSR,
-    /** write permission, owner */
-    S_IWUSR,
-    /** execute/search permission, owner */
-    S_IXUSR;
+    ;
 
     private final int nativeValue;
 

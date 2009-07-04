@@ -25,76 +25,45 @@ import java.util.Date;
  *
  * @author erik
  */
-public class Stat {
-    /** type of file */
-    public static final int S_IFMT = StatConstant.S_IFMT.getNativeValue();
-    /** named pipe (fifo) */
-    public static final int S_IFIFO = StatConstant.S_IFIFO.getNativeValue();
-    /** character special */
-    public static final int S_IFCHR = StatConstant.S_IFCHR.getNativeValue();
-    /** directory */
-    public static final int S_IFDIR = StatConstant.S_IFDIR.getNativeValue();
-    /** block special */
-    public static final int S_IFBLK = StatConstant.S_IFBLK.getNativeValue();
-    /** regular */
-    public static final int S_IFREG = StatConstant.S_IFREG.getNativeValue();
-    /** symbolic link */
-    public static final int S_IFLNK = StatConstant.S_IFLNK.getNativeValue();
-    /** socket */
-    public static final int S_IFSOCK = StatConstant.S_IFSOCK.getNativeValue();
-    /** whiteout */
-    //public static final int S_IFWHT = StatConstant.S_IFWHT.getNativeValue();
-    /** set user id on execution */
-    public static final int S_ISUID = StatConstant.S_ISUID.getNativeValue();
-    /** set group id on execution */
-    public static final int S_ISGID = StatConstant.S_ISGID.getNativeValue();
-    /** save swapped text even after use */
-    public static final int S_ISVTX = StatConstant.S_ISVTX.getNativeValue();
-    /** read permission, owner */
-    public static final int S_IRUSR = StatConstant.S_IRUSR.getNativeValue();
-    /** write permission, owner */
-    public static final int S_IWUSR = StatConstant.S_IWUSR.getNativeValue();
-    /** execute/search permission, owner */
-    public static final int S_IXUSR = StatConstant.S_IXUSR.getNativeValue();
-
-    /** Type: dev_t (4 bytes) */
+public class Stat implements FileModeFlags {
+    /** Device inode resides on. Type: dev_t (4 bytes) */
     public long st_dev = 0;
-    /** Type: ino_t (4 bytes) */
+    /** Inode's number. Type: ino_t (4 bytes) */
     public long st_ino = 0;
-    /** Type: mode_t (2 bytes) */
+    /** Inode protection mode. Type: mode_t (2 bytes) */
     public long st_mode = 0;
-    /** Type: nlink_t (2 bytes) */
+    /** Number of hard links to the file. Type: nlink_t (2 bytes) */
     public long st_nlink = 0;
-    /** Type: uid_t (4 bytes) */
+    /** User-id of owner. Type: uid_t (4 bytes) */
     public long st_uid = 0;
-    /** Type: gid_t (4 bytes) */
+    /** Group-id of owner. Type: gid_t (4 bytes) */
     public long st_gid = 0;
-    /** Type: dev_t (4 bytes) */
+    /** Device type, for special file inode. Type: dev_t (4 bytes) */
     public long st_rdev = 0;
 
     /* TODO: st_?timespec should be of class Timespec. */
 
-    /** Type: __darwin_time_t (4 bytes (32-bit platforms), 8 bytes (64-bit platforms)) */
+    /** Time of last access (seconds). Type: __darwin_time_t (4 bytes (32-bit platforms), 8 bytes (64-bit platforms)) */
     public long st_atimespec_sec = 0;
-    /** Type: long (4 bytes (32-bit platforms), 8 bytes (64-bit platforms)) */
+    /** Time of last access (nanoseconds). Type: long (4 bytes (32-bit platforms), 8 bytes (64-bit platforms)) */
     public long st_atimespec_nsec = 0;
-    /** Type: __darwin_time_t (4 bytes (32-bit platforms), 8 bytes (64-bit platforms)) */
+    /** Time of last data modification (seconds). Type: __darwin_time_t (4 bytes (32-bit platforms), 8 bytes (64-bit platforms)) */
     public long st_mtimespec_sec = 0;
-    /** Type: long (4 bytes (32-bit platforms), 8 bytes (64-bit platforms)) */
+    /** Time of last data modification (nanoseconds). Type: long (4 bytes (32-bit platforms), 8 bytes (64-bit platforms)) */
     public long st_mtimespec_nsec = 0;
-    /** Type: __darwin_time_t (4 bytes (32-bit platforms), 8 bytes (64-bit platforms)) */
+    /** Time of last file status change (seconds). Type: __darwin_time_t (4 bytes (32-bit platforms), 8 bytes (64-bit platforms)) */
     public long st_ctimespec_sec = 0;
-    /** Type: long (4 bytes (32-bit platforms), 8 bytes (64-bit platforms)) */
+    /** Time of last file status change (nanoseconds). Type: long (4 bytes (32-bit platforms), 8 bytes (64-bit platforms)) */
     public long st_ctimespec_nsec = 0;
-    /** Type: off_t (8 bytes) */
+    /** File size, in bytes. Type: off_t (8 bytes) */
     public long st_size = 0;
-    /** Type: quad_t (8 bytes) */
+    /** Blocks allocated for file. Type: quad_t (8 bytes) */
     public long st_blocks = 0;
-    /** Type: u_long (4 bytes) */
+    /** Optimal file sys I/O ops blocksize. Type: u_long (4 bytes) */
     public long st_blocksize = 0;
-    /** Type: u_long (4 bytes) */
+    /** User defined flags for file. Type: u_long (4 bytes) */
     public long st_flags = 0;
-    /** Type: u_long (4 bytes) */
+    /** File generation number. Type: u_long (4 bytes) */
     public long st_gen = 0;
 
     /**
