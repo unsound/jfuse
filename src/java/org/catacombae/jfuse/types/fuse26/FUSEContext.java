@@ -19,6 +19,8 @@
 
 package org.catacombae.jfuse.types.fuse26;
 
+import org.catacombae.jfuse.util.Log;
+
 /**
  * The jFUSE version of fuse_context.
  *
@@ -39,9 +41,11 @@ public class FUSEContext {
     public final Object privateData;
 
     private FUSEContext(long uid, long gid, long pid, Object privateData) {
+        Log.traceEnter("FUSEContext.<init>", uid, gid, pid, privateData);
         this.uid = uid;
         this.gid = gid;
         this.pid = pid;
         this.privateData = privateData;
+        Log.traceLeave("FUSEContext.<init>", this, uid, gid, pid, privateData);
     }
 }

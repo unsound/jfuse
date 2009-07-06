@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#define LOG_ENABLE_TRACE 1
+
 #include "org_catacombae_jfuse_FUSE.h"
 
 #include <stdio.h>
@@ -271,7 +273,14 @@ JNIEXPORT jobject JNICALL Java_org_catacombae_jfuse_FUSE_getContextNative
 
     fuse_context *ctx = fuse_get_context();
     jFUSEContext *jfCtx = (jFUSEContext*)ctx->private_data;
-    
+
+    CSLogDebug("Context fields:");
+    CSLogDebug("  fuse=%p", ctx->fuse);
+    CSLogDebug("  uid=%d", ctx->uid);
+    CSLogDebug("  gid=%d", ctx->gid);
+    CSLogDebug("  pid=%d", ctx->pid);
+    CSLogDebug("  private_data=%p", ctx->private_data);
+
     jclass fcClass = env->FindClass(FUSECONTEXT_CLASS);
     if(fcClass != NULL && env->ExceptionCheck() == JNI_FALSE) {
         jmethodID fcInitMid = env->GetMethodID(fcClass, FUSECONTEXT_INIT_NAME,
@@ -282,8 +291,8 @@ JNIEXPORT jobject JNICALL Java_org_catacombae_jfuse_FUSE_getContextNative
             if(obj == NULL || env->ExceptionCheck() == JNI_TRUE)
                 CSLogError("Could not create new FUSEContext instance.");
 
-            if(obj != NULL)
-                env->DeleteLocalRef(obj);
+            //if(obj != NULL)
+            //    env->DeleteLocalRef(obj);
             
             res = obj;
         }
