@@ -70,6 +70,9 @@ public interface FUSE26Operations extends SystemConstants {
      * buffer, it should be truncated.  The return value should be 0
      * for success.
      * </pre>
+     * In jFUSE the buffer size argument has already been parsed when this
+     * method gets the buffer. The byte array passed to readlink has a size
+     * equal to the size of the native buffer.
      *
      * @param path <b>(const char*)</b>
      * @param buffer <b>(char*)</b>
