@@ -16,9 +16,11 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
 package org.catacombae.jfuse.test;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.TreeSet;
@@ -27,7 +29,7 @@ import org.catacombae.jfuse.types.fuse26.FUSEConnInfo;
 import org.catacombae.jfuse.types.fuse26.FUSEFileInfo;
 import org.catacombae.jfuse.FUSEFileSystemAdapter;
 import org.catacombae.jfuse.types.fuse26.FUSEFillDir;
-import org.catacombae.jfuse.FUSEUtil;
+import org.catacombae.jfuse.util.FUSEUtil;
 import org.catacombae.jfuse.types.fuse26.FUSEContext;
 import org.catacombae.jfuse.types.system.Stat;
 import org.catacombae.jfuse.util.Log;
@@ -43,6 +45,9 @@ import org.catacombae.jfuse.util.Log;
 public class TestFS extends FUSEFileSystemAdapter {
 
     private static final String CLASS_NAME = "TestFS";
+
+    private final int blockSize = 65535;
+    private final byte[] zeroBlock;
 
     /**
      * A filesystem entry.
@@ -67,17 +72,29 @@ public class TestFS extends FUSEFileSystemAdapter {
     }
 
     private static class File extends Inode {
-
-        public byte[] data;
+        public final ArrayList<byte[]> blocks = new ArrayList<byte[]>();
+        public long length;
     }
 
     private static class Symlink extends Inode {
-
         public String target;
     }
+
+    private static class Block {
+        byte[] data;
+        int ptr = 0;
+    }
+
+/*    private static class BlockAllocator {
+        public Block
+    }*/
+
     private Hashtable<String, Inode> fileTable = new Hashtable<String, Inode>();
 
     public TestFS() {
+        zeroBlock = new byte[blockSize];
+        for(int i = 0; i < zeroBlock.length; ++i)
+            zeroBlock[i] = 0;
     }
 
     private Inode resolveSymlink(Symlink l) {
@@ -97,8 +114,8 @@ public class TestFS extends FUSEFileSystemAdapter {
     }
 
     private int createFile(String path, FUSEFileInfo fi) {
-        String parentPath = path.substring(0, path.lastIndexOf('/'));
-        String childName = path.substring(parentPath.length() + 1);
+        String parentPath = FUSEUtil.dirname(path);
+        String childName = FUSEUtil.basename(path);
 
         Inode parent = lookupInode(parentPath);
         if(parent instanceof Symlink)
@@ -117,7 +134,9 @@ public class TestFS extends FUSEFileSystemAdapter {
             f.mode = (short) (Stat.S_IFREG |
                     ((Stat.S_IRWXU | Stat.S_IRWXG | Stat.S_IRWXO) &
                     parent.mode));
-            f.data = new byte[0];
+            f.blocks.clear();
+            f.blocks.add(new byte[blockSize]);
+            f.length = 0;
             f.nlink = 1;
 
             Entry entry = new Entry();
@@ -145,11 +164,16 @@ public class TestFS extends FUSEFileSystemAdapter {
         Log.trace("conn.max_readahead = " + conn.max_readahead);
         Log.trace("conn.max_write = " + conn.max_write);
 
-        FUSEContext ctx = FUSE.getContext();
+        Log.debug("process pid=" + FUSEUtil.getProcessPid());
+        //FUSEContext ctx = FUSE.getContext();
 
         Directory rootNode = new Directory();
-        rootNode.uid = ctx.uid;
-        rootNode.gid = ctx.gid;
+        rootNode.uid = FUSEUtil.getProcessUid();
+        Log.debug("root directory uid set to: " + rootNode.uid +
+                " (0x" + Long.toHexString(rootNode.uid) + ")");
+        rootNode.gid = FUSEUtil.getProcessGid();
+        Log.debug("root directory gid set to: " + rootNode.gid +
+                " (0x" + Long.toHexString(rootNode.gid) + ")");
         rootNode.nlink = 2;
         rootNode.mode = (short)(S_IFDIR | 0777);
         fileTable.put("/", rootNode);
@@ -185,10 +209,12 @@ public class TestFS extends FUSEFileSystemAdapter {
         else {
             Inode e = lookupInode(pathString);
             if(e != null) {
+                stbuf.st_uid = e.uid;
+                stbuf.st_gid = e.gid;
                 stbuf.st_mode = e.mode;
                 stbuf.st_nlink = e.nlink;
                 if(e instanceof File)
-                    stbuf.st_size = ((File) e).data.length;
+                    stbuf.st_size = ((File) e).length;
                 else
                     stbuf.st_size = 0;
             }
@@ -232,6 +258,41 @@ public class TestFS extends FUSEFileSystemAdapter {
     }
 
     @Override
+    public int readlink(byte[] path, byte[] buffer) {
+        final String METHOD_NAME = "readlink";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, buffer);
+
+        int res;
+        String pathString = FUSEUtil.decodeUTF8(path);
+        Log.trace("  pathString = \"" + pathString + "\"");
+        if(pathString == null) // Invalid UTF-8 sequence.
+            res = -ENOENT;
+        else {
+            Inode e = lookupInode(pathString);
+            if(e != null) {
+                if(e instanceof Symlink) {
+                    if(buffer.length > 0) {
+                        Symlink link = (Symlink) e;
+                        byte[] encodedTarget = FUSEUtil.encodeUTF8(link.target);
+                        int copySize = Math.min(buffer.length - 1, encodedTarget.length);
+                        System.arraycopy(encodedTarget, 0, buffer, 0, copySize);
+                        buffer[copySize] = '\0';
+                    }
+
+                    res = 0; // ?
+                }
+                else
+                    res = -EINVAL;
+            }
+            else
+                res = -ENOENT;
+        }
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, buffer);
+        return res;
+    }
+
+    @Override
     public int open(byte[] path, FUSEFileInfo fi) {
         final String METHOD_NAME = "open";
         Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, fi);
@@ -259,13 +320,16 @@ public class TestFS extends FUSEFileSystemAdapter {
                     else if(fi.getFlagSharedLock() || fi.getFlagExclusiveLock())
                         res = -EOPNOTSUPP;
                     else {
-                        if(fi.getFlagTruncate())
-                            f.data = new byte[0];
+                        if(fi.getFlagTruncate()) {
+                            f.length = 0;
+                            f.blocks.clear();
+                            f.blocks.add(new byte[blockSize]);
+                        }
 
                         res = 0;
                     }
                 }
-                /* Do I really need to worry so much about this? Won't MacFUSE
+                /* Do I really need to worry so much about this? Won't FUSE
                  * take care of it for me? */
             }
             else {
@@ -304,10 +368,107 @@ public class TestFS extends FUSEFileSystemAdapter {
                 res = -EACCES; // ?
             else {
                 File f = (File) e;
-                int bytesLeftInFile = f.data.length - (int) (offset);
+                long bytesLeftInFile = f.length - offset;
                 if(bytesLeftInFile > 0) {
-                    int len = Math.min(bytesLeftInFile, buf.remaining());
-                    buf.put(f.data, (int)offset, len);
+                    int len = (int)Math.min(bytesLeftInFile, buf.remaining());
+
+                    int totalBytesRead = 0;
+                    while(totalBytesRead < len) {
+                        long curOffset = offset+totalBytesRead;
+                        int currentBlock = (int) (curOffset / blockSize);
+                        int offsetInBlock = (int) (curOffset - (currentBlock * blockSize));
+                        int bytesToRead = Math.min(len - totalBytesRead,
+                                blockSize - offsetInBlock);
+
+                        byte[] block = f.blocks.get(currentBlock);
+                        if(block != null)
+                            buf.put(block, offsetInBlock, bytesToRead);
+                        else
+                            buf.put(zeroBlock, offsetInBlock, bytesToRead);
+
+                        totalBytesRead += bytesToRead;
+                        ++currentBlock;
+                    }
+                    
+                    if(totalBytesRead != len)
+                        throw new RuntimeException("totalBytesRead != len (" +
+                                totalBytesRead + " != " + len);
+
+                    res = len;
+                }
+                else
+                    res = 0;
+            }
+        }
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, buf, offset,
+                fi);
+        return res;
+    }
+
+    @Override
+    public int write(byte[] path, ByteBuffer buf, long offset, FUSEFileInfo fi) {
+        final String METHOD_NAME = "write";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, buf, offset, fi);
+
+        final int res;
+        String pathString = FUSEUtil.decodeUTF8(path);
+        Log.trace("  pathString = \"" + pathString + "\"");
+        if(pathString == null) { // Invalid UTF-8 sequence.
+            Log.warning("Recieved byte sequence that could not be decoded.");
+            res = -ENOENT;
+        }
+        else if(offset < 0 || offset > Integer.MAX_VALUE) {
+            Log.warning("'offset' out of range: " + offset);
+            res = -EINVAL;
+        }
+        else {
+            Inode e = lookupInode(pathString);
+            if(e == null)
+                res = -ENOENT;
+            else if(!(e instanceof File))
+                res = -EACCES; // ?
+            else {
+                File f = (File) e;
+                long bytesLeftInFile = f.length - offset;
+                if(bytesLeftInFile > 0) {
+                    int len = buf.remaining();
+
+                    int totalBytesWritten = 0;
+                    while(totalBytesWritten < len) {
+                        long curOffset = offset+totalBytesWritten;
+                        int currentBlock = (int) (curOffset / blockSize);
+                        int offsetInBlock = (int) (curOffset - (currentBlock * blockSize));
+                        int bytesToWrite = Math.min(len - totalBytesWritten,
+                                blockSize - offsetInBlock);
+                        Log.debug("write: copying " + bytesToWrite + " bytes " +
+                                "to block " + currentBlock + " starting at" +
+                                offsetInBlock);
+
+                        while(f.blocks.size() < currentBlock)
+                            f.blocks.add(null);
+
+                        byte[] curBlock = f.blocks.get(currentBlock);
+
+                        if(curBlock == null) {
+                            curBlock = new byte[blockSize];
+                            f.blocks.set(currentBlock, curBlock);
+                        }
+
+                        buf.get(curBlock, offsetInBlock,
+                                bytesToWrite);
+
+                        if(f.length < curOffset+bytesToWrite)
+                            f.length = curOffset+bytesToWrite;
+
+                        totalBytesWritten += bytesToWrite;
+                        ++currentBlock;
+                    }
+
+                    if(totalBytesWritten != len)
+                        throw new RuntimeException("totalBytesWritten != len (" +
+                                totalBytesWritten + " != " + len);
+
                     res = len;
                 }
                 else
