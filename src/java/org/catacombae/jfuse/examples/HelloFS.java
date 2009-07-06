@@ -26,7 +26,7 @@ package org.catacombae.jfuse.examples;
 import java.nio.ByteBuffer;
 import org.catacombae.jfuse.FUSE;
 import org.catacombae.jfuse.FUSEFileSystemAdapter;
-import org.catacombae.jfuse.FUSEUtil;
+import org.catacombae.jfuse.util.FUSEUtil;
 import org.catacombae.jfuse.types.fuse26.FUSEFileInfo;
 import org.catacombae.jfuse.types.fuse26.FUSEFillDir;
 import org.catacombae.jfuse.types.system.Stat;
