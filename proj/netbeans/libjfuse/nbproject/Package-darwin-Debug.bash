@@ -6,10 +6,12 @@
 
 # Macros
 TOP=`pwd`
-PLATFORM=GNU-MacOSX
-TMPDIR=build/darwin-Debug/${PLATFORM}/tmp-packaging
+CND_PLATFORM=GNU-MacOSX
+CND_CONF=darwin-Debug
+CND_DISTDIR=dist
+TMPDIR=build/${CND_CONF}/${CND_PLATFORM}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=dist/Debug/${PLATFORM}/libjfuse.dylib
+OUTPUT_PATH=dist/darwin-Debug/libjfuse.dylib
 OUTPUT_BASENAME=libjfuse.dylib
 PACKAGE_TOP_DIR=liblibjfuse.dylib/
 
@@ -50,7 +52,7 @@ function copyFileToTmpDir
 
 # Setup
 cd "${TOP}"
-mkdir -p dist/darwin-Debug/${PLATFORM}/package
+mkdir -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package
 rm -rf ${TMPDIR}
 mkdir -p ${TMPDIR}
 
@@ -62,9 +64,9 @@ copyFileToTmpDir "${OUTPUT_PATH}" "${TMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASE
 
 # Generate tar file
 cd "${TOP}"
-rm -f dist/darwin-Debug/${PLATFORM}/package/liblibjfuse.dylib.tar
+rm -f ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/liblibjfuse.dylib.tar
 cd ${TMPDIR}
-tar -vcf ../../../../dist/darwin-Debug/${PLATFORM}/package/liblibjfuse.dylib.tar *
+tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/liblibjfuse.dylib.tar *
 checkReturnCode
 
 # Cleanup
