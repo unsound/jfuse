@@ -20,6 +20,7 @@
 package org.catacombae.jfuse.util;
 
 import java.io.UnsupportedEncodingException;
+import org.catacombae.jfuse.types.system.Timespec;
 
 /**
  *
@@ -63,10 +64,14 @@ public class FUSEUtil {
      * 'dirname'.
      *
      * @param path the pathname to process. For example "/a/b/c".
-     * @return the path component. For example "a/b".
+     * @return the path component. For example "/a/b".
      */
     public static String dirname(String path) {
-        return path.substring(0, path.lastIndexOf('/'));
+        int lastSeparatorIndex = path.lastIndexOf('/');
+        if(lastSeparatorIndex == path.indexOf('/'))
+            return path.substring(0, lastSeparatorIndex+1);
+        else
+            return path.substring(0, lastSeparatorIndex);
     }
 
     /**
@@ -110,4 +115,9 @@ public class FUSEUtil {
     private static native long getProcessUidNative();
     private static native long getProcessGidNative();
     private static native long getProcessPidNative();
+
+    public static void setTimespecToMillis(Timespec timespec, long timeMillis) {
+        timespec.sec = (int)(timeMillis / 1000);
+        timespec.nsec = (int)(timeMillis-timespec.sec*1000)*1000000;
+    }
 }
