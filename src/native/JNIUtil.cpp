@@ -132,8 +132,8 @@ jobject JNIUtil::bytesToReadonlyByteBuffer(JNIEnv *env, const void *data,
     if(buf != NULL && env->ExceptionCheck() == JNI_FALSE) {
         jclass clazz = env->GetObjectClass(buf);
         if(clazz != NULL && env->ExceptionCheck() == JNI_FALSE) {
-            char *name = "asReadOnlyBuffer";
-            char *sig = "()Ljava/nio/ByteBuffer;";
+            const char *name = "asReadOnlyBuffer";
+            const char *sig = "()Ljava/nio/ByteBuffer;";
             jmethodID mid = env->GetMethodID(clazz, name, sig);
             if(mid != NULL) {
                 jobject callres = env->CallObjectMethod(buf, mid);
