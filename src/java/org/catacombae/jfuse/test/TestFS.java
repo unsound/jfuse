@@ -23,15 +23,16 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.TreeSet;
+import java.util.TreeMap;
 import org.catacombae.jfuse.FUSE;
 import org.catacombae.jfuse.types.fuse26.FUSEConnInfo;
 import org.catacombae.jfuse.types.fuse26.FUSEFileInfo;
 import org.catacombae.jfuse.FUSEFileSystemAdapter;
 import org.catacombae.jfuse.types.fuse26.FUSEFillDir;
+import org.catacombae.jfuse.types.system.Errno;
 import org.catacombae.jfuse.util.FUSEUtil;
-import org.catacombae.jfuse.types.fuse26.FUSEContext;
 import org.catacombae.jfuse.types.system.Stat;
+import org.catacombae.jfuse.types.system.Timespec;
 import org.catacombae.jfuse.util.Log;
 
 /**
@@ -52,10 +53,14 @@ public class TestFS extends FUSEFileSystemAdapter {
     /**
      * A filesystem entry.
      */
-    private static class Entry {
+    private static class Entry implements Comparable<Entry> {
 
         public String name;
         public Inode node;
+
+        public int compareTo(Entry other) {
+            return this.name.compareTo(other.name);
+        }
     }
 
     private static abstract class Inode {
@@ -64,11 +69,13 @@ public class TestFS extends FUSEFileSystemAdapter {
         public long gid;
         public short mode;
         public int nlink;
+
+        public final Timespec accessTime = new Timespec();;
+        public final Timespec modificationTime = new Timespec();;
     }
 
     private static class Directory extends Inode {
-
-        public final TreeSet<Entry> children = new TreeSet<Entry>();
+        public final TreeMap<String, Inode> children = new TreeMap<String, Inode>();
     }
 
     private static class File extends Inode {
@@ -79,16 +86,7 @@ public class TestFS extends FUSEFileSystemAdapter {
     private static class Symlink extends Inode {
         public String target;
     }
-
-    private static class Block {
-        byte[] data;
-        int ptr = 0;
-    }
-
-/*    private static class BlockAllocator {
-        public Block
-    }*/
-
+    
     private Hashtable<String, Inode> fileTable = new Hashtable<String, Inode>();
 
     public TestFS() {
@@ -113,9 +111,11 @@ public class TestFS extends FUSEFileSystemAdapter {
         return null;
     }
 
-    private int createFile(String path, FUSEFileInfo fi) {
+    private int createFile(String path, FUSEFileInfo fi, Short mode) {
         String parentPath = FUSEUtil.dirname(path);
         String childName = FUSEUtil.basename(path);
+        if(childName.length() == 0)
+            return -ENOENT; // Invalid filename (empty)
 
         Inode parent = lookupInode(parentPath);
         if(parent instanceof Symlink)
@@ -127,25 +127,203 @@ public class TestFS extends FUSEFileSystemAdapter {
             return -ENOTDIR; // A component of the path prefix is not a directory.
         }
         else {
+            long createTime = System.currentTimeMillis();
+
             Directory parentDir = (Directory) parent;
             File f = new File();
             f.uid = parent.uid;
             f.gid = parent.gid;
-            f.mode = (short) (Stat.S_IFREG |
-                    ((Stat.S_IRWXU | Stat.S_IRWXG | Stat.S_IRWXO) &
-                    parent.mode));
+            if(mode != null)
+                f.mode = mode;
+            else
+                f.mode = (short) (Stat.S_IFREG |
+                        ((Stat.S_IRWXU | Stat.S_IRWXG | Stat.S_IRWXO) &
+                        parent.mode));
             f.blocks.clear();
             f.blocks.add(new byte[blockSize]);
             f.length = 0;
             f.nlink = 1;
+            FUSEUtil.setTimespecToMillis(f.accessTime, createTime);
+            FUSEUtil.setTimespecToMillis(f.modificationTime, createTime);
 
-            Entry entry = new Entry();
-            entry.name = childName;
-            entry.node = f;
-
-            parentDir.children.add(entry);
+            parentDir.children.put(childName, f);
             fileTable.put(path, f);
             return 0;
+        }
+    }
+
+    private int createDirectory(String pathString, Short mode) {
+        String parentPath = FUSEUtil.dirname(pathString);
+        String childName = FUSEUtil.basename(pathString);
+        if(childName.length() == 0)
+            return -ENOENT; // Invalid filename (empty)
+
+        Inode parent = lookupInode(parentPath);
+        if(parent instanceof Symlink)
+            parent = resolveSymlink((Symlink) parent);
+
+        if(parent == null)
+            return -ENOENT; // A component of the path name that must exist does not exist.
+        else if(!(parent instanceof Directory)) {
+            return -ENOTDIR; // A component of the path prefix is not a directory.
+        }
+        else {
+            long createTime = System.currentTimeMillis();
+
+            Directory parentDir = (Directory) parent;
+
+            Directory node = new Directory();
+            node.uid = parent.uid;
+            node.gid = parent.gid;
+            if(mode != null)
+                node.mode = mode;
+            else
+                node.mode = (short) (Stat.S_IFDIR |
+                        ((Stat.S_IRWXU | Stat.S_IRWXG | Stat.S_IRWXO) &
+                        parent.mode));
+            FUSEUtil.setTimespecToMillis(node.accessTime, createTime);
+            FUSEUtil.setTimespecToMillis(node.modificationTime, createTime);
+            node.nlink = 1;
+
+            parentDir.children.put(childName, node);
+            fileTable.put(pathString, node);
+            return 0;
+        }
+    }
+
+    private int createSymlink(String source, String destination) {
+        String parentPath = FUSEUtil.dirname(destination);
+        String childName = FUSEUtil.basename(destination);
+        if(childName.length() == 0)
+            return -ENOENT; // Invalid filename (empty)
+
+        Inode parent = lookupInode(parentPath);
+        if(parent instanceof Symlink)
+            parent = resolveSymlink((Symlink) parent);
+
+        if(parent == null)
+            return -ENOENT; // A component of the path name that must exist does not exist.
+        else if(!(parent instanceof Directory)) {
+            return -ENOTDIR; // A component of the path prefix is not a directory.
+        }
+        else {
+            long createTime = System.currentTimeMillis();
+
+            Directory parentDir = (Directory) parent;
+
+            Symlink l = new Symlink();
+            l.uid = parent.uid;
+            l.gid = parent.gid;
+            l.mode = (short) (Stat.S_IFLNK |
+                    ((Stat.S_IRWXU | Stat.S_IRWXG | Stat.S_IRWXO) &
+                    parent.mode));
+            FUSEUtil.setTimespecToMillis(l.accessTime, createTime);
+            FUSEUtil.setTimespecToMillis(l.modificationTime, createTime);
+            l.nlink = 1;
+            l.target = source;
+
+            parentDir.children.put(childName, l);
+            fileTable.put(destination, l);
+            return 0;
+        }
+    }
+
+    private int removeNode(String path, Class<?> clazz) {
+        String parentPath = FUSEUtil.dirname(path);
+        String childName = FUSEUtil.basename(path);
+        if(childName.length() == 0)
+            return -ENOENT; // Invalid filename (empty)
+
+        Inode parent = lookupInode(parentPath);
+        //if(parent instanceof Symlink)
+        //    parent = resolveSymlink((Symlink) parent);
+
+        if(parent == null)
+            return -ENOENT;
+        else if(!(parent instanceof Directory)) {
+            return -ENOTDIR; // A component of the path prefix is not a directory.
+        }
+        else {
+            Directory parentDir = (Directory) parent;
+
+            Inode node = parentDir.children.get(childName);
+            if(node != null && clazz.isInstance(node)) {
+                Inode dirNode = parentDir.children.remove(childName);
+                if(dirNode != node) {
+                    Log.error("Removed node was not equal to retrieved node. " +
+                            "dirNode=" + dirNode + " node=" + node);
+                    return -EIO;
+                }
+
+                Inode tableNode = fileTable.remove(path);
+                if(tableNode != node) {
+                    Log.error("Node in fileTable was different from node in " +
+                            "directory. tableNode=" + tableNode + "node=" +
+                            node);
+                    return -EIO;
+                }
+
+                --node.nlink;
+                
+                return 0;
+            }
+            else
+                return -ENOENT;
+        }
+    }
+
+    private int renameNode(String source, String dest) {
+        String parentPath = FUSEUtil.dirname(source);
+        String childName = FUSEUtil.basename(source);
+        String newParentPath = FUSEUtil.dirname(dest);
+        String newChildName = FUSEUtil.basename(dest);
+
+        if(childName.length() == 0 || newChildName.length() == 0)
+            return -ENOENT; // Invalid filename (empty)
+
+        Inode parent = lookupInode(parentPath);
+        Inode newParent = lookupInode(newParentPath);
+        //if(parent instanceof Symlink)
+        //    parent = resolveSymlink((Symlink) parent);
+
+        if(parent == null || newParent == null)
+            return -ENOENT;
+        else if(!(parent instanceof Directory) ||
+                !(newParent instanceof Directory)) {
+            return -ENOTDIR; // A component of the path prefix is not a directory.
+        }
+        else {
+            Directory parentDir = (Directory) parent;
+            Directory newParentDir = (Directory) newParent;
+
+            Inode node = parentDir.children.get(childName);
+            if(node != null) {
+                Inode dirNode = parentDir.children.remove(childName);
+                if(dirNode != node) {
+                    Log.error("Removed node was not equal to retrieved node. " +
+                            "dirNode=" + dirNode + " node=" + node);
+                    return -EIO;
+                }
+
+                newParentDir.children.put(newChildName, node);
+
+                Inode tableNode = fileTable.get(source);
+                if(tableNode != node) {
+                    Log.error("Node in fileTable was different from node in " +
+                            "directory. tableNode=" + tableNode + "node=" +
+                            node);
+                    return -EIO;
+                }
+
+                fileTable.put(dest, node);
+                fileTable.remove(source);
+
+                --node.nlink;
+
+                return 0;
+            }
+            else
+                return -ENOENT;
         }
     }
 
@@ -165,8 +343,8 @@ public class TestFS extends FUSEFileSystemAdapter {
         Log.trace("conn.max_write = " + conn.max_write);
 
         Log.debug("process pid=" + FUSEUtil.getProcessPid());
-        //FUSEContext ctx = FUSE.getContext();
 
+        long mountTime = System.currentTimeMillis();
         Directory rootNode = new Directory();
         rootNode.uid = FUSEUtil.getProcessUid();
         Log.debug("root directory uid set to: " + rootNode.uid +
@@ -176,6 +354,8 @@ public class TestFS extends FUSEFileSystemAdapter {
                 " (0x" + Long.toHexString(rootNode.gid) + ")");
         rootNode.nlink = 2;
         rootNode.mode = (short)(S_IFDIR | 0777);
+        FUSEUtil.setTimespecToMillis(rootNode.accessTime, mountTime);
+        FUSEUtil.setTimespecToMillis(rootNode.modificationTime, mountTime);
         fileTable.put("/", rootNode);
 
         Log.debug("fileTable result for '/': " + lookupInode("/"));
@@ -213,6 +393,11 @@ public class TestFS extends FUSEFileSystemAdapter {
                 stbuf.st_gid = e.gid;
                 stbuf.st_mode = e.mode;
                 stbuf.st_nlink = e.nlink;
+                stbuf.st_atimespec_sec = e.accessTime.sec;
+                stbuf.st_atimespec_nsec = e.accessTime.nsec;
+                stbuf.st_mtimespec_sec = e.modificationTime.sec;
+                stbuf.st_mtimespec_nsec = e.modificationTime.nsec;
+
                 if(e instanceof File)
                     stbuf.st_size = ((File) e).length;
                 else
@@ -245,8 +430,8 @@ public class TestFS extends FUSEFileSystemAdapter {
 
                 filler.fill(FUSEUtil.encodeUTF8("."), null, 0);
                 filler.fill(FUSEUtil.encodeUTF8(".."), null, 0);
-                for(Entry child : dir.children)
-                    filler.fill(FUSEUtil.encodeUTF8(child.name), null, 0);
+                for(String childName : dir.children.keySet())
+                    filler.fill(FUSEUtil.encodeUTF8(childName), null, 0);
             }
             else
                 res = -ENOENT;
@@ -289,6 +474,25 @@ public class TestFS extends FUSEFileSystemAdapter {
         }
 
         Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, buffer);
+        return res;
+    }
+
+    @Override
+    public int symlink(byte[] source, byte[] dest) {
+        final String METHOD_NAME = "symlink";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, source, dest);
+
+        int res;
+        String sourceString = FUSEUtil.decodeUTF8(source);
+        String destString = FUSEUtil.decodeUTF8(dest);
+        Log.trace("  sourceString = \"" + sourceString + "\"");
+        Log.trace("  destString = \"" + destString + "\"");
+        if(sourceString == null || destString == null) // Invalid UTF-8 sequence.
+            res = -ENOENT;
+        else
+            res = createSymlink(sourceString, destString);
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, source, dest);
         return res;
     }
 
@@ -336,11 +540,170 @@ public class TestFS extends FUSEFileSystemAdapter {
                 if(!fi.getFlagCreate())
                     res = -ENOENT;
                 else
-                    res = createFile(pathString, fi);
+                    res = createFile(pathString, fi, null);
             }
         }
 
         Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, fi);
+        return res;
+    }
+    
+    @Override
+    public int create(byte[] path, short mode, FUSEFileInfo fi) {
+        final String METHOD_NAME = "create";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, mode, fi);
+
+        int res;
+        String pathString = FUSEUtil.decodeUTF8(path);
+        Log.trace("  pathString = \"" + pathString + "\"");
+        if(pathString == null) // Invalid UTF-8 sequence.
+            res = -ENOENT;
+        else {
+            res = createFile(pathString, fi, mode);
+        }
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, mode, fi);
+        return res;
+    }
+
+    @Override
+    public int unlink(byte[] path) {
+        final String METHOD_NAME = "unlink";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path);
+
+        int res;
+        String pathString = FUSEUtil.decodeUTF8(path);
+        Log.trace("  pathString = \"" + pathString + "\"");
+        if(pathString == null) // Invalid UTF-8 sequence.
+            res = -ENOENT;
+        else
+            res = removeNode(pathString, null);
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path);
+        return res;
+    }
+
+    @Override
+    public int truncate(byte[] path,
+			 long newSize) {
+        final String METHOD_NAME = "truncate";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, newSize);
+
+        int res;
+        String pathString = FUSEUtil.decodeUTF8(path);
+        Log.trace("  pathString = \"" + pathString + "\"");
+        if(pathString == null) // Invalid UTF-8 sequence.
+            res = -ENOENT;
+        else {
+            Inode e = lookupInode(pathString);
+            if(e == null)
+                res = -ENOENT;
+            else if(!(e instanceof File))
+                res = -EACCES; // ?
+            else {
+                File f = (File) e;
+                f.length = newSize;
+
+                while(f.blocks.size() > f.length/blockSize)
+                    f.blocks.remove(f.blocks.size()-1);
+
+                while(f.blocks.size() < f.length/blockSize)
+                    f.blocks.add(null);
+                res = 0;
+            }
+        }
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, newSize);
+        return res;
+    }
+
+    @Override
+    public int utimens(byte[] path,
+            Timespec accessTime,
+            Timespec modificationTime) {
+        final String METHOD_NAME = "utimens";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, accessTime,
+                modificationTime);
+
+        int res;
+        String pathString = FUSEUtil.decodeUTF8(path);
+        Log.trace("  pathString = \"" + pathString + "\"");
+        if(pathString == null) // Invalid UTF-8 sequence.
+            res = -ENOENT;
+        else {
+            Inode node = lookupInode(pathString);
+            if(node == null)
+                res = -ENOENT;
+            else {
+                node.accessTime.sec = accessTime.sec;
+                node.accessTime.nsec = accessTime.nsec;
+                
+                node.modificationTime.sec = modificationTime.sec;
+                node.modificationTime.nsec = modificationTime.nsec;
+
+                res = 0;
+            }
+        }
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, accessTime,
+                modificationTime);
+        return res;
+    }
+
+    @Override
+    public int mkdir(byte[] path, short mode) {
+        final String METHOD_NAME = "mkdir";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, mode);
+
+        int res;
+        String pathString = FUSEUtil.decodeUTF8(path);
+        Log.trace("  pathString = \"" + pathString + "\"");
+        if(pathString == null) // Invalid UTF-8 sequence.
+            res = -ENOENT;
+        else {
+            res = createDirectory(pathString, mode);
+        }
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, mode);
+        return res;
+    }
+
+    @Override
+    public int rmdir(byte[] path) {
+        final String METHOD_NAME = "rmdir";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path);
+
+        int res;
+        String pathString = FUSEUtil.decodeUTF8(path);
+        Log.trace("  pathString = \"" + pathString + "\"");
+        if(pathString == null) // Invalid UTF-8 sequence.
+            res = -ENOENT;
+        else {
+            res = removeNode(pathString, Directory.class);
+        }
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path);
+        return res;
+    }
+
+    @Override
+    public int rename(byte[] oldPath,
+		       byte[] newPath) {
+        final String METHOD_NAME = "rename";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, oldPath, newPath);
+
+        int res;
+        String oldPathString = FUSEUtil.decodeUTF8(oldPath);
+        String newPathString = FUSEUtil.decodeUTF8(newPath);
+        Log.trace("  oldPathString = \"" + oldPathString + "\"");
+        Log.trace("  newPathString = \"" + newPathString + "\"");
+        if(oldPathString == null || newPathString == null) // Invalid UTF-8 sequence.
+            res = -ENOENT;
+        else {
+            res = renameNode(oldPathString, newPathString);
+        }
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, oldPath, newPath);
         return res;
     }
 
@@ -398,6 +761,10 @@ public class TestFS extends FUSEFileSystemAdapter {
                 }
                 else
                     res = 0;
+
+                // Update access time.
+                FUSEUtil.setTimespecToMillis(f.accessTime,
+                        System.currentTimeMillis());
             }
         }
 
@@ -430,49 +797,54 @@ public class TestFS extends FUSEFileSystemAdapter {
                 res = -EACCES; // ?
             else {
                 File f = (File) e;
-                long bytesLeftInFile = f.length - offset;
-                if(bytesLeftInFile > 0) {
-                    int len = buf.remaining();
+                int len = buf.remaining();
 
-                    int totalBytesWritten = 0;
-                    while(totalBytesWritten < len) {
-                        long curOffset = offset+totalBytesWritten;
-                        int currentBlock = (int) (curOffset / blockSize);
-                        int offsetInBlock = (int) (curOffset - (currentBlock * blockSize));
-                        int bytesToWrite = Math.min(len - totalBytesWritten,
-                                blockSize - offsetInBlock);
-                        Log.debug("write: copying " + bytesToWrite + " bytes " +
-                                "to block " + currentBlock + " starting at" +
-                                offsetInBlock);
+                Log.debug("len = " + len);
 
-                        while(f.blocks.size() < currentBlock)
-                            f.blocks.add(null);
+                int totalBytesWritten = 0;
+                while(totalBytesWritten < len) {
 
-                        byte[] curBlock = f.blocks.get(currentBlock);
+                    long curOffset = offset + totalBytesWritten;
+                    int currentBlock = (int) (curOffset / blockSize);
+                    int offsetInBlock = (int) (curOffset - (currentBlock * blockSize));
+                    int bytesToWrite = Math.min(len - totalBytesWritten,
+                            blockSize - offsetInBlock);
+                    Log.debug("write: copying " + bytesToWrite + " bytes " +
+                            "to block " + currentBlock + " starting at " +
+                            offsetInBlock);
 
-                        if(curBlock == null) {
-                            curBlock = new byte[blockSize];
-                            f.blocks.set(currentBlock, curBlock);
-                        }
-
-                        buf.get(curBlock, offsetInBlock,
-                                bytesToWrite);
-
-                        if(f.length < curOffset+bytesToWrite)
-                            f.length = curOffset+bytesToWrite;
-
-                        totalBytesWritten += bytesToWrite;
-                        ++currentBlock;
+                    while(f.blocks.size() <= currentBlock) {
+                        f.blocks.add(null);
+                        Log.debug("added empty block. f.blocks.size()=" +
+                                f.blocks.size());
                     }
 
-                    if(totalBytesWritten != len)
-                        throw new RuntimeException("totalBytesWritten != len (" +
-                                totalBytesWritten + " != " + len);
+                    byte[] curBlock = f.blocks.get(currentBlock);
 
-                    res = len;
+                    if(curBlock == null) {
+                        curBlock = new byte[blockSize];
+                        f.blocks.set(currentBlock, curBlock);
+                    }
+
+                    buf.get(curBlock, offsetInBlock,
+                            bytesToWrite);
+
+                    if(f.length < curOffset + bytesToWrite)
+                        f.length = curOffset + bytesToWrite;
+
+                    totalBytesWritten += bytesToWrite;
+                    ++currentBlock;
                 }
-                else
-                    res = 0;
+
+                if(totalBytesWritten != len)
+                    throw new RuntimeException("totalBytesWritten != len (" +
+                            totalBytesWritten + " != " + len);
+
+                // Update modification time.
+                FUSEUtil.setTimespecToMillis(f.modificationTime,
+                        System.currentTimeMillis());
+                
+                res = len;
             }
         }
 
