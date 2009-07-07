@@ -29,7 +29,6 @@ import org.catacombae.jfuse.types.fuse26.FUSEConnInfo;
 import org.catacombae.jfuse.types.fuse26.FUSEFileInfo;
 import org.catacombae.jfuse.FUSEFileSystemAdapter;
 import org.catacombae.jfuse.types.fuse26.FUSEFillDir;
-import org.catacombae.jfuse.types.system.Errno;
 import org.catacombae.jfuse.util.FUSEUtil;
 import org.catacombae.jfuse.types.system.Stat;
 import org.catacombae.jfuse.types.system.Timespec;
@@ -134,7 +133,7 @@ public class TestFS extends FUSEFileSystemAdapter {
             f.uid = parent.uid;
             f.gid = parent.gid;
             if(mode != null)
-                f.mode = mode;
+                f.mode = (short)(Stat.S_IFREG | (mode & ~Stat.S_IFMT));
             else
                 f.mode = (short) (Stat.S_IFREG |
                         ((Stat.S_IRWXU | Stat.S_IRWXG | Stat.S_IRWXO) &
@@ -175,12 +174,19 @@ public class TestFS extends FUSEFileSystemAdapter {
             Directory node = new Directory();
             node.uid = parent.uid;
             node.gid = parent.gid;
-            if(mode != null)
-                node.mode = mode;
-            else
+            if(mode != null) {
+                Log.debug("mode supplied: 0x" + Integer.toHexString(mode));
+                node.mode = (short)(Stat.S_IFDIR | (mode & ~Stat.S_IFMT));
+                Log.debug("mode set: 0x" + Integer.toHexString(node.mode));
+            }
+            else {
+                Log.debug("no mode supplied... setting mode to standard:");
                 node.mode = (short) (Stat.S_IFDIR |
                         ((Stat.S_IRWXU | Stat.S_IRWXG | Stat.S_IRWXO) &
                         parent.mode));
+                Log.debug("no mode supplied... setting mode to standard:");
+                Log.debug("  0x" + Integer.toHexString(node.mode));
+            }
             FUSEUtil.setTimespecToMillis(node.accessTime, createTime);
             FUSEUtil.setTimespecToMillis(node.modificationTime, createTime);
             node.nlink = 1;
@@ -247,7 +253,7 @@ public class TestFS extends FUSEFileSystemAdapter {
             Directory parentDir = (Directory) parent;
 
             Inode node = parentDir.children.get(childName);
-            if(node != null && clazz.isInstance(node)) {
+            if(node != null && (clazz == null || clazz.isInstance(node))) {
                 Inode dirNode = parentDir.children.remove(childName);
                 if(dirNode != node) {
                     Log.error("Removed node was not equal to retrieved node. " +
@@ -389,6 +395,9 @@ public class TestFS extends FUSEFileSystemAdapter {
         else {
             Inode e = lookupInode(pathString);
             if(e != null) {
+                Log.debug("stbuf before:");
+                stbuf.printFields("  ", System.err);
+
                 stbuf.st_uid = e.uid;
                 stbuf.st_gid = e.gid;
                 stbuf.st_mode = e.mode;
@@ -402,6 +411,9 @@ public class TestFS extends FUSEFileSystemAdapter {
                     stbuf.st_size = ((File) e).length;
                 else
                     stbuf.st_size = 0;
+
+                Log.debug("stbuf after:");
+                stbuf.printFields("  ", System.err);
             }
             else
                 res = -ENOENT;
