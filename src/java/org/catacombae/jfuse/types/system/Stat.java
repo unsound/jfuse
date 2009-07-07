@@ -19,6 +19,7 @@
 
 package org.catacombae.jfuse.types.system;
 
+import java.io.PrintStream;
 import java.util.Date;
 
 /**
@@ -118,5 +119,26 @@ public class Stat implements FileModeFlags {
 
     public Date getStatusChangeTimeAsDate() {
         return new Date(st_ctimespec_sec*1000 + st_ctimespec_nsec/1000000);
+    }
+
+    public void printFields(String prefix, PrintStream ps) {
+        ps.println(prefix + "st_dev = " + st_dev);
+        ps.println(prefix + "st_ino = " + st_ino);
+        ps.println(prefix + "st_mode = 0x" + Integer.toHexString((short)st_mode));
+        ps.println(prefix + "st_nlink = " + st_nlink);
+        ps.println(prefix + "st_uid = " + st_uid);
+        ps.println(prefix + "st_gid = " + st_gid);
+        ps.println(prefix + "st_rdev = " + st_rdev);
+        ps.println(prefix + "st_atimespec_sec = " + st_atimespec_sec);
+        ps.println(prefix + "st_atimespec_nsec = " + st_atimespec_nsec);
+        ps.println(prefix + "st_mtimespec_sec = " + st_mtimespec_sec);
+        ps.println(prefix + "st_mtimespec_nsec = " + st_mtimespec_nsec);
+        ps.println(prefix + "st_ctimespec_sec = " + st_ctimespec_sec);
+        ps.println(prefix + "st_ctimespec_nsec = " + st_ctimespec_nsec);
+        ps.println(prefix + "st_size = " + st_size);
+        ps.println(prefix + "st_blocks = " + st_blocks);
+        ps.println(prefix + "st_blocksize = " + st_blocksize);
+        ps.println(prefix + "st_flags = " + st_flags);
+        ps.println(prefix + "st_gen = " + st_gen);
     }
 }
