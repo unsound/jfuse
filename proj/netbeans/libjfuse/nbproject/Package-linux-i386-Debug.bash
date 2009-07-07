@@ -6,12 +6,14 @@
 
 # Macros
 TOP=`pwd`
-PLATFORM=GNU-Linux-x86
-TMPDIR=build/linux-i386-Debug/${PLATFORM}/tmp-packaging
+CND_PLATFORM=GNU-Linux-x86
+CND_CONF=linux-i386-Debug
+CND_DISTDIR=dist
+TMPDIR=build/${CND_CONF}/${CND_PLATFORM}/tmp-packaging
 TMPDIRNAME=tmp-packaging
 OUTPUT_PATH=dist/linux-i386-Debug/libjfuse.so
 OUTPUT_BASENAME=libjfuse.so
-PACKAGE_TOP_DIR=libjfuse.so/
+PACKAGE_TOP_DIR=liblibjfuse.so/
 
 # Functions
 function checkReturnCode
@@ -50,21 +52,21 @@ function copyFileToTmpDir
 
 # Setup
 cd "${TOP}"
-mkdir -p dist/linux-i386-Debug/package
+mkdir -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package
 rm -rf ${TMPDIR}
 mkdir -p ${TMPDIR}
 
 # Copy files and create directories and links
 cd "${TOP}"
-makeDirectory ${TMPDIR}/libjfuse.so/lib
+makeDirectory ${TMPDIR}/liblibjfuse.so/lib
 copyFileToTmpDir "${OUTPUT_PATH}" "${TMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
 
 
 # Generate tar file
 cd "${TOP}"
-rm -f dist/linux-i386-Debug/package/libjfuse.so.tar
+rm -f ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/liblibjfuse.so.tar
 cd ${TMPDIR}
-tar -vcf ../../../../dist/linux-i386-Debug/package/libjfuse.so.tar *
+tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/liblibjfuse.so.tar *
 checkReturnCode
 
 # Cleanup
