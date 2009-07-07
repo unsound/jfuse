@@ -669,9 +669,9 @@ bool FUSE26Util::fillTimespec(JNIEnv *env, const struct timespec *source, jobjec
             break;
         }
 
-        if(!setIntField(env, clazz, target, "tv_sec", source->tv_sec))
+        if(!setIntField(env, clazz, target, "sec", source->tv_sec))
             break;
-        if(!setIntField(env, clazz, target, "tv_nsec", source->tv_nsec))
+        if(!setIntField(env, clazz, target, "nsec", source->tv_nsec))
             break;
         
         ret = true;
