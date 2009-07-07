@@ -405,7 +405,7 @@ public interface FUSE26Operations extends SystemConstants {
      * which the operation is to be applied.
      * @param fi <b>(struct fuse_file_info*)</b>
      * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
+     * otherwise. (ignored)
      */
     public int release(byte[] path,
 			FUSEFileInfo fi);
@@ -721,8 +721,8 @@ public interface FUSE26Operations extends SystemConstants {
      * Introduced in version 2.5
      * </pre>
      *
-     * @param path <b>(const char*)</b>
-     * @param mode <b>(mode_t)</b>
+     * @param path <b>(const char*)</b> path to the newly created file.
+     * @param mode <b>(mode_t)</b> the mode flags for the created file.
      * @param fi <b>(struct fuse_file_info*)</b>
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
@@ -840,7 +840,8 @@ public interface FUSE26Operations extends SystemConstants {
      * otherwise.
      */
     public int utimens(byte[] path,
-			Timespec accessTime, Timespec modificationTime); // TODO: tv
+			Timespec accessTime,
+                        Timespec modificationTime);
 
     /**
      * <pre>
