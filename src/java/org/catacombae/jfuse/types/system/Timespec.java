@@ -19,13 +19,38 @@
 
 package org.catacombae.jfuse.types.system;
 
+import java.util.Date;
+
 /**
+ * A Java mapping of <code>struct timespec</code>.
  *
- * @author erik
+ * @author Erik Larsson
  */
 public class Timespec {
     /** Seconds. */
     public int sec;
     /** Nanoseconds. */
     public int nsec;
+
+    /**
+     * Sets the fields of this Timespec object to the specified time value,
+     * expressed in milliseconds since January 1, 1970, 00:00:00 GMT.
+     *
+     * @param millis the new time value, in milliseconds since January 1, 1970,
+     * 00:00:00 GMT.
+     */
+    public void setToMillis(long millis) {
+        sec = (int)(millis / 1000);
+        nsec = (int)(millis-sec*1000)*1000000;
+    }
+
+    /**
+     * Sets the fields of this Timespec object to the specified time value,
+     * expressed as a Java date.
+     *
+     * @param d the new time value.
+     */
+    public void setToDate(Date d) {
+        setToMillis(d.getTime());
+    }
 }

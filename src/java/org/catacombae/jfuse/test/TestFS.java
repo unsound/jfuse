@@ -142,8 +142,8 @@ public class TestFS extends FUSEFileSystemAdapter {
             f.blocks.add(new byte[blockSize]);
             f.length = 0;
             f.nlink = 1;
-            FUSEUtil.setTimespecToMillis(f.accessTime, createTime);
-            FUSEUtil.setTimespecToMillis(f.modificationTime, createTime);
+            f.accessTime.setToMillis(createTime);
+            f.modificationTime.setToMillis(createTime);
 
             parentDir.children.put(childName, f);
             fileTable.put(path, f);
@@ -187,8 +187,8 @@ public class TestFS extends FUSEFileSystemAdapter {
                 Log.debug("no mode supplied... setting mode to standard:");
                 Log.debug("  0x" + Integer.toHexString(node.mode));
             }
-            FUSEUtil.setTimespecToMillis(node.accessTime, createTime);
-            FUSEUtil.setTimespecToMillis(node.modificationTime, createTime);
+            node.accessTime.setToMillis(createTime);
+            node.modificationTime.setToMillis(createTime);
             node.nlink = 1;
 
             parentDir.children.put(childName, node);
@@ -223,8 +223,8 @@ public class TestFS extends FUSEFileSystemAdapter {
             l.mode = (short) (Stat.S_IFLNK |
                     ((Stat.S_IRWXU | Stat.S_IRWXG | Stat.S_IRWXO) &
                     parent.mode));
-            FUSEUtil.setTimespecToMillis(l.accessTime, createTime);
-            FUSEUtil.setTimespecToMillis(l.modificationTime, createTime);
+            l.accessTime.setToMillis(createTime);
+            l.modificationTime.setToMillis(createTime);
             l.nlink = 1;
             l.target = source;
 
@@ -360,8 +360,8 @@ public class TestFS extends FUSEFileSystemAdapter {
                 " (0x" + Long.toHexString(rootNode.gid) + ")");
         rootNode.nlink = 2;
         rootNode.mode = (short)(S_IFDIR | 0777);
-        FUSEUtil.setTimespecToMillis(rootNode.accessTime, mountTime);
-        FUSEUtil.setTimespecToMillis(rootNode.modificationTime, mountTime);
+        rootNode.accessTime.setToMillis(mountTime);
+        rootNode.modificationTime.setToMillis(mountTime);
         fileTable.put("/", rootNode);
 
         Log.debug("fileTable result for '/': " + lookupInode("/"));
@@ -806,8 +806,7 @@ public class TestFS extends FUSEFileSystemAdapter {
                     res = 0;
 
                 // Update access time.
-                FUSEUtil.setTimespecToMillis(f.accessTime,
-                        System.currentTimeMillis());
+                f.accessTime.setToMillis(System.currentTimeMillis());
             }
         }
 
@@ -884,8 +883,7 @@ public class TestFS extends FUSEFileSystemAdapter {
                             totalBytesWritten + " != " + len);
 
                 // Update modification time.
-                FUSEUtil.setTimespecToMillis(f.modificationTime,
-                        System.currentTimeMillis());
+                f.modificationTime.setToMillis(System.currentTimeMillis());
                 
                 res = len;
             }

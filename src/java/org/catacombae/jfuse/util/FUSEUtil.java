@@ -20,7 +20,6 @@
 package org.catacombae.jfuse.util;
 
 import java.io.UnsupportedEncodingException;
-import org.catacombae.jfuse.types.system.Timespec;
 
 /**
  *
@@ -115,9 +114,4 @@ public class FUSEUtil {
     private static native long getProcessUidNative();
     private static native long getProcessGidNative();
     private static native long getProcessPidNative();
-
-    public static void setTimespecToMillis(Timespec timespec, long timeMillis) {
-        timespec.sec = (int)(timeMillis / 1000);
-        timespec.nsec = (int)(timeMillis-timespec.sec*1000)*1000000;
-    }
 }
