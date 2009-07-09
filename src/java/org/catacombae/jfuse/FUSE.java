@@ -20,6 +20,7 @@
 package org.catacombae.jfuse;
 
 import org.catacombae.jfuse.types.fuse26.FUSEContext;
+import org.catacombae.jfuse.util.Log;
 
 /**
  * Hooks to some of the FUSE library functions.
@@ -37,26 +38,66 @@ public class FUSE {
     public static void main(String[] args, FUSE26FileSystem fileSystem) {
         System.err.println("FUSE.main(...)");
         if(args.length < 1)
-            throw new IllegalArgumentException("You need to specify the mount point as first argument.");
+            throw new IllegalArgumentException("You need to specify the " +
+                    "mountpoint as the first argument.");
+
         String mountPoint = args[0];
         String[] adjustedArgs = new String[args.length - 1];
         if(adjustedArgs.length > 0)
             System.arraycopy(args, 1, adjustedArgs, 0, adjustedArgs.length);
 
         synchronized(mountSync) {
-            System.err.println("Calling mountNative26");
-            mountNative26(fileSystem, mountPoint, adjustedArgs);
-            System.err.println("  done calling mountNative26.");
+            System.err.println("Calling mountNative26 with args:");
+            for(int i = 0; i < adjustedArgs.length; ++i)
+                System.err.println("  adjustedArgs[" + i + "] = \"" +
+                        adjustedArgs[i] + "\"");
+            System.err.println("  ...");
+            boolean res = mount26(fileSystem, mountPoint, adjustedArgs);
+            System.err.println("  mountNative26 returned " + res + ".");
         }
     }
 
-    public static void mount(FUSE26FileSystem fileSystem, String mountPoint, FUSEOptions options) {
+    public static void mount(FUSE26FileSystem fileSystem, String mountPoint,
+            FUSEOptions options) {
         // Never allow more than one mount at the same time.
         synchronized(mountSync) {
             System.err.println("Calling mountNative26");
-            mountNative26(fileSystem, mountPoint, options.generateOptionStrings());
-            System.err.println("  done calling mountNative26.");
+            boolean res = mount26(fileSystem, mountPoint,
+                    options.generateOptionStrings());
+            System.err.println("  mountNative26 returned " + res + ".");
         }
+    }
+
+    private static boolean mount26(FUSE26FileSystem fileSystem,
+            final String mountPoint, String[] optionStrings) {
+        Thread shutdownHook = new Thread() {
+            @Override
+            public void run() {
+                Log.debug("Shutdown hook invoked... trying to unmount \"" +
+                        mountPoint + "\"");
+                boolean res = unmount(mountPoint, true);
+                if(res)
+                    Log.debug("Successfully unmounted \"" + mountPoint + "\"");
+                else
+                    Log.error("Shutdown hook could not unmount \"" +
+                            mountPoint + "\"!");
+            }
+        };
+
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
+
+        boolean res = mountNative26(fileSystem, mountPoint, optionStrings);
+
+        try {
+            if(!Runtime.getRuntime().removeShutdownHook(shutdownHook))
+                Log.error("FUSE.mount26: Could not remove shutdown hook!");
+        } catch(IllegalStateException e) {
+            // No worries. This happens when the user presses "Ctrl-C".
+            Log.debug("Shutdown hook was not removed since we are in the " +
+                    "process of shutting down the JVM.");
+        }
+
+        return res;
     }
 
     private static native boolean mountNative26(FUSE26FileSystem fileSystem,
@@ -75,4 +116,10 @@ public class FUSE {
     }
 
     private static native FUSEContext getContextNative();
+
+    private static boolean unmount(String mountPoint, boolean force) {
+        return unmountNative(mountPoint, force);
+    }
+
+    private static native boolean unmountNative(String mountPoint, boolean force);
 }
