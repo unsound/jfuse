@@ -24,12 +24,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 #include <jni.h>
 
 #define FUSE_USE_VERSION 26
 #include <fuse.h>
 #include <fuse/fuse_common.h>
+#include <sys/mount.h>
 
 #include "fuse26_module.h"
 #include "CSLog.h"
@@ -146,6 +148,8 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSE_mountNative26(
     CSLogTraceEnter("Java_org_catacombae_jfuse_FUSE_mountNative26(%p, %p, %p, %p, %p)",
             env, cls, fileSystem, mountPoint, optionStrings);
 
+    jboolean res = JNI_FALSE;
+
     jclass fileSystemClass = env->GetObjectClass(fileSystem);
     if(fileSystemClass == NULL)
         errorHandling();
@@ -182,81 +186,126 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSE_mountNative26(
 
     /* Read options. */
     struct fuse_args args = FUSE_ARGS_INIT(0, NULL);
+    if(fuse_opt_add_arg(&args, utf8MountPoint) != 0)
+        CSPanicWithMessage("fuse_opt_add_arg failed unexpectedly.");
+
     jsize optionStringsLength = env->GetArrayLength(optionStrings);
+    CSLogDebug("Reading option strings (length=%ld)...", (long)optionStringsLength);
     for(int i = 0; i < optionStringsLength; ++i) {
         jstring cur = (jstring)env->GetObjectArrayElement(optionStrings, i);
         const char *utfChars = env->GetStringUTFChars(cur, NULL);
 
-        fuse_opt_add_arg(&args, utfChars);
+        CSLogDebug("  Adding option %d: \"%s\"", i, utfChars);
+        int addArgRetval = fuse_opt_add_arg(&args, utfChars);
+        if(addArgRetval != 0)
+            CSPanicWithMessage("fuse_opt_add_arg failed unexpectedly with "
+                    "retval=%d, errno: %d (%s)", addArgRetval, errno,
+                    strerror(errno));
 
         env->ReleaseStringUTFChars(cur, utfChars);
         env->DeleteLocalRef(cur);
     }
-    
-    jFUSEContext *context = new jFUSEContext(env, fileSystem);
-    
-    /*
-     * FUSE regular mount procedure:
-     *
-     * Init:
-     * - fuse_mount:
-     *     (char *mountpoint, struct fuse_args *args)-> (struct fuse_chan*)
-     * - fuse_new:
-     *     (struct fuse_chan *ch, struct fuse_args *args,
-     *      struct fuse_operations *op, size_t op_size, void *user_data)
-     *     ->(struct fuse*)
-     * Running:
-     * - fuse_loop / fuse_loop_mt:
-     *     (struct fuse*)->(int)
-     *   Main loop, running until file system is unmounted.
-     * Cleanup:
-     * - fuse_unmount:
-     *     (char *mountpoint, struct fuse_chan *ch)->(void)
-     * - fuse_destroy:
-     *     (struct fuse* f)->(void)
-     *
-     *
-     * FUSE lowlevel mount procedure:
-     *
-     * Init:
-     * - fuse_mount:
-     *     (char *mountpoint, struct fuse_args *args)->(struct fuse_chan*)
-     * - fuse_lowlevel_new:
-     *     (struct fuse_args *args, struct fuse_lowlevel_ops *op,
-     *       size_t op_size, void *userdata) -> (struct fuse_session*)
-     * - fuse_session_add_chan:
-     *     (struct fuse_session *se, struct fuse_chan *ch)->(void)
-     * Running:
-     * - fuse_session_loop / fuse_session_loop_mt:
-     *     (struct fuse_session *se)->(int)
-     * Cleanup:
-     * - fuse_session_remove_chan:
-     *     (struct fuse_chan *ch)->(void)
-     * - fuse_session_destroy:
-     *     (struct fuse_session *se)->(void)
-     * - fuse_unmount:
-     *     (char *mountpoint, struct fuse_chan *ch)->(void)
-     */
-    fuse_chan *chan = fuse_mount(utf8MountPoint, &args);
-    if(chan == NULL)
-        errorHandling();
 
-    fuse *fh = fuse_new(chan, &args, &jfuse_operations,
-            sizeof(jfuse_operations), context);
-    if(fh == NULL)
-        errorHandling();
+    if(fuse_parse_cmdline(&args, NULL, NULL, NULL) != 0)
+        CSLogError("fuse_parse_cmdline didn't return 0.");
+    else {
+        jFUSEContext *context = new jFUSEContext(env, fileSystem);
 
-    fuse_loop(fh);
+        /*
+         * FUSE regular mount procedure:
+         *
+         * Init:
+         * - fuse_mount:
+         *     (char *mountpoint, struct fuse_args *args)-> (struct fuse_chan*)
+         * - fuse_new:
+         *     (struct fuse_chan *ch, struct fuse_args *args,
+         *      struct fuse_operations *op, size_t op_size, void *user_data)
+         *     ->(struct fuse*)
+         * Running:
+         * - fuse_loop / fuse_loop_mt:
+         *     (struct fuse*)->(int)
+         *   Main loop, running until file system is unmounted.
+         * Cleanup:
+         * - fuse_unmount:
+         *     (char *mountpoint, struct fuse_chan *ch)->(void)
+         * - fuse_destroy:
+         *     (struct fuse* f)->(void)
+         *
+         *
+         * FUSE lowlevel mount procedure:
+         *
+         * Init:
+         * - fuse_mount:
+         *     (char *mountpoint, struct fuse_args *args)->(struct fuse_chan*)
+         * - fuse_lowlevel_new:
+         *     (struct fuse_args *args, struct fuse_lowlevel_ops *op,
+         *       size_t op_size, void *userdata) -> (struct fuse_session*)
+         * - fuse_session_add_chan:
+         *     (struct fuse_session *se, struct fuse_chan *ch)->(void)
+         * Running:
+         * - fuse_session_loop / fuse_session_loop_mt:
+         *     (struct fuse_session *se)->(int)
+         * Cleanup:
+         * - fuse_session_remove_chan:
+         *     (struct fuse_chan *ch)->(void)
+         * - fuse_session_destroy:
+         *     (struct fuse_session *se)->(void)
+         * - fuse_unmount:
+         *     (char *mountpoint, struct fuse_chan *ch)->(void)
+         */
+        fuse_chan *chan = NULL;
+        fuse *fh = NULL;
 
-    fuse_opt_free_args(&args);
-    fuse_unmount(utf8MountPoint, chan);
-    fuse_destroy(fh);
+        CSLogDebug("Invoking fuse_mount...");
+        chan = fuse_mount(utf8MountPoint, &args);
+        CSLogDebug("   done. result=%p", chan);
+        if(chan != NULL) {
+            CSLogDebug("Invoking fuse_new...");
+            fh = fuse_new(chan, &args, &jfuse_operations,
+                    sizeof (jfuse_operations), context);
+            CSLogDebug("   done. result=%p", fh);
+            if(fh != NULL) {
+                if(fuse_set_signal_handlers(fuse_get_session(fh)) == 0) {
+                    CSLogDebug("Invoking fuse_loop...");
+                    int fuseLoopRetval = fuse_loop(fh);
+                    CSLogDebug("  done. result=%d", fuseLoopRetval);
+                    if(fuseLoopRetval != 0)
+                        CSLogError("fuse_loop exited with a non-zero value: %d "
+                            "(errno is %d (%s)", fuseLoopRetval, errno,
+                            strerror(errno));
+                    else
+                        res = JNI_TRUE;
 
-    delete context;
+                    fuse_remove_signal_handlers(fuse_get_session(fh));
+                }
+                else
+                    CSLogError("Couldn't set signal handlers!");
+            }
+            else
+                CSLogError("fuse_new exited with an error. (errno is %d (%s))",
+                    errno, strerror(errno));
+        }
+        else
+            CSLogError("fuse_mount exited with an error. (errno is %d (%s))",
+                errno, strerror(errno));
+
+        fuse_opt_free_args(&args);
+
+        if(chan != NULL) {
+            CSLogDebug("Unmounting \"%s\"... (chan=%p)", utf8MountPoint, chan);
+            fuse_unmount(utf8MountPoint, chan);
+        }
+        if(fh != NULL) {
+            CSLogDebug("Destroying fuse filehandle %p...", fh);
+            fuse_destroy(fh);
+        }
+
+        delete context;
+    }
 
     CSLogTraceLeave("Java_org_catacombae_jfuse_FUSE_mountNative26(%p, %p, %p, %p, %p): %d",
-            env, cls, fileSystem, mountPoint, optionStrings, JNI_TRUE);
-    return JNI_TRUE;
+            env, cls, fileSystem, mountPoint, optionStrings, res);
+    return res;
 }
 
 /*
@@ -304,6 +353,35 @@ JNIEXPORT jobject JNICALL Java_org_catacombae_jfuse_FUSE_getContextNative
         CSLogError("Could not find class %s.", FUSECONTEXT_CLASS);
 
     CSLogTraceLeave("%s (%p, %p): %p", _FNAME_, env, clazz, res);
+    return res;
+#undef _FNAME_
+}
+
+/*
+ * Class:     org_catacombae_jfuse_FUSE
+ * Method:    unmountNative
+ * Signature: (Ljava/lang/String;Z)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSE_unmountNative
+  (JNIEnv *env, jclass clazz, jstring mountPoint, jboolean force) {
+#define _FNAME_ "Java_org_catacombae_jfuse_FUSE_unmountNative"
+    CSLogTraceEnter("%s (%p, %p, %p, %d)", _FNAME_, env, clazz, mountPoint,
+            force);
+
+    jboolean res = JNI_FALSE;
+
+    const char *mountPointChars = env->GetStringUTFChars(mountPoint, NULL);
+
+    if(unmount(mountPointChars, (force == JNI_TRUE ? MNT_FORCE : 0)) == 0)
+        res = JNI_TRUE;
+    else
+        CSLogError("Could not unmount \"%s\". errno=%d (%s)", mountPointChars,
+                errno, strerror(errno));
+
+    env->ReleaseStringUTFChars(mountPoint, mountPointChars);
+
+    CSLogTraceLeave("%s (%p, %p, %p, %d): %d", _FNAME_, env, clazz, mountPoint,
+            force, res);
     return res;
 #undef _FNAME_
 }

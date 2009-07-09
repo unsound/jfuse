@@ -23,6 +23,14 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSE_mountNative26
 JNIEXPORT jobject JNICALL Java_org_catacombae_jfuse_FUSE_getContextNative
   (JNIEnv *, jclass);
 
+/*
+ * Class:     org_catacombae_jfuse_FUSE
+ * Method:    unmountNative
+ * Signature: (Ljava/lang/String;Z)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSE_unmountNative
+  (JNIEnv *, jclass, jstring, jboolean);
+
 #ifdef __cplusplus
 }
 #endif
