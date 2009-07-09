@@ -424,6 +424,37 @@ public class TestFS extends FUSEFileSystemAdapter {
     }
 
     @Override
+    public int chmod(byte[] path, short newMode) {
+        final String METHOD_NAME = "chmod";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, newMode);
+
+        final int res;
+        String pathString = FUSEUtil.decodeUTF8(path);
+        Log.trace("  pathString = \"" + pathString + "\"");
+        if(pathString == null) // Invalid UTF-8 sequence.
+            res = -ENOENT;
+        else {
+            Inode e = lookupInode(pathString);
+            if(e != null) {
+                Log.debug("newMode: 0x" + Integer.toHexString(newMode));
+                Log.debug("permissions before chmod: 0x" +
+                        Integer.toHexString(e.mode));
+                int permissionMask = S_IRWXU | S_IRWXG | S_IRWXO;
+                e.mode = (short)(((e.mode & 0xFFFF) & ~permissionMask) |
+                        ((newMode & 0xFFFF) & permissionMask));
+                Log.debug("permissions after chmod: 0x" +
+                        Integer.toHexString(e.mode));
+                res = 0;
+            }
+            else
+                res = -ENOENT;
+        }
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, newMode);
+        return res;
+    }
+
+    @Override
     public int readdir(byte[] path, FUSEFillDir filler, long offset,
             FUSEFileInfo fi) {
         final String METHOD_NAME = "readdir";
