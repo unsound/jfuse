@@ -24,21 +24,24 @@ import org.catacombae.jfuse.types.system.Timespec;
 import org.catacombae.jfuse.types.fuse26.FUSEFileInfo;
 
 /**
- * MacFUSE 2.0 extensions to FUSE operations.
+ * MacFUSE 2.0 extensions to FUSE operations. These operations will only be
+ * called if jFUSE is running in a MacFUSE 2.0 (or later) environment.
  *
  * @author Erik Larsson
  */
 public interface MacFUSE20Operations {
+
     /**
-     * See exchange(2) for more info.
+     * Atomically exchange data between two files. See exchangedata(2) for more
+     * info.
      *
-     * @param path1 <b>(const char*)</b>
-     * @param path2 <b>(const char*)</b>
-     * @param options <b>(uint32_t)</b>
+     * @param path1 the first file. <b>(const char*)</b>
+     * @param path2 the second file. <b>(const char*)</b>
+     * @param options options to the exchange operation. <b>(uint32_t)</b>
      * @return 0 if successful and a negated error value from FUSEErrorValues
      * otherwise.
      */
-	int exchange(String path1, String path2, long options);
+    public int exchange(byte[] path1, String path2, long options);
 
     /**
      * Get the Mac OS X extended time values "backup time" and "create time".
@@ -72,24 +75,37 @@ public interface MacFUSE20Operations {
     public int setcrtime(String path, Timespec tv);
 
     /**
+     * Change file flags. See chflags(2) for more info.
      * 
      * @param path <b>(const char*)</b>
      * @param flags <b>(uint32_t)</b>
      * @return 0 if successful and a negated error value from FUSEErrorValues
      * otherwise.
      */
-	public int chflags(String path, int flags);
+    public int chflags(String path, int flags);
 
     /**
+     * Set many attributes in a single call. If you implement setattr_x and
+     * fsetattr_x, they together replace the operations chmod, chown, utimens,
+     * truncate, ftruncate, chflags, setcrtime, and setbkuptime. None of these
+     * replaced operations will be called if setattr_x and fsetattr_x are
+     * implemented. (Note that this only applies if MacFUSE is available. They
+     * are ignored in regular FUSE.)
      *
      * @param path <b>(const char*)</b>
      * @param attr <b>(struct setattr_x*)</b>
      * @return 0 if successful and a negated error value from FUSEErrorValues
      * otherwise.
      */
-	public int setattr_x(String path, Setattr_x attr);
+    public int setattr_x(String path, Setattr_x attr);
 
     /**
+     * Set many attributes in a single call. If you implement setattr_x and
+     * fsetattr_x, they together replace the operations chmod, chown, utimens,
+     * truncate, ftruncate, chflags, setcrtime, and setbkuptime. None of these
+     * replaced operations will be called if setattr_x and fsetattr_x are
+     * implemented. (Note that this only applies if MacFUSE is available. They
+     * are ignored in regular FUSE.)
      *
      * @param path <b>(const char*)</b>
      * @param attr <b>(struct setattr_x*)</b>
@@ -97,7 +113,7 @@ public interface MacFUSE20Operations {
      * @return 0 if successful and a negated error value from FUSEErrorValues
      * otherwise.
      */
-	public int fsetattr_x(String path, Setattr_x attr, FUSEFileInfo fi);
+    public int fsetattr_x(String path, Setattr_x attr, FUSEFileInfo fi);
 }
 
 /* From fuse/fuse.h, MacFUSE 2.0.2/2.0.3:
