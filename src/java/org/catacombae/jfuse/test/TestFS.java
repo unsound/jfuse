@@ -27,7 +27,7 @@ import java.util.TreeMap;
 import org.catacombae.jfuse.FUSE;
 import org.catacombae.jfuse.types.fuse26.FUSEConnInfo;
 import org.catacombae.jfuse.types.fuse26.FUSEFileInfo;
-import org.catacombae.jfuse.FUSEFileSystemAdapter;
+import org.catacombae.jfuse.MacFUSEFileSystemAdapter;
 import org.catacombae.jfuse.types.fuse26.FUSEFillDir;
 import org.catacombae.jfuse.util.FUSEUtil;
 import org.catacombae.jfuse.types.system.Stat;
@@ -42,12 +42,20 @@ import org.catacombae.jfuse.util.Log;
  *
  * @author Erik Larsson
  */
-public class TestFS extends FUSEFileSystemAdapter {
+public class TestFS extends MacFUSEFileSystemAdapter {
 
     private static final String CLASS_NAME = "TestFS";
 
     private final int blockSize = 65535;
     private final byte[] zeroBlock;
+
+    private void setCreateTimes(Inode node, long createTime) {
+        node.accessTime.setToMillis(createTime);
+        node.modificationTime.setToMillis(createTime);
+        node.statusChangeTime.setToMillis(createTime);
+        node.createTime.setToMillis(createTime);
+        node.backupTime.setToMillis(0);
+    }
 
     /**
      * A filesystem entry.
@@ -69,8 +77,11 @@ public class TestFS extends FUSEFileSystemAdapter {
         public short mode;
         public int nlink;
 
-        public final Timespec accessTime = new Timespec();;
-        public final Timespec modificationTime = new Timespec();;
+        public final Timespec accessTime = new Timespec();
+        public final Timespec modificationTime = new Timespec();
+        public final Timespec statusChangeTime = new Timespec();
+        public final Timespec createTime = new Timespec();
+        public final Timespec backupTime = new Timespec();
     }
 
     private static class Directory extends Inode {
@@ -142,8 +153,7 @@ public class TestFS extends FUSEFileSystemAdapter {
             f.blocks.add(new byte[blockSize]);
             f.length = 0;
             f.nlink = 1;
-            f.accessTime.setToMillis(createTime);
-            f.modificationTime.setToMillis(createTime);
+            setCreateTimes(f, createTime);
 
             parentDir.children.put(childName, f);
             fileTable.put(path, f);
@@ -187,8 +197,7 @@ public class TestFS extends FUSEFileSystemAdapter {
                 Log.debug("no mode supplied... setting mode to standard:");
                 Log.debug("  0x" + Integer.toHexString(node.mode));
             }
-            node.accessTime.setToMillis(createTime);
-            node.modificationTime.setToMillis(createTime);
+            setCreateTimes(node, createTime);
             node.nlink = 1;
 
             parentDir.children.put(childName, node);
@@ -223,8 +232,7 @@ public class TestFS extends FUSEFileSystemAdapter {
             l.mode = (short) (Stat.S_IFLNK |
                     ((Stat.S_IRWXU | Stat.S_IRWXG | Stat.S_IRWXO) &
                     parent.mode));
-            l.accessTime.setToMillis(createTime);
-            l.modificationTime.setToMillis(createTime);
+            setCreateTimes(l, createTime);
             l.nlink = 1;
             l.target = source;
 
@@ -270,6 +278,7 @@ public class TestFS extends FUSEFileSystemAdapter {
                 }
 
                 --node.nlink;
+                node.statusChangeTime.setToMillis(System.currentTimeMillis());
                 
                 return 0;
             }
@@ -324,7 +333,7 @@ public class TestFS extends FUSEFileSystemAdapter {
                 fileTable.put(dest, node);
                 fileTable.remove(source);
 
-                --node.nlink;
+                node.statusChangeTime.setToMillis(System.currentTimeMillis());
 
                 return 0;
             }
@@ -360,8 +369,7 @@ public class TestFS extends FUSEFileSystemAdapter {
                 " (0x" + Long.toHexString(rootNode.gid) + ")");
         rootNode.nlink = 2;
         rootNode.mode = (short)(S_IFDIR | 0777);
-        rootNode.accessTime.setToMillis(mountTime);
-        rootNode.modificationTime.setToMillis(mountTime);
+        setCreateTimes(rootNode, mountTime);
         fileTable.put("/", rootNode);
 
         Log.debug("fileTable result for '/': " + lookupInode("/"));
@@ -402,11 +410,10 @@ public class TestFS extends FUSEFileSystemAdapter {
                 stbuf.st_gid = e.gid;
                 stbuf.st_mode = e.mode;
                 stbuf.st_nlink = e.nlink;
-                stbuf.st_atimespec_sec = e.accessTime.sec;
-                stbuf.st_atimespec_nsec = e.accessTime.nsec;
-                stbuf.st_mtimespec_sec = e.modificationTime.sec;
-                stbuf.st_mtimespec_nsec = e.modificationTime.nsec;
-
+                stbuf.st_atimespec.setToTimespec(e.accessTime);
+                stbuf.st_mtimespec.setToTimespec(e.modificationTime);
+                stbuf.st_ctimespec.setToTimespec(e.statusChangeTime);
+                
                 if(e instanceof File)
                     stbuf.st_size = ((File) e).length;
                 else
@@ -444,6 +451,9 @@ public class TestFS extends FUSEFileSystemAdapter {
                         ((newMode & 0xFFFF) & permissionMask));
                 Log.debug("permissions after chmod: 0x" +
                         Integer.toHexString(e.mode));
+
+                e.statusChangeTime.setToMillis(System.currentTimeMillis());
+
                 res = 0;
             }
             else
@@ -652,6 +662,9 @@ public class TestFS extends FUSEFileSystemAdapter {
 
                 while(f.blocks.size() < f.length/blockSize)
                     f.blocks.add(null);
+
+                f.modificationTime.setToMillis(System.currentTimeMillis());
+
                 res = 0;
             }
         }
@@ -684,6 +697,8 @@ public class TestFS extends FUSEFileSystemAdapter {
                 node.modificationTime.sec = modificationTime.sec;
                 node.modificationTime.nsec = modificationTime.nsec;
 
+                node.statusChangeTime.setToMillis(System.currentTimeMillis());
+                
                 res = 0;
             }
         }
@@ -891,6 +906,86 @@ public class TestFS extends FUSEFileSystemAdapter {
 
         Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, buf, offset,
                 fi);
+        return res;
+    }
+
+    @Override
+    public int getxtimes(ByteBuffer path, Timespec bkuptime, Timespec crtime) {
+        final String METHOD_NAME = "getxtimes";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, bkuptime, crtime);
+
+        final int res;
+        String pathString = FUSEUtil.decodeUTF8(path);
+        Log.trace("  pathString = \"" + pathString + "\"");
+        if(pathString == null) { // Invalid UTF-8 sequence.
+            Log.warning("Recieved byte sequence that could not be decoded.");
+            res = -ENOENT;
+        }
+        else {
+            Inode e = lookupInode(pathString);
+            if(e == null)
+                res = -ENOENT;
+            else {
+                bkuptime.setToTimespec(e.backupTime);
+                crtime.setToTimespec(e.createTime);
+                res = 0;
+            }
+        }
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, bkuptime,
+                crtime);
+        return res;
+    }
+
+    @Override
+    public int setbkuptime(ByteBuffer path, Timespec tv) {
+        final String METHOD_NAME = "setbkuptime";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, tv);
+
+        final int res;
+        String pathString = FUSEUtil.decodeUTF8(path);
+        Log.trace("  pathString = \"" + pathString + "\"");
+        if(pathString == null) { // Invalid UTF-8 sequence.
+            Log.warning("Recieved byte sequence that could not be decoded.");
+            res = -ENOENT;
+        }
+        else {
+            Inode e = lookupInode(pathString);
+            if(e == null)
+                res = -ENOENT;
+            else {
+                e.backupTime.setToTimespec(tv);
+                res = 0;
+            }
+        }
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, tv);
+        return res;
+    }
+
+    @Override
+    public int setcrtime(ByteBuffer path, Timespec tv) {
+        final String METHOD_NAME = "setbkuptime";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, tv);
+
+        final int res;
+        String pathString = FUSEUtil.decodeUTF8(path);
+        Log.trace("  pathString = \"" + pathString + "\"");
+        if(pathString == null) { // Invalid UTF-8 sequence.
+            Log.warning("Recieved byte sequence that could not be decoded.");
+            res = -ENOENT;
+        }
+        else {
+            Inode e = lookupInode(pathString);
+            if(e == null)
+                res = -ENOENT;
+            else {
+                e.createTime.setToTimespec(tv);
+                res = 0;
+            }
+        }
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, tv);
         return res;
     }
 
