@@ -20,12 +20,21 @@
 package org.catacombae.jfuse.util;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+//import java.nio.charset.CharsetDecoder;
+//import java.nio.charset.CharsetEncoder;
 
 /**
  *
  * @author erik
  */
 public class FUSEUtil {
+    private static final Charset utf8Charset = Charset.forName("UTF-8");
+    //private static final CharsetDecoder utf8Decoder = utf8Charset.newDecoder();
+    //private static final CharsetEncoder utf8Encoder = utf8Charset.newEncoder();
+
     /**
      * Convenience method for encoding a UTF-8 byte string from a Java
      * {@link String}.
@@ -43,10 +52,10 @@ public class FUSEUtil {
     }
 
     /**
-     * Convenience method for decoding a UTF-8 byte sequence into a Java
+     * Convenience method for decoding a UTF-8 byte array into a Java
      * {@link String}.
      *
-     * @param utf8Data the string to decode.
+     * @param utf8Data the UTF-8 encoded string.
      * @return a {@link String} containing the contents of 'utf8Data'.
      */
     public static String decodeUTF8(byte[] utf8Data) {
@@ -55,6 +64,22 @@ public class FUSEUtil {
             return new String(utf8Data, 0, utf8Data.length, "UTF-8");
         } catch(UnsupportedEncodingException e) {
             throw new RuntimeException("UTF-8 charset not found! This should not happen...", e);
+        }
+    }
+
+    /**
+     * Convenience method for decoding a UTF-8 ByteBuffer into a Java
+     * {@link String}.
+     *
+     * @param utf8Data the UTF-8 encoded string.
+     * @return a {@link String} containing the contents of 'utf8Data'.
+     */
+    public static String decodeUTF8(ByteBuffer utf8Data) {
+        try {
+            return utf8Charset.newDecoder().decode(utf8Data).toString();
+        } catch(CharacterCodingException ex) {
+            ex.printStackTrace();
+            return null;
         }
     }
 
