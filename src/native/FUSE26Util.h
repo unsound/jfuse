@@ -20,13 +20,13 @@
 #ifndef _FUSE26UTIL_H
 #define	_FUSE26UTIL_H
 
-#include <jni.h>
 #if FUSE_USE_VERSION != 26
 #define FUSE_USE_VERSION 26
 #endif
-#include <fuse.h>
 
 #include "JNIUtil.h"
+
+#include <fuse.h>
 
 class FUSE26Util : JNIUtil {
 public:
@@ -94,6 +94,12 @@ public:
      * <code>source</code>.
      */
     static jobject newFlock(JNIEnv *env, const struct flock *source);
+
+    /**
+     * Merges the contents of source (Java class Timespec) into the supplied
+     * struct timespec.
+     */
+    static bool mergeTimespec(JNIEnv *env, jobject source, struct timespec *target);
 
     /**
      * Fills in the fields of target (Java class Timespec) from the fields of source

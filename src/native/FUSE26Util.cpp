@@ -28,64 +28,6 @@
 #include <inttypes.h>
 #include <sys/stat.h>
 
-/**
- * Creates a new Java object from the specified class, init name and init
- * signature. Currently you cannot pass on any arguments to the constructor, so
- * initName and initSignature are really pointless (they will always be "<init>"
- * and "()V".
- */
-static inline jobject newObject(JNIEnv *env, const char *className, const char *initName,
-        const char *initSignature) {
-
-    jobject res = NULL;
-
-    jclass clazz = env->FindClass(className);
-    if(clazz == NULL || env->ExceptionCheck() == JNI_TRUE)
-        CSLogError("Could not find class \"%s\"", className);
-    else {
-        jmethodID constructor = env->GetMethodID(clazz, initName,
-                initSignature);
-        if(constructor == NULL || env->ExceptionCheck() == JNI_TRUE)
-            CSLogError("Could not find method \"%s\" with signature %s.", initName,
-                initSignature);
-        else {
-            jobject obj = env->NewObject(clazz, constructor);
-            if(obj == NULL || env->ExceptionCheck() == JNI_TRUE)
-                CSLogError("Could not create new FUSEFileInfo instance.");
-            else
-                res = obj;
-        }
-    }
-
-    return res;
-}
-
-static inline jobject newObjectWithObjectArg(JNIEnv *env, const char *className,
-        const char *initName, const char *initSignature, jobject arg) {
-
-    jobject res = NULL;
-
-    jclass clazz = env->FindClass(className);
-    if(clazz == NULL || env->ExceptionCheck() == JNI_TRUE)
-        CSLogError("Could not find class \"%s\"", className);
-    else {
-        jmethodID constructor = env->GetMethodID(clazz, initName,
-                initSignature);
-        if(constructor == NULL || env->ExceptionCheck() == JNI_TRUE)
-            CSLogError("Could not find method \"%s\" with signature %s.", initName,
-                initSignature);
-        else {
-            jobject obj = env->NewObject(clazz, constructor, arg);
-            if(obj == NULL || env->ExceptionCheck() == JNI_TRUE)
-                CSLogError("Could not create new FUSEFileInfo instance.");
-            else
-                res = obj;
-        }
-    }
-
-    return res;
-}
-
 jobject FUSE26Util::newFUSEFillDir(JNIEnv *env, fuse_fill_dir_t filler, void *buf) {
     CSLogTraceEnter("jobject FUSE26Util::newFUSEFillDir(%p, %p, %p)", env, filler, buf);
 
@@ -222,12 +164,9 @@ bool FUSE26Util::mergeStat(JNIEnv *env, jobject statObject, struct stat *target)
         jlong jl_uid;
         jlong jl_gid;
         jlong jl_rdev;
-        jlong jl_atimespec_sec;
-        jlong jl_atimespec_nsec;
-        jlong jl_mtimespec_sec;
-        jlong jl_mtimespec_nsec;
-        jlong jl_ctimespec_sec;
-        jlong jl_ctimespec_nsec;
+        jobject jl_atimespec;
+        jobject jl_mtimespec;
+        jobject jl_ctimespec;
         jlong jl_size;
         jlong jl_blocks;
         jlong jl_blocksize;
@@ -248,17 +187,14 @@ bool FUSE26Util::mergeStat(JNIEnv *env, jobject statObject, struct stat *target)
             break;
         if(!getLongField(env, statClass, statObject, "st_rdev", &jl_rdev))
             break;
-        if(!getLongField(env, statClass, statObject, "st_atimespec_sec", &jl_atimespec_sec))
+        if(!getObjectField(env, statClass, statObject, "st_atimespec",
+                JAVA_CLASS(TIMESPEC_CLASS), &jl_atimespec))
             break;
-        if(!getLongField(env, statClass, statObject, "st_atimespec_nsec", &jl_atimespec_nsec))
+        if(!getObjectField(env, statClass, statObject, "st_mtimespec",
+                JAVA_CLASS(TIMESPEC_CLASS), &jl_mtimespec))
             break;
-        if(!getLongField(env, statClass, statObject, "st_mtimespec_sec", &jl_mtimespec_sec))
-            break;
-        if(!getLongField(env, statClass, statObject, "st_mtimespec_nsec", &jl_mtimespec_nsec))
-            break;
-        if(!getLongField(env, statClass, statObject, "st_ctimespec_sec", &jl_ctimespec_sec))
-            break;
-        if(!getLongField(env, statClass, statObject, "st_ctimespec_nsec", &jl_ctimespec_nsec))
+        if(!getObjectField(env, statClass, statObject, "st_ctimespec",
+                JAVA_CLASS(TIMESPEC_CLASS), &jl_ctimespec))
             break;
         if(!getLongField(env, statClass, statObject, "st_size", &jl_size))
             break;
@@ -271,6 +207,14 @@ bool FUSE26Util::mergeStat(JNIEnv *env, jobject statObject, struct stat *target)
         if(!getLongField(env, statClass, statObject, "st_gen", &jl_gen))
             break;
 
+        struct timespec tmp_st_atimespec, tmp_st_mtimespec, tmp_st_ctimespec;
+        if(!FUSE26Util::mergeTimespec(env, jl_atimespec, &tmp_st_atimespec))
+            break;
+        if(!FUSE26Util::mergeTimespec(env, jl_mtimespec, &tmp_st_mtimespec))
+            break;
+        if(!FUSE26Util::mergeTimespec(env, jl_ctimespec, &tmp_st_ctimespec))
+            break;
+
         target->st_dev = jl_dev;
         target->st_ino = jl_ino;
         target->st_mode = jl_mode;
@@ -279,19 +223,13 @@ bool FUSE26Util::mergeStat(JNIEnv *env, jobject statObject, struct stat *target)
         target->st_gid = jl_gid;
         target->st_rdev = jl_rdev;
 #ifdef __linux__
-        target->st_atim.tv_sec = jl_atimespec_sec;
-        target->st_atim.tv_nsec = jl_atimespec_nsec;
-        target->st_mtim.tv_sec = jl_mtimespec_sec;
-        target->st_mtim.tv_nsec = jl_mtimespec_nsec;
-        target->st_ctim.tv_sec = jl_ctimespec_sec;
-        target->st_ctim.tv_nsec = jl_ctimespec_nsec;
+        target->st_atim = tmp_st_atimespec;
+        target->st_mtim = tmp_st_mtimespec;
+        target->st_ctim = tmp_st_ctimespec;
 #else
-        target->st_atimespec.tv_sec = jl_atimespec_sec;
-        target->st_atimespec.tv_nsec = jl_atimespec_nsec;
-        target->st_mtimespec.tv_sec = jl_mtimespec_sec;
-        target->st_mtimespec.tv_nsec = jl_mtimespec_nsec;
-        target->st_ctimespec.tv_sec = jl_ctimespec_sec;
-        target->st_ctimespec.tv_nsec = jl_ctimespec_nsec;
+        target->st_atimespec = tmp_st_atimespec;
+        target->st_mtimespec = tmp_st_mtimespec;
+        target->st_ctimespec = tmp_st_ctimespec;
 #endif
         target->st_size = jl_size;
         target->st_blocks = jl_blocks;
@@ -322,6 +260,20 @@ bool FUSE26Util::fillStat(JNIEnv *env, const struct stat *st, jobject statObject
             break;
         }
 
+        jobject st_atimespec;
+        jobject st_mtimespec;
+        jobject st_ctimespec;
+
+        if(!getObjectField(env, statClass, statObject, "st_atimespec",
+                JAVA_CLASS(TIMESPEC_CLASS), &st_atimespec))
+            break;
+        if(!getObjectField(env, statClass, statObject, "st_mtimespec",
+                JAVA_CLASS(TIMESPEC_CLASS), &st_mtimespec))
+            break;
+        if(!getObjectField(env, statClass, statObject, "st_ctimespec",
+                JAVA_CLASS(TIMESPEC_CLASS), &st_ctimespec))
+            break;
+
         if(!setLongField(env, statClass, statObject, "st_dev", st->st_dev))
             break;
         if(!setLongField(env, statClass, statObject, "st_ino", st->st_ino))
@@ -337,30 +289,18 @@ bool FUSE26Util::fillStat(JNIEnv *env, const struct stat *st, jobject statObject
         if(!setLongField(env, statClass, statObject, "st_rdev", st->st_rdev))
             break;
 #ifdef __linux__
-        if(!setLongField(env, statClass, statObject, "st_atimespec_sec", st->st_atim.tv_sec))
+        if(!FUSE26Util::fillTimespec(env, &(st->st_atim), st_atimespec))
             break;
-        if(!setLongField(env, statClass, statObject, "st_atimespec_nsec", st->st_atim.tv_nsec))
+        if(!FUSE26Util::fillTimespec(env, &(st->st_mtim), st_mtimespec))
             break;
-        if(!setLongField(env, statClass, statObject, "st_mtimespec_sec", st->st_mtim.tv_sec))
-            break;
-        if(!setLongField(env, statClass, statObject, "st_mtimespec_nsec", st->st_mtim.tv_nsec))
-            break;
-        if(!setLongField(env, statClass, statObject, "st_ctimespec_sec", st->st_ctim.tv_sec))
-            break;
-        if(!setLongField(env, statClass, statObject, "st_ctimespec_nsec", st->st_ctim.tv_nsec))
+        if(!FUSE26Util::fillTimespec(env, &(st->st_ctim), st_ctimespec))
             break;
 #else
-        if(!setLongField(env, statClass, statObject, "st_atimespec_sec", st->st_atimespec.tv_sec))
+        if(!FUSE26Util::fillTimespec(env, &(st->st_atimespec), st_atimespec))
             break;
-        if(!setLongField(env, statClass, statObject, "st_atimespec_nsec", st->st_atimespec.tv_nsec))
+        if(!FUSE26Util::fillTimespec(env, &(st->st_mtimespec), st_mtimespec))
             break;
-        if(!setLongField(env, statClass, statObject, "st_mtimespec_sec", st->st_mtimespec.tv_sec))
-            break;
-        if(!setLongField(env, statClass, statObject, "st_mtimespec_nsec", st->st_mtimespec.tv_nsec))
-            break;
-        if(!setLongField(env, statClass, statObject, "st_ctimespec_sec", st->st_ctimespec.tv_sec))
-            break;
-        if(!setLongField(env, statClass, statObject, "st_ctimespec_nsec", st->st_ctimespec.tv_nsec))
+        if(!FUSE26Util::fillTimespec(env, &(st->st_ctimespec), st_ctimespec))
             break;
 #endif
         if(!setLongField(env, statClass, statObject, "st_size", st->st_size))
@@ -376,6 +316,10 @@ bool FUSE26Util::fillStat(JNIEnv *env, const struct stat *st, jobject statObject
             break;
 #endif
         
+        env->DeleteLocalRef(st_atimespec);
+        env->DeleteLocalRef(st_mtimespec);
+        env->DeleteLocalRef(st_ctimespec);
+
         ret = true;
     } while(0);
 
@@ -650,6 +594,44 @@ jobject FUSE26Util::newFlock(JNIEnv *env, const struct flock *source) {
 
     CSLogTraceLeave("jobject FUSE26Util::newFlock(%p, %p): %p", env, source, res);
     return res;
+}
+
+/**
+ * Merges the contents of source (Java class Timespec) into the supplied
+ * struct timespec.
+ */
+bool FUSE26Util::mergeTimespec(JNIEnv *env, jobject source,
+        struct timespec *target) {
+#define _FNAME_ "FUSE26Util::mergeTimespec"
+    CSLogTraceEnter("bool " _FNAME_ "(%p, %p, %p)", env, source, target);
+    bool res = false;
+    do {
+        jclass clazz = env->GetObjectClass(source);
+        if(clazz == NULL || env->ExceptionCheck() == JNI_TRUE) {
+            CSLogError("Could not get object class!");
+            if(env->ExceptionCheck())
+                env->ExceptionDescribe();
+            break;
+        }
+
+        jint sec;
+        jint nsec;
+
+        if(!getIntField(env, clazz, source, "sec", &sec))
+            break;
+        if(!getIntField(env, clazz, source, "nsec", &nsec))
+            break;
+
+        target->tv_sec = sec;
+        target->tv_nsec = nsec;
+
+        res = true;
+    }
+    while(0);
+
+    CSLogTraceLeave("bool " _FNAME_ "(%p, %p, %p): %d", env, source, target, res);
+    return res;
+#undef _FNAME_
 }
 
 /**

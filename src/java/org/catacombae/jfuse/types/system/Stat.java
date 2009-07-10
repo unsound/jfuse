@@ -44,18 +44,12 @@ public class Stat implements FileModeFlags {
 
     /* TODO: st_?timespec should be of class Timespec. */
 
-    /** Time of last access (seconds). Type: __darwin_time_t (4 bytes (32-bit platforms), 8 bytes (64-bit platforms)) */
-    public long st_atimespec_sec = 0;
-    /** Time of last access (nanoseconds). Type: long (4 bytes (32-bit platforms), 8 bytes (64-bit platforms)) */
-    public long st_atimespec_nsec = 0;
-    /** Time of last data modification (seconds). Type: __darwin_time_t (4 bytes (32-bit platforms), 8 bytes (64-bit platforms)) */
-    public long st_mtimespec_sec = 0;
-    /** Time of last data modification (nanoseconds). Type: long (4 bytes (32-bit platforms), 8 bytes (64-bit platforms)) */
-    public long st_mtimespec_nsec = 0;
-    /** Time of last file status change (seconds). Type: __darwin_time_t (4 bytes (32-bit platforms), 8 bytes (64-bit platforms)) */
-    public long st_ctimespec_sec = 0;
-    /** Time of last file status change (nanoseconds). Type: long (4 bytes (32-bit platforms), 8 bytes (64-bit platforms)) */
-    public long st_ctimespec_nsec = 0;
+    /** Time of last access. */
+    public final Timespec st_atimespec = new Timespec();
+    /** Time of last data modification. */
+    public final Timespec st_mtimespec = new Timespec();
+    /** Time of last file status change. */
+    public final Timespec st_ctimespec = new Timespec();
     /** File size, in bytes. Type: off_t (8 bytes) */
     public long st_size = 0;
     /** Blocks allocated for file. Type: quad_t (8 bytes) */
@@ -78,47 +72,14 @@ public class Stat implements FileModeFlags {
         st_uid = 0;
         st_gid = 0;
         st_rdev = 0;
-        st_atimespec_sec = 0;
-        st_atimespec_nsec = 0;
-        st_mtimespec_sec = 0;
-        st_mtimespec_nsec = 0;
-        st_ctimespec_sec = 0;
-        st_ctimespec_nsec = 0;
+        st_atimespec.zero();
+        st_mtimespec.zero();
+        st_ctimespec.zero();
         st_size = 0;
         st_blocks = 0;
         st_blocksize = 0;
         st_flags = 0;
         st_gen = 0;
-    }
-
-    public void setAccessTimeToDate(Date d) {
-        long millis = d.getTime();
-        st_atimespec_sec = millis / 1000;
-        st_atimespec_nsec = (millis % 1000) * 1000000;
-    }
-
-    public void setModifyTimeToDate(Date d) {
-        long millis = d.getTime();
-        st_mtimespec_sec = millis / 1000;
-        st_mtimespec_nsec = (millis % 1000) * 1000000;
-    }
-
-    public void setStatusChangeTimeToDate(Date d) {
-        long millis = d.getTime();
-        st_ctimespec_sec = millis / 1000;
-        st_ctimespec_nsec = (millis % 1000) * 1000000;
-    }
-
-    public Date getAccessTimeAsDate() {
-        return new Date(st_atimespec_sec*1000 + st_atimespec_nsec/1000000);
-    }
-
-    public Date getModifyTimeAsDate() {
-        return new Date(st_mtimespec_sec*1000 + st_mtimespec_nsec/1000000);
-    }
-
-    public Date getStatusChangeTimeAsDate() {
-        return new Date(st_ctimespec_sec*1000 + st_ctimespec_nsec/1000000);
     }
 
     public void printFields(String prefix, PrintStream ps) {
@@ -129,12 +90,10 @@ public class Stat implements FileModeFlags {
         ps.println(prefix + "st_uid = " + st_uid);
         ps.println(prefix + "st_gid = " + st_gid);
         ps.println(prefix + "st_rdev = " + st_rdev);
-        ps.println(prefix + "st_atimespec_sec = " + st_atimespec_sec);
-        ps.println(prefix + "st_atimespec_nsec = " + st_atimespec_nsec);
-        ps.println(prefix + "st_mtimespec_sec = " + st_mtimespec_sec);
-        ps.println(prefix + "st_mtimespec_nsec = " + st_mtimespec_nsec);
-        ps.println(prefix + "st_ctimespec_sec = " + st_ctimespec_sec);
-        ps.println(prefix + "st_ctimespec_nsec = " + st_ctimespec_nsec);
+        ps.println(prefix + "st_atimespec:");
+        st_atimespec.print(prefix + " ", ps);
+        st_mtimespec.print(prefix + " ", ps);
+        st_ctimespec.print(prefix + " ", ps);
         ps.println(prefix + "st_size = " + st_size);
         ps.println(prefix + "st_blocks = " + st_blocks);
         ps.println(prefix + "st_blocksize = " + st_blocksize);
