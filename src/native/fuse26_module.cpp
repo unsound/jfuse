@@ -40,7 +40,7 @@ int jfuse_getattr(const char *path, struct stat *stbuf) {
 
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
     JAVA_ARG_STAT(2, stbuf);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_GETATTR_NAME, OPS_GETATTR_SIGNATURE) {
@@ -70,13 +70,11 @@ int jfuse_readlink(const char *path, char *target, size_t target_len) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
-    JAVA_ARG_BYTE_ARRAY(2, target, target_len);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
+    JAVA_ARG_BYTEBUFFER(2, target, target_len);
 
     JFUSE_FS_PROVIDER_METHOD_OK(READLINK) {
         JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2));
-
-        JFUSE_MERGE_BYTE_ARRAY(JAVA_ARG(2), target, target_len);
 
         JFUSE_SET_RETVAL();
     }
@@ -98,7 +96,7 @@ int jfuse_getdir(const char *path, fuse_dirh_t dirh, fuse_dirfil_t dirfil) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
     JAVA_ARG_FUSE_DIRFIL(2, dirfil, dirh);
 
     JFUSE_FS_PROVIDER_METHOD_OK(GETDIR) {
@@ -124,7 +122,7 @@ int jfuse_mknod(const char *path, mode_t mode, dev_t dev) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
 
     JFUSE_FS_PROVIDER_METHOD_OK(MKNOD) {
         JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), (jshort)mode, (jlong)dev);
@@ -148,7 +146,7 @@ int jfuse_mkdir(const char *path, mode_t mode) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
 
     JFUSE_FS_PROVIDER_METHOD_OK(MKDIR) {
         JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), (jshort)mode);
@@ -172,7 +170,7 @@ int jfuse_unlink(const char *path) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
 
     JFUSE_FS_PROVIDER_METHOD_OK(UNLINK) {
         JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1));
@@ -196,7 +194,7 @@ int jfuse_rmdir(const char *path) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
 
     JFUSE_FS_PROVIDER_METHOD_OK(RMDIR) {
         JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1));
@@ -221,8 +219,8 @@ int jfuse_symlink(const char *from_path, const char *to_path) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, from_path);
-    JAVA_ARG_CSTRING(2, to_path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, from_path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(2, to_path);
 
     JFUSE_FS_PROVIDER_METHOD_OK(SYMLINK) {
         JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2));
@@ -248,8 +246,8 @@ int jfuse_rename(const char *from_path, const char *to_path) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, from_path);
-    JAVA_ARG_CSTRING(2, to_path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, from_path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(2, to_path);
 
     JFUSE_FS_PROVIDER_METHOD_OK(RENAME) {
         JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2));
@@ -275,8 +273,8 @@ int jfuse_link(const char *from_path, const char *to_path) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, from_path);
-    JAVA_ARG_CSTRING(2, to_path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, from_path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(2, to_path);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_LINK_NAME, OPS_LINK_SIGNATURE) {
         JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2));
@@ -301,7 +299,7 @@ int jfuse_chmod(const char *path, mode_t mode) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_CHMOD_NAME, OPS_CHMOD_SIGNATURE) {
         JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), (jshort)mode);
@@ -325,7 +323,7 @@ int jfuse_chown(const char *path, uid_t uid, gid_t gid) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_CHOWN_NAME, OPS_CHOWN_SIGNATURE) {
         JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), (jlong)uid, (jlong)gid);
@@ -349,7 +347,7 @@ int jfuse_truncate(const char *path, off_t size) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_TRUNCATE_NAME, OPS_TRUNCATE_SIGNATURE) {
         JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), size);
@@ -373,7 +371,7 @@ int jfuse_utime(const char *path, struct utimbuf *time) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
     JAVA_ARG_UTIMBUF(2, time);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_UTIME_NAME, OPS_UTIME_SIGNATURE) {
@@ -402,7 +400,7 @@ int jfuse_open(const char *path, struct fuse_file_info *fi) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
     JAVA_ARG_FUSE_FILE_INFO(2, fi);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_OPEN_NAME, OPS_OPEN_SIGNATURE) {
@@ -433,7 +431,7 @@ int jfuse_read(const char *path, char *targetbuf, size_t targetbuf_len, off_t fi
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
     JAVA_ARG_BYTEBUFFER(2, targetbuf, targetbuf_len);
     JAVA_ARG_FUSE_FILE_INFO(4, fi);
 
@@ -465,7 +463,7 @@ int jfuse_write(const char *path, const char *buf, size_t len, off_t off,
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
     JAVA_ARG_READONLY_BYTEBUFFER(2, buf, len);
     JAVA_ARG_FUSE_FILE_INFO(4, fi);
 
@@ -495,7 +493,7 @@ int jfuse_statfs(const char *path, struct statvfs *stvfsbuf) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
     JAVA_ARG_STATVFS(2, stvfsbuf);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_STATFS_NAME, OPS_STATFS_SIGNATURE) {
@@ -523,7 +521,7 @@ int jfuse_flush(const char *path, struct fuse_file_info *fi) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
     JAVA_ARG_FUSE_FILE_INFO(2, fi);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_FLUSH_NAME, OPS_FLUSH_SIGNATURE) {
@@ -551,7 +549,7 @@ int jfuse_release(const char *path, struct fuse_file_info *fi) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
     JAVA_ARG_FUSE_FILE_INFO(2, fi);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_RELEASE_NAME, OPS_RELEASE_SIGNATURE) {
@@ -579,7 +577,7 @@ int jfuse_fsync(const char *path, int datasync, struct fuse_file_info *fi) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
     JAVA_ARG_FUSE_FILE_INFO(3, fi);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_FSYNC_NAME, OPS_FSYNC_SIGNATURE) {
@@ -613,9 +611,9 @@ int jfuse_setxattr(const char *path, const char *name, const char *value,
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
-    JAVA_ARG_CSTRING(2, name);
-    JAVA_ARG_BYTE_ARRAY(3, value, value_len);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(2, name);
+    JAVA_ARG_READONLY_BYTEBUFFER(3, value, value_len);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_SETXATTR_BSD_NAME, OPS_SETXATTR_BSD_SIGNATURE) {
 
@@ -645,9 +643,9 @@ int jfuse_setxattr(const char *path, const char *name, const char *value,
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
-    JAVA_ARG_CSTRING(2, name);
-    JAVA_ARG_BYTE_ARRAY(3, value, value_len);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(2, name);
+    JAVA_ARG_READONLY_BYTEBUFFER(3, value, value_len);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_SETXATTR_NAME, OPS_SETXATTR_SIGNATURE) {
 
@@ -680,15 +678,13 @@ int jfuse_getxattr(const char *path, const char *name, char *value,
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
-    JAVA_ARG_CSTRING(2, name);
-    JAVA_ARG_BYTE_ARRAY(3, value, value_len);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(2, name);
+    JAVA_ARG_BYTEBUFFER(3, value, value_len);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_GETXATTR_BSD_NAME, OPS_GETXATTR_BSD_SIGNATURE) {
 
         JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), JAVA_ARG(3), position);
-
-        JFUSE_MERGE_BYTE_ARRAY(JAVA_ARG(3), value, value_len)
 
         JFUSE_SET_RETVAL();
     }
@@ -715,15 +711,13 @@ int jfuse_getxattr(const char *path, const char *name, char *value,
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
-    JAVA_ARG_CSTRING(2, name);
-    JAVA_ARG_BYTE_ARRAY(3, value, value_len);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(2, name);
+    JAVA_ARG_BYTEBUFFER(3, value, value_len);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_GETXATTR_NAME, OPS_GETXATTR_SIGNATURE) {
 
         JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), JAVA_ARG(3));
-
-        JFUSE_MERGE_BYTE_ARRAY(JAVA_ARG(3), value, value_len)
 
         JFUSE_SET_RETVAL();
     }
@@ -747,14 +741,12 @@ int jfuse_listxattr(const char *path, char *namebuf, size_t namebuf_len) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
-    JAVA_ARG_BYTE_ARRAY(2, namebuf, namebuf_len);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
+    JAVA_ARG_BYTEBUFFER(2, namebuf, namebuf_len);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_LISTXATTR_NAME, OPS_LISTXATTR_SIGNATURE) {
 
         JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2));
-
-        JFUSE_MERGE_BYTE_ARRAY(JAVA_ARG(2), namebuf, namebuf_len)
 
         JFUSE_SET_RETVAL();
     }
@@ -777,8 +769,8 @@ int jfuse_removexattr(const char *path, const char *name) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
-    JAVA_ARG_CSTRING(2, name);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(2, name);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_REMOVEXATTR_NAME, OPS_REMOVEXATTR_SIGNATURE) {
 
@@ -804,7 +796,7 @@ int jfuse_opendir(const char *path, struct fuse_file_info *fi) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
     JAVA_ARG_FUSE_FILE_INFO(2, fi);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_OPENDIR_NAME, OPS_OPENDIR_SIGNATURE) {
@@ -836,7 +828,7 @@ int jfuse_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
     JAVA_ARG_FUSE_FILL_DIR(2, filler, buf);
     JAVA_ARG_FUSE_FILE_INFO(4, fi);
 
@@ -867,7 +859,7 @@ int jfuse_releasedir(const char *path, struct fuse_file_info *fi) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
     JAVA_ARG_FUSE_FILE_INFO(2, fi);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_RELEASEDIR_NAME, OPS_RELEASEDIR_SIGNATURE) {
@@ -895,7 +887,7 @@ int jfuse_fsyncdir(const char *path, int datasync, struct fuse_file_info *fi) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
     JAVA_ARG_FUSE_FILE_INFO(3, fi);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_FSYNCDIR_NAME, OPS_FSYNCDIR_SIGNATURE) {
@@ -969,7 +961,7 @@ int jfuse_access(const char *path, int amode) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_ACCESS_NAME, OPS_ACCESS_SIGNATURE) {
         JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), amode);
@@ -993,7 +985,7 @@ int jfuse_create(const char *path, mode_t crmode, struct fuse_file_info *fi) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
     JAVA_ARG_FUSE_FILE_INFO(3, fi);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_CREATE_NAME, OPS_CREATE_SIGNATURE) {
@@ -1021,7 +1013,7 @@ int jfuse_ftruncate(const char *path, off_t size, struct fuse_file_info *fi) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
     JAVA_ARG_FUSE_FILE_INFO(3, fi);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_FTRUNCATE_NAME, OPS_FTRUNCATE_SIGNATURE) {
@@ -1049,7 +1041,7 @@ int jfuse_fgetattr(const char *path, struct stat *stbuf, struct fuse_file_info *
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
     JAVA_ARG_STAT(2, stbuf);
     JAVA_ARG_FUSE_FILE_INFO(3, fi);
 
@@ -1081,7 +1073,7 @@ int jfuse_lock(const char *path, struct fuse_file_info *fi, int cmd,
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
     JAVA_ARG_FUSE_FILE_INFO(2, fi);
     JAVA_ARG_FLOCK(4, flk);
 
@@ -1112,7 +1104,7 @@ int jfuse_utimens(const char *path, const struct timespec tv[2]) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
     JAVA_ARG_TIMESPEC(2, &tv[0]);
     JAVA_ARG_TIMESPEC(3, &tv[1]);
 
@@ -1140,7 +1132,7 @@ int jfuse_bmap(const char *path, size_t blocksize, uint64_t *idx) {
     int retval = -EIO;
     JFUSE_OPERATION_INIT();
 
-    JAVA_ARG_CSTRING(1, path);
+    JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
     JAVA_ARG_LONGREF(3, idx);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_BMAP_NAME, OPS_BMAP_SIGNATURE) {

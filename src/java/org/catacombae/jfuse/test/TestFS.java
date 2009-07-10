@@ -391,7 +391,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
     }
 
     @Override
-    public int getattr(byte[] path, Stat stbuf) {
+    public int getattr(ByteBuffer path, Stat stbuf) {
         final String METHOD_NAME = "getattr";
         Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, stbuf);
 
@@ -431,7 +431,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
     }
 
     @Override
-    public int chmod(byte[] path, short newMode) {
+    public int chmod(ByteBuffer path, short newMode) {
         final String METHOD_NAME = "chmod";
         Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, newMode);
 
@@ -465,7 +465,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
     }
 
     @Override
-    public int readdir(byte[] path, FUSEFillDir filler, long offset,
+    public int readdir(ByteBuffer path, FUSEFillDir filler, long offset,
             FUSEFileInfo fi) {
         final String METHOD_NAME = "readdir";
         Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, filler, offset,
@@ -496,7 +496,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
     }
 
     @Override
-    public int readlink(byte[] path, byte[] buffer) {
+    public int readlink(ByteBuffer path, ByteBuffer buffer) {
         final String METHOD_NAME = "readlink";
         Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, buffer);
 
@@ -509,12 +509,12 @@ public class TestFS extends MacFUSEFileSystemAdapter {
             Inode e = lookupInode(pathString);
             if(e != null) {
                 if(e instanceof Symlink) {
-                    if(buffer.length > 0) {
+                    if(buffer.capacity() > 0) {
                         Symlink link = (Symlink) e;
                         byte[] encodedTarget = FUSEUtil.encodeUTF8(link.target);
-                        int copySize = Math.min(buffer.length - 1, encodedTarget.length);
-                        System.arraycopy(encodedTarget, 0, buffer, 0, copySize);
-                        buffer[copySize] = '\0';
+                        int copySize = Math.min(buffer.capacity() - 1, encodedTarget.length);
+                        buffer.put(encodedTarget, 0, copySize);
+                        buffer.put((byte)0); // Null terminator
                     }
 
                     res = 0; // ?
@@ -531,7 +531,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
     }
 
     @Override
-    public int symlink(byte[] source, byte[] dest) {
+    public int symlink(ByteBuffer source, ByteBuffer dest) {
         final String METHOD_NAME = "symlink";
         Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, source, dest);
 
@@ -550,7 +550,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
     }
 
     @Override
-    public int open(byte[] path, FUSEFileInfo fi) {
+    public int open(ByteBuffer path, FUSEFileInfo fi) {
         final String METHOD_NAME = "open";
         Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, fi);
 
@@ -602,7 +602,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
     }
     
     @Override
-    public int create(byte[] path, short mode, FUSEFileInfo fi) {
+    public int create(ByteBuffer path, short mode, FUSEFileInfo fi) {
         final String METHOD_NAME = "create";
         Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, mode, fi);
 
@@ -620,7 +620,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
     }
 
     @Override
-    public int unlink(byte[] path) {
+    public int unlink(ByteBuffer path) {
         final String METHOD_NAME = "unlink";
         Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path);
 
@@ -637,7 +637,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
     }
 
     @Override
-    public int truncate(byte[] path,
+    public int truncate(ByteBuffer path,
 			 long newSize) {
         final String METHOD_NAME = "truncate";
         Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, newSize);
@@ -674,7 +674,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
     }
 
     @Override
-    public int utimens(byte[] path,
+    public int utimens(ByteBuffer path,
             Timespec accessTime,
             Timespec modificationTime) {
         final String METHOD_NAME = "utimens";
@@ -709,7 +709,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
     }
 
     @Override
-    public int mkdir(byte[] path, short mode) {
+    public int mkdir(ByteBuffer path, short mode) {
         final String METHOD_NAME = "mkdir";
         Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, mode);
 
@@ -727,7 +727,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
     }
 
     @Override
-    public int rmdir(byte[] path) {
+    public int rmdir(ByteBuffer path) {
         final String METHOD_NAME = "rmdir";
         Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path);
 
@@ -745,8 +745,8 @@ public class TestFS extends MacFUSEFileSystemAdapter {
     }
 
     @Override
-    public int rename(byte[] oldPath,
-		       byte[] newPath) {
+    public int rename(ByteBuffer oldPath,
+		       ByteBuffer newPath) {
         final String METHOD_NAME = "rename";
         Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, oldPath, newPath);
 
@@ -766,7 +766,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
     }
 
     @Override
-    public int read(byte[] path, ByteBuffer buf, long offset, FUSEFileInfo fi) {
+    public int read(ByteBuffer path, ByteBuffer buf, long offset, FUSEFileInfo fi) {
         final String METHOD_NAME = "read";
         Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, buf, offset, fi);
 
@@ -831,7 +831,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
     }
 
     @Override
-    public int write(byte[] path, ByteBuffer buf, long offset, FUSEFileInfo fi) {
+    public int write(ByteBuffer path, ByteBuffer buf, long offset, FUSEFileInfo fi) {
         final String METHOD_NAME = "write";
         Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, buf, offset, fi);
 

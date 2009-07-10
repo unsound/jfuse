@@ -37,157 +37,157 @@ import java.nio.ByteBuffer;
 public abstract class FUSE26FileSystemAdapter implements FUSEFileSystem {
 
     //@Override
-    public int getattr(byte[] path, Stat stat) {
+    public int getattr(ByteBuffer path, Stat stat) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int readlink(byte[] path, byte[] buffer) {
+    public int readlink(ByteBuffer path, ByteBuffer buffer) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int getdir(byte[] path, FUSEDirFil filler) {
+    public int getdir(ByteBuffer path, FUSEDirFil filler) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int mknod(byte[] path, short fileMode, long deviceNumber) {
+    public int mknod(ByteBuffer path, short fileMode, long deviceNumber) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int mkdir(byte[] path, short createMode) {
+    public int mkdir(ByteBuffer path, short createMode) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int unlink(byte[] path) {
+    public int unlink(ByteBuffer path) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int rmdir(byte[] path) {
+    public int rmdir(ByteBuffer path) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int symlink(byte[] sourcePath, byte[] destPath) {
+    public int symlink(ByteBuffer sourcePath, ByteBuffer destPath) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int rename(byte[] oldPath, byte[] newPath) {
+    public int rename(ByteBuffer oldPath, ByteBuffer newPath) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int link(byte[] sourcePath, byte[] destPath) {
+    public int link(ByteBuffer sourcePath, ByteBuffer destPath) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int chmod(byte[] path, short mode_t_newMode) {
+    public int chmod(ByteBuffer path, short mode_t_newMode) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int chown(byte[] path, long userId, long groupId) {
+    public int chown(ByteBuffer path, long userId, long groupId) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int truncate(byte[] path, long newSize) {
+    public int truncate(ByteBuffer path, long newSize) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int utime(byte[] path, Utimbuf time) {
+    public int utime(ByteBuffer path, Utimbuf time) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int open(byte[] path, FUSEFileInfo fi) {
+    public int open(ByteBuffer path, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int read(byte[] path, ByteBuffer dest, long offset, FUSEFileInfo fi) {
+    public int read(ByteBuffer path, ByteBuffer dest, long offset, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int write(byte[] path, ByteBuffer src, long off, FUSEFileInfo fi) {
+    public int write(ByteBuffer path, ByteBuffer src, long off, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int statfs(byte[] path, StatVFS stat) {
+    public int statfs(ByteBuffer path, StatVFS stat) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int flush(byte[] path, FUSEFileInfo fi) {
+    public int flush(ByteBuffer path, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int release(byte[] path, FUSEFileInfo fi) {
+    public int release(ByteBuffer path, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int fsync(byte[] path, boolean datasync, FUSEFileInfo fi) {
+    public int fsync(ByteBuffer path, boolean datasync, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int setxattr_BSD(byte[] path, byte[] name, byte[] value, int flags, int position) {
+    public int setxattr_BSD(ByteBuffer path, ByteBuffer name, ByteBuffer value, int flags, int position) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int setxattr(byte[] path, byte[] name, byte[] value, int flags) {
+    public int setxattr(ByteBuffer path, ByteBuffer name, ByteBuffer value, int flags) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int getxattr_BSD(byte[] path, byte[] name, byte[] value, int position) {
+    public int getxattr_BSD(ByteBuffer path, ByteBuffer name, ByteBuffer value, int position) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int getxattr(byte[] path, byte[] name, byte[] value) {
+    public int getxattr(ByteBuffer path, ByteBuffer name, ByteBuffer value) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int listxattr(byte[] path, byte[] namebuf) {
+    public int listxattr(ByteBuffer path, ByteBuffer namebuf) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int removexattr(byte[] path, byte[] name) {
+    public int removexattr(ByteBuffer path, ByteBuffer name) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int opendir(byte[] path, FUSEFileInfo fi) {
+    public int opendir(ByteBuffer path, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int readdir(byte[] path, FUSEFillDir filler, long offset, FUSEFileInfo fi) {
+    public int readdir(ByteBuffer path, FUSEFillDir filler, long offset, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int releasedir(byte[] path, FUSEFileInfo fi) {
+    public int releasedir(ByteBuffer path, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int fsyncdir(byte[] path, boolean datasync, FUSEFileInfo fi) {
+    public int fsyncdir(ByteBuffer path, boolean datasync, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
@@ -202,37 +202,37 @@ public abstract class FUSE26FileSystemAdapter implements FUSEFileSystem {
     }
 
     //@Override
-    public int access(byte[] path, int mode) {
+    public int access(ByteBuffer path, int mode) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int create(byte[] path, short mode, FUSEFileInfo fi) {
+    public int create(ByteBuffer path, short mode, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int ftruncate(byte[] path, long length, FUSEFileInfo fi) {
+    public int ftruncate(ByteBuffer path, long length, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int fgetattr(byte[] path, Stat stat, FUSEFileInfo fi) {
+    public int fgetattr(ByteBuffer path, Stat stat, FUSEFileInfo fi) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int lock(byte[] path, FUSEFileInfo fi, int cmd, Flock flock) {
+    public int lock(ByteBuffer path, FUSEFileInfo fi, int cmd, Flock flock) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int utimens(byte[] path, Timespec accessTime, Timespec modificationTime) {
+    public int utimens(ByteBuffer path, Timespec accessTime, Timespec modificationTime) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
     //@Override
-    public int bmap(byte[] path, long blocksize, LongRef idx) {
+    public int bmap(ByteBuffer path, long blocksize, LongRef idx) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 

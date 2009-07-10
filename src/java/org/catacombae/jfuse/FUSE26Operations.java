@@ -57,7 +57,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int getattr(byte[] path,
+    public int getattr(ByteBuffer path,
 			Stat stat);
 
     /**
@@ -79,8 +79,8 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int readlink(byte[] path,
-			 byte[] buffer);
+    public int readlink(ByteBuffer path,
+			 ByteBuffer buffer);
 
     /**
      * <pre>
@@ -93,7 +93,7 @@ public interface FUSE26Operations extends SystemConstants {
      * otherwise.
      * @deprecated
      */
-    public int getdir(byte[] path,
+    public int getdir(ByteBuffer path,
 		       FUSEDirFil filler);
 
     /**
@@ -110,7 +110,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @param deviceNumber <b>(dev_t)</b>
      * @return 0 if successful, an inverted error value from FUSEErrorValues otherwise.
      */
-    public int mknod(byte[] path,
+    public int mknod(ByteBuffer path,
 		      short fileMode,
 		      long deviceNumber);
 
@@ -124,7 +124,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @param createMode <b>(mode_t)</b>
      * @return 0 if successful, an inverted error value from FUSEErrorValues otherwise.
      */
-    public int mkdir(byte[] path,
+    public int mkdir(ByteBuffer path,
 		      short createMode);
 
     /**
@@ -136,7 +136,7 @@ public interface FUSE26Operations extends SystemConstants {
      * which the operation is to be applied.
      * @return 0 if successful, an inverted error value from FUSEErrorValues otherwise.
      */
-    public int unlink(byte[] path);
+    public int unlink(ByteBuffer path);
 
     /**
      * <pre>
@@ -147,7 +147,7 @@ public interface FUSE26Operations extends SystemConstants {
      * which the operation is to be applied.
      * @return 0 if successful, an inverted error value from FUSEErrorValues otherwise.
      */
-    public int rmdir(byte[] path);
+    public int rmdir(ByteBuffer path);
     
     /**
      * <pre>
@@ -159,8 +159,8 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int symlink(byte[] sourcePath,
-			byte[] destPath);
+    public int symlink(ByteBuffer sourcePath,
+			ByteBuffer destPath);
     
     /**
      * <pre>
@@ -172,8 +172,8 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int rename(byte[] oldPath,
-		       byte[] newPath);
+    public int rename(ByteBuffer oldPath,
+		       ByteBuffer newPath);
     
     /**
      * <pre>
@@ -185,8 +185,8 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int link(byte[] sourcePath,
-		     byte[] destPath);
+    public int link(ByteBuffer sourcePath,
+		     ByteBuffer destPath);
     
     /**
      * <pre>
@@ -199,7 +199,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int chmod(byte[] path,
+    public int chmod(ByteBuffer path,
 		      short newMode);
     
     /**
@@ -214,7 +214,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int chown(byte[] path,
+    public int chown(ByteBuffer path,
 		      long userId,
 		      long groupId);
 
@@ -229,7 +229,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int truncate(byte[] path,
+    public int truncate(ByteBuffer path,
 			 long newSize);
 
     /**
@@ -246,7 +246,7 @@ public interface FUSE26Operations extends SystemConstants {
      * otherwise.
      * @deprecated
      */
-    public int utime(byte[] path,
+    public int utime(ByteBuffer path,
 		      Utimbuf time);
 
     /**
@@ -268,7 +268,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int open(byte[] path,
+    public int open(ByteBuffer path,
 		     FUSEFileInfo fi);
 
     /**
@@ -301,7 +301,7 @@ public interface FUSE26Operations extends SystemConstants {
      *          <li>-{@link #EIO EIO}</li>
      *          </ul>
      */
-    public int read(byte[] path,
+    public int read(ByteBuffer path,
 		     ByteBuffer dest,
 		     long off,
 		     FUSEFileInfo fi);
@@ -325,7 +325,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int write(byte[] path,
+    public int write(ByteBuffer path,
 		      ByteBuffer src,
 		      long off,
 		      FUSEFileInfo fi);
@@ -346,7 +346,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int statfs(byte[] path,
+    public int statfs(ByteBuffer path,
 		       StatVFS stat);
 
     /**
@@ -381,7 +381,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int flush(byte[] path,
+    public int flush(ByteBuffer path,
 		      FUSEFileInfo fi);
 
     /**
@@ -407,7 +407,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise. (ignored)
      */
-    public int release(byte[] path,
+    public int release(ByteBuffer path,
 			FUSEFileInfo fi);
 
     /**
@@ -428,7 +428,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int fsync(byte[] path, boolean datasync, FUSEFileInfo fi);
+    public int fsync(ByteBuffer path, boolean datasync, FUSEFileInfo fi);
 
     /**
      * <pre>
@@ -473,9 +473,9 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int setxattr_BSD(byte[] path,
-			 byte[] name,
-			 byte[] value,
+    public int setxattr_BSD(ByteBuffer path,
+			 ByteBuffer name,
+			 ByteBuffer value,
 			 int flags,
 			 int position);
 
@@ -495,9 +495,9 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int setxattr(byte[] path,
-            byte[] name,
-            byte[] value,
+    public int setxattr(ByteBuffer path,
+            ByteBuffer name,
+            ByteBuffer value,
             int flags);
     //#endif /* __FreeBSD__ >= 10 */
 
@@ -517,9 +517,9 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int getxattr_BSD(byte[] path,
-			 byte[] name,
-			 byte[] value,
+    public int getxattr_BSD(ByteBuffer path,
+			 ByteBuffer name,
+			 ByteBuffer value,
 			 int position);
 
     /**
@@ -537,9 +537,9 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int getxattr(byte[] path,
-            byte[] name,
-            byte[] value);
+    public int getxattr(ByteBuffer path,
+            ByteBuffer name,
+            ByteBuffer value);
 
     /**
      * <pre>
@@ -551,8 +551,8 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int listxattr(byte[] path,
-			  byte[] namebuf);
+    public int listxattr(ByteBuffer path,
+			  ByteBuffer namebuf);
 
     /**
      * <pre>
@@ -564,8 +564,8 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int removexattr(byte[] path,
-			    byte[] name);
+    public int removexattr(ByteBuffer path,
+			    ByteBuffer name);
 
     /**
      * <pre>
@@ -582,7 +582,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int opendir(byte[] path,
+    public int opendir(ByteBuffer path,
 			FUSEFileInfo fi);
 
     /**
@@ -616,7 +616,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int readdir(byte[] path,
+    public int readdir(ByteBuffer path,
 			FUSEFillDir filler,
 			long offset,
 			FUSEFileInfo fi);
@@ -633,7 +633,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int releasedir(byte[] path,
+    public int releasedir(ByteBuffer path,
 			   FUSEFileInfo fi);
 
     /**
@@ -652,7 +652,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int fsyncdir(byte[] path,
+    public int fsyncdir(ByteBuffer path,
 			 boolean datasync,
 			 FUSEFileInfo fi);
 
@@ -704,7 +704,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int access(byte[] path,
+    public int access(ByteBuffer path,
 		       int mode);
 
     /**
@@ -727,7 +727,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int create(byte[] path,
+    public int create(ByteBuffer path,
 		       short mode,
 		       FUSEFileInfo fi);
 
@@ -751,7 +751,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int ftruncate(byte[] path,
+    public int ftruncate(ByteBuffer path,
 			  long length,
 			  FUSEFileInfo fi);
 
@@ -775,7 +775,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int fgetattr(byte[] path,
+    public int fgetattr(ByteBuffer path,
 			 Stat stat,
 			 FUSEFileInfo fi);
 
@@ -820,7 +820,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int lock(byte[] path,
+    public int lock(ByteBuffer path,
 		     FUSEFileInfo fi,
 		     int cmd,
 		     Flock flock);
@@ -839,7 +839,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int utimens(byte[] path,
+    public int utimens(ByteBuffer path,
 			Timespec accessTime,
                         Timespec modificationTime);
 
@@ -859,7 +859,7 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int bmap(byte[] path,
+    public int bmap(ByteBuffer path,
 		     long blocksize,
 		     LongRef idx);
 }

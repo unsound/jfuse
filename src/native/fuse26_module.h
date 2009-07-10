@@ -129,6 +129,7 @@ static inline jFUSEContext* getjFUSEContext() {
     return (jFUSEContext*)fuse_ctx->private_data;
 }
 
+/*
 #define JAVA_ARG_CSTRING(num, str) \
     CSLogDebug("Processing argument %d (%s) of type byte array (from C string)...", num, #str); \
     jbyteArray java_arg##num = JNIUtil::cstringToJByteArray(env, str); \
@@ -137,7 +138,7 @@ static inline jFUSEContext* getjFUSEContext() {
             env->ExceptionDescribe(); \
         CSPanicWithMessage("Could not create new Java byte array from C string \"%s\".", str); \
     }
-
+*/
 #define JAVA_ARG_CSTRING_BYTEBUFFER(num, str) \
     CSLogDebug("Processing argument %d (%s) of type read-only ByteBuffer (from C string)...", num, #str); \
     jobject java_arg##num = JNIUtil::cstringToReadonlyByteBuffer(env, str); \
@@ -147,6 +148,7 @@ static inline jFUSEContext* getjFUSEContext() {
         CSPanicWithMessage("Could not create new Java read-only ByteBuffer from C string \"%s\".", str); \
     }
 
+/*
 #define JAVA_ARG_EMPTY_BYTE_ARRAY(num, len) \
     CSLogDebug("Processing argument %d (%s) of type (new) byte array...", num, #len); \
     jbyteArray java_arg##num = env->NewByteArray(len); \
@@ -155,6 +157,7 @@ static inline jFUSEContext* getjFUSEContext() {
             env->ExceptionDescribe(); \
         CSPanicWithMessage("Could not create new Java byte array for java_arg" #num "."); \
     }
+*/
 
 #define JAVA_ARG_EMPTY_BYTEBUFFER(num, len) \
     CSLogDebug("Processing argument %d (%s) of type (new) ByteBuffer...", num, #len); \
@@ -165,6 +168,7 @@ static inline jFUSEContext* getjFUSEContext() {
         CSPanicWithMessage("Could not create new Java ByteBuffer for java_arg" #num "."); \
     }
 
+/*
 #define JAVA_ARG_BYTE_ARRAY(num, buf, len) \
     CSLogDebug("Processing argument %d (%s) of type byte array...", num, #buf); \
     jbyteArray java_arg##num = JNIUtil::bytesToJByteArray(env, buf, len); \
@@ -173,6 +177,7 @@ static inline jFUSEContext* getjFUSEContext() {
             env->ExceptionDescribe(); \
         CSPanicWithMessage("Could not create new Java byte array from char* buffer."); \
     }
+*/
 
 #define JAVA_ARG_BYTEBUFFER(num, buf, len) \
     CSLogDebug("Processing argument %d (%s) of type ByteByffer...", num, #buf); \

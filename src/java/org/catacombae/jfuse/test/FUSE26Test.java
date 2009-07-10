@@ -19,6 +19,7 @@
 
 package org.catacombae.jfuse.test;
 
+import java.nio.ByteBuffer;
 import org.catacombae.jfuse.FUSE26Capabilities;
 import org.catacombae.jfuse.FUSE26FileSystemAdapter;
 import org.catacombae.jfuse.types.system.LongRef;
@@ -36,7 +37,7 @@ public class FUSE26Test {
 
         FUSE26FileSystemAdapter fs = new Yada() {
             @Override
-            public int getattr(byte[] path, Stat stat) {
+            public int getattr(ByteBuffer path, Stat stat) {
                 return -ENOENT;
             }
         };
@@ -46,7 +47,7 @@ public class FUSE26Test {
 
     private static class Yada extends FUSE26FileSystemAdapter {
         @Override
-        public int bmap(byte[] path,
+        public int bmap(ByteBuffer path,
 		     long blocksize,
 		     LongRef idx) {
             return -ENOENT;

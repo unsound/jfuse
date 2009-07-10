@@ -52,7 +52,7 @@ public class HelloFS extends FUSEFileSystemAdapter {
     }
 
     @Override
-    public int getattr(byte[] path, Stat stbuf) {
+    public int getattr(ByteBuffer path, Stat stbuf) {
         String pathString = FUSEUtil.decodeUTF8(path);
         if(pathString == null) // Invalid UTF-8 sequence.
             return -ENOENT;
@@ -74,7 +74,7 @@ public class HelloFS extends FUSEFileSystemAdapter {
     }
 
     @Override
-    public int readdir(byte[] path, FUSEFillDir filler, long offset,
+    public int readdir(ByteBuffer path, FUSEFillDir filler, long offset,
             FUSEFileInfo fi) {
         String pathString = FUSEUtil.decodeUTF8(path);
         if(pathString == null) // Invalid UTF-8 sequence.
@@ -90,7 +90,7 @@ public class HelloFS extends FUSEFileSystemAdapter {
     }
 
     @Override
-    public int open(byte[] path, FUSEFileInfo fi) {
+    public int open(ByteBuffer path, FUSEFileInfo fi) {
         String pathString = FUSEUtil.decodeUTF8(path);
         if(pathString == null) // Invalid UTF-8 sequence.
             return -ENOENT;
@@ -105,7 +105,7 @@ public class HelloFS extends FUSEFileSystemAdapter {
     }
 
     @Override
-    public int read(byte[] path, ByteBuffer buf, long offset, FUSEFileInfo fi) {
+    public int read(ByteBuffer path, ByteBuffer buf, long offset, FUSEFileInfo fi) {
         String pathString = FUSEUtil.decodeUTF8(path);
         if(pathString == null) { // Invalid UTF-8 sequence.
             return -ENOENT;
