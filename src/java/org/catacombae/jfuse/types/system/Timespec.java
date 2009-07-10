@@ -38,7 +38,7 @@ public class Timespec {
      * Sets the fields of this Timespec object to the specified time value,
      * expressed in nanoseconds since January 1, 1970, 00:00:00 GMT.
      *
-     * @param millis the new time value, in nanoseconds since January 1, 1970,
+     * @param nanos the new time value, in nanoseconds since January 1, 1970,
      * 00:00:00 GMT.
      */
     public void setToNanos(long nanos) {
