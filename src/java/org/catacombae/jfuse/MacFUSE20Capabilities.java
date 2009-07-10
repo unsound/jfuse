@@ -19,10 +19,33 @@
 
 package org.catacombae.jfuse;
 
+import java.io.PrintStream;
+import java.lang.reflect.Field;
+
 /**
  *
  * @author erik
  */
-public interface FUSE26FileSystem extends FUSE26Operations {
-    public FUSE26Capabilities getFUSECapabilities();
+public class MacFUSE20Capabilities {
+    public boolean exchange = false;
+    public boolean getxtimes = false;
+    public boolean setbkuptime = false;
+    public boolean setcrtime = false;
+    public boolean chflags = false;
+    public boolean setattr_x = false;
+    public boolean fsetattr_x = false;
+
+    public void printFields(PrintStream ps, String prefix) {
+        try {
+            for(Field f : getClass().getDeclaredFields())
+                ps.println(prefix + f.getName() + ": " + f.getBoolean(this));
+        } catch(IllegalAccessException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public void print(PrintStream ps, String prefix) {
+        ps.println(prefix + MacFUSE20Capabilities.class.getSimpleName() + ":");
+        printFields(ps, prefix + "  ");
+    }
 }

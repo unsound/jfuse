@@ -70,6 +70,13 @@ public class FUSE {
 
     private static boolean mount26(FUSE26FileSystem fileSystem,
             final String mountPoint, String[] optionStrings) {
+        FUSE26Capabilities fuseCapabilities = fileSystem.getFUSECapabilities();
+        MacFUSE20Capabilities macFuseCapabilities;
+        if(fileSystem instanceof MacFUSE20FileSystem)
+            macFuseCapabilities = ((MacFUSE20FileSystem)fileSystem).getMacFUSECapabilities();
+        else
+            macFuseCapabilities = null;
+
         Thread shutdownHook = new Thread() {
             @Override
             public void run() {
@@ -86,7 +93,8 @@ public class FUSE {
 
         Runtime.getRuntime().addShutdownHook(shutdownHook);
 
-        boolean res = mountNative26(fileSystem, mountPoint, optionStrings);
+        boolean res = mountNative26(fileSystem, mountPoint, optionStrings,
+                fuseCapabilities, macFuseCapabilities);
 
         try {
             if(!Runtime.getRuntime().removeShutdownHook(shutdownHook))
@@ -101,7 +109,9 @@ public class FUSE {
     }
 
     private static native boolean mountNative26(FUSE26FileSystem fileSystem,
-            String mountPoint, String[] optionStrings);
+            String mountPoint, String[] optionStrings,
+            FUSE26Capabilities fuseCapabilities,
+            MacFUSE20Capabilities macFuseCapabilities);
 
     /**
      * Get the current context

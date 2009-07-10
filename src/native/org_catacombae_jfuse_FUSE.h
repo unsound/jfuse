@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     org_catacombae_jfuse_FUSE
  * Method:    mountNative26
- * Signature: (Lorg/catacombae/jfuse/FUSE26FileSystem;Ljava/lang/String;[Ljava/lang/String;)Z
+ * Signature: (Lorg/catacombae/jfuse/FUSE26FileSystem;Ljava/lang/String;[Ljava/lang/String;Lorg/catacombae/jfuse/FUSE26Capabilities;Lorg/catacombae/jfuse/MacFUSE20Capabilities;)Z
  */
 JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSE_mountNative26
-  (JNIEnv *, jclass, jobject, jstring, jobjectArray);
+  (JNIEnv *, jclass, jobject, jstring, jobjectArray, jobject, jobject);
 
 /*
  * Class:     org_catacombae_jfuse_FUSE

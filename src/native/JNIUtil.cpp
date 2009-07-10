@@ -233,6 +233,69 @@ bool JNIUtil::getLongField(JNIEnv *env, jclass fieldClass, jobject fieldObject,
     getField(Long, "J");
 }
 
+bool JNIUtil::getObjectField(JNIEnv *env, jclass fieldClass, jobject fieldObject,
+        const char *fieldName, const char *fieldSignature, jobject *target) {
+    getField(Object, fieldSignature);
+}
+
+/**
+ * Creates a new Java object from the specified class, init name and init
+ * signature. Currently you cannot pass on any arguments to the constructor, so
+ * initName and initSignature are really pointless (they will always be "<init>"
+ * and "()V".
+ */
+jobject JNIUtil::newObject(JNIEnv *env, const char *className, const char *initName,
+        const char *initSignature) {
+
+    jobject res = NULL;
+
+    jclass clazz = env->FindClass(className);
+    if(clazz == NULL || env->ExceptionCheck() == JNI_TRUE)
+        CSLogError("Could not find class \"%s\"", className);
+    else {
+        jmethodID constructor = env->GetMethodID(clazz, initName,
+                initSignature);
+        if(constructor == NULL || env->ExceptionCheck() == JNI_TRUE)
+            CSLogError("Could not find method \"%s\" with signature %s.", initName,
+                initSignature);
+        else {
+            jobject obj = env->NewObject(clazz, constructor);
+            if(obj == NULL || env->ExceptionCheck() == JNI_TRUE)
+                CSLogError("Could not create new FUSEFileInfo instance.");
+            else
+                res = obj;
+        }
+    }
+
+    return res;
+}
+
+jobject JNIUtil::newObjectWithObjectArg(JNIEnv *env, const char *className,
+        const char *initName, const char *initSignature, jobject arg) {
+
+    jobject res = NULL;
+
+    jclass clazz = env->FindClass(className);
+    if(clazz == NULL || env->ExceptionCheck() == JNI_TRUE)
+        CSLogError("Could not find class \"%s\"", className);
+    else {
+        jmethodID constructor = env->GetMethodID(clazz, initName,
+                initSignature);
+        if(constructor == NULL || env->ExceptionCheck() == JNI_TRUE)
+            CSLogError("Could not find method \"%s\" with signature %s.", initName,
+                initSignature);
+        else {
+            jobject obj = env->NewObject(clazz, constructor, arg);
+            if(obj == NULL || env->ExceptionCheck() == JNI_TRUE)
+                CSLogError("Could not create new FUSEFileInfo instance.");
+            else
+                res = obj;
+        }
+    }
+
+    return res;
+}
+
 #undef getField
 #undef setField
 

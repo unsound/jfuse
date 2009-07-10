@@ -20,9 +20,10 @@
 package org.catacombae.jfuse;
 
 /**
+ * Always extends the latest MacFUSE version of the file system adapter.
  *
- * @author erik
+ * @author Erik Larsson
  */
-public interface FUSE26FileSystem extends FUSE26Operations {
-    public FUSE26Capabilities getFUSECapabilities();
+public class MacFUSEFileSystemAdapter extends MacFUSE20FileSystemAdapter {
+
 }

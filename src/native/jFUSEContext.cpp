@@ -31,6 +31,7 @@ jFUSEContext::jFUSEContext(JNIEnv* env, jobject fsProvider) {
     this->env = env;
     this->fsProvider = fsProvider;
     this->privateData = NULL;
+    this->xtimesEnabled = false;
 }
 
 jFUSEContext::~jFUSEContext() {
@@ -78,4 +79,12 @@ void jFUSEContext::setPrivateData(jobject obj) {
         env->DeleteGlobalRef(this->privateData);
 
     this->privateData = globj;
+}
+
+bool jFUSEContext::getXtimesEnabled() {
+    return this->xtimesEnabled;
+}
+
+void jFUSEContext::setXtimesEnabled(bool b) {
+    this->xtimesEnabled = b;
 }

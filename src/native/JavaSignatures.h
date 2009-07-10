@@ -25,11 +25,16 @@
 #define JAVA_CLASS(a)               "L" a ";"
 #define JFUSE_CLASS(a)              "L" JFUSE_PACKAGE "/" #a ";"
 
+// Class signatures for certain built in Java classes
+
+#define OBJECT_CLASS                "java/lang/Object"
+#define BYTEBUFFER_CLASS            "java/nio/ByteBuffer"
+
 // Class / method signatures for certain classes
 
 #define FUSECONTEXT_CLASS           JFUSE_PACKAGE "/types/fuse26/FUSEContext"
 #define FUSECONTEXT_INIT_NAME       "<init>"
-#define FUSECONTEXT_INIT_SIGNATURE  "(JJJ" JAVA_CLASS("java/lang/Object") ")V"
+#define FUSECONTEXT_INIT_SIGNATURE  "(JJJ" JAVA_CLASS(OBJECT_CLASS) ")V"
 
 #define FUSECONNINFO_CLASS          JFUSE_PACKAGE "/types/fuse26/FUSEConnInfo"
 #define FUSECONNINFO_INIT_NAME      "<init>"
@@ -104,9 +109,9 @@
 #define OPS_OPEN_NAME               "open"
 #define OPS_OPEN_SIGNATURE          "([B" JAVA_CLASS(FUSEFILEINFO_CLASS) ")I"
 #define OPS_READ_NAME               "read"
-#define OPS_READ_SIGNATURE          "([B" JAVA_CLASS("java/nio/ByteBuffer") "J" JAVA_CLASS(FUSEFILEINFO_CLASS) ")I"
+#define OPS_READ_SIGNATURE          "([B" JAVA_CLASS(BYTEBUFFER_CLASS) "J" JAVA_CLASS(FUSEFILEINFO_CLASS) ")I"
 #define OPS_WRITE_NAME              "write"
-#define OPS_WRITE_SIGNATURE         "([B" JAVA_CLASS("java/nio/ByteBuffer") "J" JAVA_CLASS(FUSEFILEINFO_CLASS) ")I"
+#define OPS_WRITE_SIGNATURE         "([B" JAVA_CLASS(BYTEBUFFER_CLASS) "J" JAVA_CLASS(FUSEFILEINFO_CLASS) ")I"
 #define OPS_STATFS_NAME             "statfs"
 #define OPS_STATFS_SIGNATURE        "([B" JAVA_CLASS(STATVFS_CLASS) ")I"
 #define OPS_FLUSH_NAME              "flush"
@@ -136,9 +141,9 @@
 #define OPS_FSYNCDIR_NAME           "fsyncdir"
 #define OPS_FSYNCDIR_SIGNATURE      "([BZ" JAVA_CLASS(FUSEFILEINFO_CLASS) ")I"
 #define OPS_INIT_NAME               "init"
-#define OPS_INIT_SIGNATURE          "(" JAVA_CLASS(FUSECONNINFO_CLASS) ")" JAVA_CLASS("java/lang/Object")
+#define OPS_INIT_SIGNATURE          "(" JAVA_CLASS(FUSECONNINFO_CLASS) ")" JAVA_CLASS(OBJECT_CLASS)
 #define OPS_DESTROY_NAME            "destroy"
-#define OPS_DESTROY_SIGNATURE       "(" JAVA_CLASS("java/lang/Object") ")V"
+#define OPS_DESTROY_SIGNATURE       "(" JAVA_CLASS(OBJECT_CLASS) ")V"
 #define OPS_ACCESS_NAME             "access"
 #define OPS_ACCESS_SIGNATURE        "([BI)I"
 #define OPS_CREATE_NAME             "create"
@@ -153,6 +158,40 @@
 #define OPS_UTIMENS_SIGNATURE       "([B" JAVA_CLASS(TIMESPEC_CLASS) JAVA_CLASS(TIMESPEC_CLASS) ")I"
 #define OPS_BMAP_NAME               "bmap"
 #define OPS_BMAP_SIGNATURE          "([BJ" JAVA_CLASS(LONGREF_CLASS) ")I"
+
+// MacFUSE20Operations signatures
+
+#if defined(__APPLE__) || defined(__DARWIN__)
+#if (__FreeBSD__ >= 10)
+
+#define SETATTR_X_CLASS             JFUSE_PACKAGE "/types/macfuse20/Setattr_x"
+#define SETATTR_X_INIT_NAME         "<init>"
+#define SETATTR_X_INIT_SIGNATURE    "()V"
+
+#define OPS_EXCHANGE_NAME           "exchange"
+#define OPS_EXCHANGE_SIGNATURE      "(" JAVA_CLASS(BYTEBUFFER_CLASS) JAVA_CLASS(BYTEBUFFER_CLASS) "J)I"
+
+#define OPS_GETXTIMES_NAME          "getxtimes"
+#define OPS_GETXTIMES_SIGNATURE     "(" JAVA_CLASS(BYTEBUFFER_CLASS) JAVA_CLASS(TIMESPEC_CLASS) JAVA_CLASS(TIMESPEC_CLASS) ")I"
+
+#define OPS_SETBKUPTIME_NAME        "setbkuptime"
+#define OPS_SETBKUPTIME_SIGNATURE   "(" JAVA_CLASS(BYTEBUFFER_CLASS) JAVA_CLASS(TIMESPEC_CLASS) ")I"
+
+#define OPS_SETCRTIME_NAME          "setcrtime"
+#define OPS_SETCRTIME_SIGNATURE     "(" JAVA_CLASS(BYTEBUFFER_CLASS) JAVA_CLASS(TIMESPEC_CLASS) ")I"
+
+#define OPS_CHFLAGS_NAME            "chflags"
+#define OPS_CHFLAGS_SIGNATURE       "(" JAVA_CLASS(BYTEBUFFER_CLASS) "I)I"
+
+#define OPS_SETATTR_X_NAME          "setattr_x"
+#define OPS_SETATTR_X_SIGNATURE     "(" JAVA_CLASS(BYTEBUFFER_CLASS) JAVA_CLASS(SETATTR_X_CLASS) ")I"
+
+#define OPS_FSETATTR_X_NAME         "fsetattr_x"
+#define OPS_FSETATTR_X_SIGNATURE    "(" JAVA_CLASS(BYTEBUFFER_CLASS) JAVA_CLASS(SETATTR_X_CLASS) JAVA_CLASS(FUSEFILEINFO_CLASS) ")I"
+
+#endif /* __FreeBSD__ >= 10 */
+#endif /* defined(__APPLE__) || defined(__DARWIN__) */
+
 
 /*
 #define OPS__NAME                   ""

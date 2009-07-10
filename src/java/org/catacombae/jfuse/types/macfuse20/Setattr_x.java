@@ -63,4 +63,85 @@ public class Setattr_x {
     /** Flags (probably equivalent to {@link Stat#st_flags}). <b>(uint32_t)</b> */
     public int flags;
 
+    private boolean wantsMode = false;
+    private boolean wantsUid = false;
+    private boolean wantsGid = false;
+    private boolean wantsSize = false;
+    private boolean wantsModtime = false;
+    private boolean wantsCrtime = false;
+    private boolean wantsChgtime = false;
+    private boolean wantsBkuptime = false;
+    private boolean wantsFlags = false;
+
+    /**
+     * Whether or not this setattr_x session wants the file system to set the
+     * variable 'mode'.
+     */
+    public boolean wantsMode() {
+        return wantsMode;
+    }
+
+    /**
+     * Whether or not this setattr_x session wants the file system to set the
+     * variable 'uid'.
+     */
+    public boolean wantsUid() {
+        return wantsUid;
+    }
+
+    /**
+     * Whether or not this setattr_x session wants the file system to set the
+     * variable 'gid'.
+     */
+    public boolean wantsGid() {
+        return wantsGid;
+    }
+
+    /**
+     * Whether or not this setattr_x session wants the file system to set the
+     * variable 'size'.
+     */
+    public boolean wantsSize() {
+        return wantsSize;
+    }
+
+    /**
+     * Whether or not this setattr_x session wants the file system to set the
+     * variable 'modtime'.
+     */
+    public boolean wantsModtime() {
+        return wantsModtime;
+    }
+
+    /**
+     * Whether or not this setattr_x session wants the file system to set the
+     * variable 'crtime'.
+     */
+    public boolean wantsCrtime() {
+        return wantsCrtime;
+    }
+
+    /**
+     * Whether or not this setattr_x session wants the file system to set the
+     * variable 'chgtime'.
+     */
+    public boolean wantsChgtime() {
+        return wantsChgtime;
+    }
+
+    /**
+     * Whether or not this setattr_x session wants the file system to set the
+     * variable 'bkuptime'.
+     */
+    public boolean wantsBkuptime() {
+        return wantsBkuptime;
+    }
+
+    /**
+     * Whether or not this setattr_x session wants the file system to set the
+     * variable 'flags'.
+     */
+    public boolean wantsFlags() {
+        return wantsFlags;
+    }
 }

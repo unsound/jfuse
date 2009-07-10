@@ -23,6 +23,6 @@ package org.catacombae.jfuse;
  *
  * @author erik
  */
-public interface FUSE26FileSystem extends FUSE26Operations {
-    public FUSE26Capabilities getFUSECapabilities();
+public interface MacFUSE20FileSystem extends MacFUSE20Operations {
+    public MacFUSE20Capabilities getMacFUSECapabilities();
 }

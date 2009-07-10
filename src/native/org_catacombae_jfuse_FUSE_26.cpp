@@ -34,6 +34,7 @@
 #include <sys/mount.h>
 
 #include "fuse26_module.h"
+#include "macfuse20_module.h"
 #include "CSLog.h"
 #include "JavaSignatures.h"
 
@@ -58,10 +59,18 @@ static bool getCapability(JNIEnv *env, jclass capabilitiesClass,
     }
 }
 
-static bool fillFUSE26Operations(JNIEnv *env, jclass capabilitiesClass,
-        jobject capabilities, struct fuse_operations *ops) {
-    CSLogTraceEnter("fillFUSE26Operations(%p, %p, %p, %p)",
-            env, capabilitiesClass, capabilities, ops);
+static bool fillFUSE26Operations(JNIEnv *env, jobject capabilities,
+        struct fuse_operations *ops) {
+    CSLogTraceEnter("fillFUSE26Operations(%p, %p, %p)",
+            env, capabilities, ops);
+
+    jclass capabilitiesClass = env->GetObjectClass(capabilities);
+    if(capabilitiesClass == NULL || env->ExceptionCheck() == JNI_TRUE) {
+        CSLogError("Could not get FUSE 2.6 capabilities class!");
+        return false;
+    }
+    else
+        CSLogDebug("Got FUSE 2.6 capabilities class: %p", capabilitiesClass);
 
     memset(ops, 0, sizeof(struct fuse_operations));
 
@@ -129,56 +138,106 @@ static bool fillFUSE26Operations(JNIEnv *env, jclass capabilitiesClass,
 #undef AddOperationIfSupported
 #undef AddOperationIfSupported2
 
-    CSLogTraceLeave("fillFUSE26Operations(%p, %p, %p, %p): %d",
-            env, capabilitiesClass, capabilities, ops, true);
+    CSLogTraceLeave("fillFUSE26Operations(%p, %p, %p): %d",
+            env, capabilities, ops, true);
     
     return true;
 }
+
+#if defined(__APPLE__) || defined(__DARWIN__)
+#if (__FreeBSD__ >= 10)
+static bool fillMacFUSE20Operations(JNIEnv *env, jobject capabilities,
+        struct fuse_operations *ops) {
+#define _FNAME_ "fillMacFUSE20Operations"
+    CSLogTraceEnter(_FNAME_ "(%p, %p, %p)", env, capabilities, ops);
+
+    jclass capabilitiesClass = env->GetObjectClass(capabilities);
+    if(capabilitiesClass == NULL || env->ExceptionCheck() == JNI_TRUE) {
+        CSLogError("Could not get MacFUSE 2.0 capabilities class!");
+        return false;
+    }
+    else
+        CSLogDebug("Got MacFUSE 2.0 capabilities class: %p", capabilitiesClass);
+
+#define AddOperationIfSupported2(a, b) \
+    do { \
+        jboolean value; \
+        if(getCapability(env, capabilitiesClass, capabilities, #b, &value)) { \
+            if(value == JNI_TRUE) { \
+                ops->a = jfuse_##a; \
+                CSLogDebug("Added capability " #b " -> " #a); \
+            } \
+        } \
+        else \
+            return false; \
+    } while(0)
+
+#define AddOperationIfSupported(a) AddOperationIfSupported2(a, a)
+
+    AddOperationIfSupported(exchange);
+    AddOperationIfSupported(getxtimes);
+    AddOperationIfSupported(setbkuptime);
+    AddOperationIfSupported(setcrtime);
+    AddOperationIfSupported(chflags);
+    AddOperationIfSupported(setattr_x);
+    AddOperationIfSupported(fsetattr_x);
+
+#undef AddOperationIfSupported
+#undef AddOperationIfSupported2
+
+    CSLogTraceLeave(_FNAME_ "(%p, %p, %p, %p): %d",
+            env, capabilitiesClass, capabilities, ops, true);
+    return true;
+#undef _FNAME_
+}
+#endif /* __FreeBSD__ >= 10 */
+#endif /* defined(__APPLE__) || defined(__DARWIN__) */
 
 static struct fuse_operations jfuse_operations;
 
 /*
  * Class:     org_catacombae_jfuse_FUSE
  * Method:    mountNative26
- * Signature: (Lorg/catacombae/jfuse/FUSE26FileSystem;Ljava/lang/String;Lorg/catacombae/jfuse/FUSEOptions;)Z
+ * Signature: (Lorg/catacombae/jfuse/FUSE26FileSystem;Ljava/lang/String;[Ljava/lang/String;Lorg/catacombae/jfuse/FUSE26Capabilities;Lorg/catacombae/jfuse/MacFUSE20Capabilities;)Z
  */
 JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSE_mountNative26(
         JNIEnv *env, jclass cls, jobject fileSystem, jstring mountPoint,
-        jobjectArray optionStrings) {
-    CSLogTraceEnter("Java_org_catacombae_jfuse_FUSE_mountNative26(%p, %p, %p, %p, %p)",
-            env, cls, fileSystem, mountPoint, optionStrings);
+        jobjectArray optionStrings, jobject fuseCapabilities,
+        jobject macFuseCapabilities) {
+#define _FNAME_ "Java_org_catacombae_jfuse_FUSE_mountNative26"
+    CSLogTraceEnter(_FNAME_ "(%p, %p, %p, %p, %p, %p, %p)", env, cls,
+            fileSystem, mountPoint, optionStrings, fuseCapabilities,
+            macFuseCapabilities);
 
     jboolean res = JNI_FALSE;
 
-    jclass fileSystemClass = env->GetObjectClass(fileSystem);
-    if(fileSystemClass == NULL)
-        errorHandling();
-    else
-        CSLogDebug("Got file system class: %p", fileSystemClass);
+    jFUSEContext *context = new jFUSEContext(env, fileSystem);
 
-    jmethodID getCapabilitiesMid = env->GetMethodID(fileSystemClass,
-            "getCapabilities", "()Lorg/catacombae/jfuse/FUSE26Capabilities;");
-    if(getCapabilitiesMid == NULL)
-        CSPanicWithMessage("Could not get method ID for getCapabilities!");
-    else
-        CSLogDebug("Got method ID for getCapabilities(): %p", getCapabilitiesMid);
-
-    jobject capabilities = env->CallObjectMethod(fileSystem, getCapabilitiesMid);
-    if(capabilities == NULL)
-        CSPanicWithMessage("Could not call object method getCapabilities.");
-    else
-        CSLogDebug("Called method getCapabilities() with result: %p", capabilities);
-
-    jclass capabilitiesClass = env->GetObjectClass(capabilities);
-    if(capabilitiesClass == NULL)
-        CSPanicWithMessage("Could not get capabilities class!");
-    else
-        CSLogDebug("Got capabilities class: %p", capabilitiesClass);
-
-    if(!fillFUSE26Operations(env, capabilitiesClass, capabilities, &jfuse_operations))
+    if(!fillFUSE26Operations(env, fuseCapabilities, &jfuse_operations))
         CSPanicWithMessage("Could not fill FUSE 2.6 operations!");
     else
         CSLogDebug("Filled FUSE 2.6 operations.");
+
+#if defined(__APPLE__) || defined(__DARWIN__)
+#if (__FreeBSD__ >= 10)
+    if(macFuseCapabilities != NULL) {
+        if(!fillMacFUSE20Operations(env, macFuseCapabilities,
+                &jfuse_operations))
+            CSPanicWithMessage("Could not fill MacFUSE 2.0 operations!");
+        else {
+            CSLogDebug("Filled MacFUSE 2.0 operations.");
+            if(jfuse_operations.getxtimes != NULL ||
+                    jfuse_operations.setbkuptime != NULL ||
+                    jfuse_operations.setcrtime != NULL) {
+                CSLogDebug("Requesting enabling of xtimes.");
+                context->setXtimesEnabled(true);
+            }
+        }
+    }
+    else
+        CSLogDebug("No MacFUSE 2.0 operations to fill.");
+#endif /*__FreeBSD__ >= 10 */
+#endif /* defined(__APPLE__) || defined(__DARWIN__) */
 
     /* Read mountpoint. */
     jboolean isCopy;
@@ -209,8 +268,6 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSE_mountNative26(
     if(fuse_parse_cmdline(&args, NULL, NULL, NULL) != 0)
         CSLogError("fuse_parse_cmdline didn't return 0.");
     else {
-        jFUSEContext *context = new jFUSEContext(env, fileSystem);
-
         /*
          * FUSE regular mount procedure:
          *
@@ -303,9 +360,11 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSE_mountNative26(
         delete context;
     }
 
-    CSLogTraceLeave("Java_org_catacombae_jfuse_FUSE_mountNative26(%p, %p, %p, %p, %p): %d",
-            env, cls, fileSystem, mountPoint, optionStrings, res);
+    CSLogTraceLeave(_FNAME_ "(%p, %p, %p, %p, %p, %p, %p): %d", env, cls,
+            fileSystem, mountPoint, optionStrings, fuseCapabilities,
+            macFuseCapabilities, res);
     return res;
+#undef _FNAME_
 }
 
 /*

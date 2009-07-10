@@ -55,6 +55,14 @@ public:
 
     static bool getLongField(JNIEnv *env, jclass fieldClass, jobject fieldObject,
             const char *fieldName, jlong *target);
+    
+    static bool getObjectField(JNIEnv *env, jclass fieldClass, jobject fieldObject,
+            const char *fieldName, const char *fieldSignature, jobject *target);
+protected:
+    static jobject newObject(JNIEnv *env, const char *className,
+            const char *initName, const char *initSignature);
+    static jobject newObjectWithObjectArg(JNIEnv *env, const char *className,
+            const char *initName, const char *initSignature, jobject arg);
 };
 
 #endif	/* _JNIUTIL_H */

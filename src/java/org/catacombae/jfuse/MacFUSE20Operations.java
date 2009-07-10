@@ -19,6 +19,7 @@
 
 package org.catacombae.jfuse;
 
+import java.nio.ByteBuffer;
 import org.catacombae.jfuse.types.macfuse20.Setattr_x;
 import org.catacombae.jfuse.types.system.Timespec;
 import org.catacombae.jfuse.types.fuse26.FUSEFileInfo;
@@ -35,13 +36,13 @@ public interface MacFUSE20Operations {
      * Atomically exchange data between two files. See exchangedata(2) for more
      * info.
      *
-     * @param path1 the first file. <b>(const char*)</b>
-     * @param path2 the second file. <b>(const char*)</b>
+     * @param path1 path to the first file. <b>(const char*)</b>
+     * @param path2 path to the second file. <b>(const char*)</b>
      * @param options options to the exchange operation. <b>(uint32_t)</b>
      * @return 0 if successful and a negated error value from FUSEErrorValues
      * otherwise.
      */
-    public int exchange(byte[] path1, String path2, long options);
+    public int exchange(ByteBuffer path1, ByteBuffer path2, long options);
 
     /**
      * Get the Mac OS X extended time values "backup time" and "create time".
@@ -52,7 +53,7 @@ public interface MacFUSE20Operations {
      * @return 0 if successful or a negated error value from FUSEErrorValues
      * otherwise.
      */
-    public int getxtimes(String path, Timespec bkuptime, Timespec crtime);
+    public int getxtimes(ByteBuffer path, Timespec bkuptime, Timespec crtime);
 
     /**
      * Set the Mac OS X extended time value "backup time".
@@ -62,7 +63,7 @@ public interface MacFUSE20Operations {
      * @return 0 if successful or a negated error value from FUSEErrorValues
      * otherwise.
      */
-    public int setbkuptime(String path, Timespec tv);
+    public int setbkuptime(ByteBuffer path, Timespec tv);
 
     /**
      * Set the Mac OS X extended time value "create time".
@@ -72,7 +73,7 @@ public interface MacFUSE20Operations {
      * @return 0 if successful and a negated error value from FUSEErrorValues
      * otherwise.
      */
-    public int setcrtime(String path, Timespec tv);
+    public int setcrtime(ByteBuffer path, Timespec tv);
 
     /**
      * Change file flags. See chflags(2) for more info.
@@ -82,7 +83,7 @@ public interface MacFUSE20Operations {
      * @return 0 if successful and a negated error value from FUSEErrorValues
      * otherwise.
      */
-    public int chflags(String path, int flags);
+    public int chflags(ByteBuffer path, int flags);
 
     /**
      * Set many attributes in a single call. If you implement setattr_x and
@@ -97,7 +98,7 @@ public interface MacFUSE20Operations {
      * @return 0 if successful and a negated error value from FUSEErrorValues
      * otherwise.
      */
-    public int setattr_x(String path, Setattr_x attr);
+    public int setattr_x(ByteBuffer path, Setattr_x attr);
 
     /**
      * Set many attributes in a single call. If you implement setattr_x and
@@ -113,7 +114,7 @@ public interface MacFUSE20Operations {
      * @return 0 if successful and a negated error value from FUSEErrorValues
      * otherwise.
      */
-    public int fsetattr_x(String path, Setattr_x attr, FUSEFileInfo fi);
+    public int fsetattr_x(ByteBuffer path, Setattr_x attr, FUSEFileInfo fi);
 }
 
 /* From fuse/fuse.h, MacFUSE 2.0.2/2.0.3:

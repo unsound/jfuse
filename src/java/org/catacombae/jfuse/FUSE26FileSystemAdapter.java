@@ -237,7 +237,7 @@ public abstract class FUSE26FileSystemAdapter implements FUSEFileSystem {
     }
 
     //@Override
-    public final FUSE26Capabilities getCapabilities() {
+    public final FUSE26Capabilities getFUSECapabilities() {
         FUSE26Capabilities c = new FUSE26Capabilities();
 
         // Find out our capabilities through reflection.

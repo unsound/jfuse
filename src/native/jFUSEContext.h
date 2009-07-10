@@ -32,10 +32,13 @@ public:
     jmethodID getFSProviderMethod(const char *name, const char *descriptor);
     jobject getPrivateData();
     void setPrivateData(jobject obj);
+    bool getXtimesEnabled();
+    void setXtimesEnabled(bool b);
 protected:
     JNIEnv *env;
     jobject fsProvider;
     jobject privateData;
+    bool xtimesEnabled;
 };
 
 #endif	/* _JFUSECONTEXT_H */
