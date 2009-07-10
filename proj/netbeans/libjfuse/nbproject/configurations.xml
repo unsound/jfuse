@@ -10,9 +10,11 @@
       <itemPath>../../../src/native/FUSEFillDirContext.h</itemPath>
       <itemPath>../../../src/native/JNIUtil.h</itemPath>
       <itemPath>../../../src/native/JavaSignatures.h</itemPath>
+      <itemPath>../../../src/native/MacFUSE20Util.h</itemPath>
       <itemPath>../../../src/native/common.h</itemPath>
       <itemPath>../../../src/native/fuse26_module.h</itemPath>
       <itemPath>../../../src/native/jFUSEContext.h</itemPath>
+      <itemPath>../../../src/native/macfuse20_module.h</itemPath>
       <itemPath>../../../src/native/org_catacombae_jfuse_FUSE.h</itemPath>
       <itemPath>../../../src/native/org_catacombae_jfuse_types_fuse26_FUSEDirFil.h</itemPath>
       <itemPath>../../../src/native/org_catacombae_jfuse_types_fuse26_FUSEFillDir.h</itemPath>
@@ -31,9 +33,11 @@
       <itemPath>../../../src/native/FUSEDirFilContext.cpp</itemPath>
       <itemPath>../../../src/native/FUSEFillDirContext.cpp</itemPath>
       <itemPath>../../../src/native/JNIUtil.cpp</itemPath>
+      <itemPath>../../../src/native/MacFUSE20Util.cpp</itemPath>
       <itemPath>../../../src/native/common.cpp</itemPath>
       <itemPath>../../../src/native/fuse26_module.cpp</itemPath>
       <itemPath>../../../src/native/jFUSEContext.cpp</itemPath>
+      <itemPath>../../../src/native/macfuse20_module.cpp</itemPath>
       <itemPath>../../../src/native/org_catacombae_jfuse_FUSE_26.cpp</itemPath>
       <itemPath>../../../src/native/org_catacombae_jfuse_types_fuse26_FUSEDirFil.cpp</itemPath>
       <itemPath>../../../src/native/org_catacombae_jfuse_types_fuse26_FUSEFillDir.cpp</itemPath>
@@ -77,6 +81,7 @@
           <commandLine>-mmacosx-version-min=10.4 -arch i386 -arch ppc -arch x86_64 -arch ppc64</commandLine>
           <preprocessorList>
             <Elem>_FILE_OFFSET_BITS=64</Elem>
+            <Elem>__FreeBSD__=10</Elem>
           </preprocessorList>
           <warningLevel>2</warningLevel>
         </ccTool>
