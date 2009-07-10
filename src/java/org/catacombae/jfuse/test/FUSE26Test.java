@@ -41,7 +41,7 @@ public class FUSE26Test {
             }
         };
 
-        fs.getCapabilities().print(System.out, "");
+        fs.getFUSECapabilities().print(System.out, "");
     }
 
     private static class Yada extends FUSE26FileSystemAdapter {
