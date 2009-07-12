@@ -82,6 +82,8 @@ public class TestFS extends MacFUSEFileSystemAdapter {
         public final Timespec statusChangeTime = new Timespec();
         public final Timespec createTime = new Timespec();
         public final Timespec backupTime = new Timespec();
+
+        private int flags = 0;
     }
 
     private static class Directory extends Inode {
@@ -413,6 +415,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                 stbuf.st_atimespec.setToTimespec(e.accessTime);
                 stbuf.st_mtimespec.setToTimespec(e.modificationTime);
                 stbuf.st_ctimespec.setToTimespec(e.statusChangeTime);
+                stbuf.st_flags = e.flags;
                 
                 if(e instanceof File)
                     stbuf.st_size = ((File) e).length;
@@ -651,16 +654,21 @@ public class TestFS extends MacFUSEFileSystemAdapter {
             Inode e = lookupInode(pathString);
             if(e == null)
                 res = -ENOENT;
+            else if(e instanceof Directory)
+                res = -EISDIR;
             else if(!(e instanceof File))
                 res = -EACCES; // ?
             else {
                 File f = (File) e;
                 f.length = newSize;
+                
+                int numBlocks = (int)(f.length/blockSize +
+                        (f.length%blockSize != 0 ? 1 : 0));
 
-                while(f.blocks.size() > f.length/blockSize)
+                while(f.blocks.size() > numBlocks)
                     f.blocks.remove(f.blocks.size()-1);
 
-                while(f.blocks.size() < f.length/blockSize)
+                while(f.blocks.size() < numBlocks)
                     f.blocks.add(null);
 
                 f.modificationTime.setToMillis(System.currentTimeMillis());
@@ -890,7 +898,6 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                         f.length = curOffset + bytesToWrite;
 
                     totalBytesWritten += bytesToWrite;
-                    ++currentBlock;
                 }
 
                 if(totalBytesWritten != len)
@@ -986,6 +993,35 @@ public class TestFS extends MacFUSEFileSystemAdapter {
         }
 
         Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, tv);
+        return res;
+    }
+
+    @Override
+    public int chflags(ByteBuffer path, int flags) {
+        final String METHOD_NAME = "chflags";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, flags);
+
+        final int res;
+        String pathString = FUSEUtil.decodeUTF8(path);
+        Log.trace("  pathString = \"" + pathString + "\"");
+        if(pathString == null) { // Invalid UTF-8 sequence.
+            Log.warning("Recieved byte sequence that could not be decoded.");
+            res = -ENOENT;
+        }
+        else {
+            Inode e = lookupInode(pathString);
+            if(e == null)
+                res = -ENOENT;
+            else {
+                Log.debug("Changing flags from 0x" +
+                        Integer.toHexString(e.flags) + " to 0x" +
+                        Integer.toHexString(flags) + "...");
+                e.flags = flags;
+                res = 0;
+            }
+        }
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, flags);
         return res;
     }
 
