@@ -17,6 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#if defined(__APPLE__) || defined(__DARWIN__)
+#if (__FreeBSD__ >= 10)
+
 #include "MacFUSE20Util.h"
 #include "JavaSignatures.h"
 #include "FUSE26Util.h"
@@ -256,3 +259,5 @@ jobject MacFUSE20Util::newSetattr_x(JNIEnv *env,
 #undef _FNAME_
 }
 
+#endif /* __FreeBSD__ >= 10 */
+#endif /* defined(__APPLE__) || defined(__DARWIN__) */

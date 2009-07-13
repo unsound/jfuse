@@ -914,10 +914,14 @@ void* jfuse_init(struct fuse_conn_info *conn) {
     JFUSE_OPERATION_INIT();
     void *retval = context;
 
+#if defined(__APPLE__) || defined(__DARWIN__)
+#if (__FreeBSD__ >= 10)
     if(context->getXtimesEnabled()) {
         FUSE_ENABLE_XTIMES(conn);
         CSLogDebug("Enabled xtimes.");
     }
+#endif /* __FreeBSD__ >= 10 */
+#endif /* defined(__APPLE__) || defined(__DARWIN__) */
 
     JAVA_ARG_FUSE_CONN_INFO(1, conn);
 

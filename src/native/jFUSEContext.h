@@ -32,13 +32,21 @@ public:
     jmethodID getFSProviderMethod(const char *name, const char *descriptor);
     jobject getPrivateData();
     void setPrivateData(jobject obj);
+#if defined(__APPLE__) || defined(__DARWIN__)
+#if __FreeBSD__ >= 10
     bool getXtimesEnabled();
     void setXtimesEnabled(bool b);
+#endif /* __FreeBSD__ >= 10 */
+#endif /* defined(__APPLE__) || defined(__DARWIN__) */
 protected:
     JNIEnv *env;
     jobject fsProvider;
     jobject privateData;
+#if defined(__APPLE__) || defined(__DARWIN__)
+#if __FreeBSD__ >= 10
     bool xtimesEnabled;
+#endif /* __FreeBSD__ >= 10 */
+#endif /* defined(__APPLE__) || defined(__DARWIN__) */
 };
 
 #endif	/* _JFUSECONTEXT_H */
