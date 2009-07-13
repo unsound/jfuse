@@ -671,6 +671,15 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                 while(f.blocks.size() < numBlocks)
                     f.blocks.add(null);
 
+                byte[] lastBlock = f.blocks.get(numBlocks-1);
+                if(lastBlock != null) {
+                    // Zero out the truncated part of the last block.
+                    int activeBytesInBlock = (int)(f.length%blockSize);
+                    System.arraycopy(zeroBlock, activeBytesInBlock,
+                            lastBlock, activeBytesInBlock,
+                            blockSize-activeBytesInBlock);
+                }
+
                 f.modificationTime.setToMillis(System.currentTimeMillis());
 
                 res = 0;
@@ -839,7 +848,8 @@ public class TestFS extends MacFUSEFileSystemAdapter {
     }
 
     @Override
-    public int write(ByteBuffer path, ByteBuffer buf, long offset, FUSEFileInfo fi) {
+    public int write(ByteBuffer path, ByteBuffer buf, final long offset,
+            FUSEFileInfo fi) {
         final String METHOD_NAME = "write";
         Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, buf, offset, fi);
 
@@ -862,7 +872,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                 res = -EACCES; // ?
             else {
                 File f = (File) e;
-                int len = buf.remaining();
+                final int len = buf.remaining();
 
                 Log.debug("len = " + len);
 
@@ -870,28 +880,29 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                 while(totalBytesWritten < len) {
 
                     long curOffset = offset + totalBytesWritten;
-                    int currentBlock = (int) (curOffset / blockSize);
-                    int offsetInBlock = (int) (curOffset - (currentBlock * blockSize));
+                    int currentBlockIndex = (int) (curOffset / blockSize);
+                    int offsetInBlock =
+                            (int) (curOffset - (currentBlockIndex * blockSize));
                     int bytesToWrite = Math.min(len - totalBytesWritten,
                             blockSize - offsetInBlock);
                     Log.debug("write: copying " + bytesToWrite + " bytes " +
-                            "to block " + currentBlock + " starting at " +
+                            "to block " + currentBlockIndex + " starting at " +
                             offsetInBlock);
 
-                    while(f.blocks.size() <= currentBlock) {
+                    while(f.blocks.size() <= currentBlockIndex) {
                         f.blocks.add(null);
                         Log.debug("added empty block. f.blocks.size()=" +
                                 f.blocks.size());
                     }
 
-                    byte[] curBlock = f.blocks.get(currentBlock);
+                    byte[] currentBlock = f.blocks.get(currentBlockIndex);
 
-                    if(curBlock == null) {
-                        curBlock = new byte[blockSize];
-                        f.blocks.set(currentBlock, curBlock);
+                    if(currentBlock == null) {
+                        currentBlock = new byte[blockSize];
+                        f.blocks.set(currentBlockIndex, currentBlock);
                     }
 
-                    buf.get(curBlock, offsetInBlock,
+                    buf.get(currentBlock, offsetInBlock,
                             bytesToWrite);
 
                     if(f.length < curOffset + bytesToWrite)
