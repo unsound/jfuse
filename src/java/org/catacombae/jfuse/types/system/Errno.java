@@ -169,7 +169,7 @@ public enum Errno {
     ENOTEMPTY,
     /* quotas & mush */
     /** Too many processes */
-    //EPROCLIM,
+    //EPROCLIM, // Does not exist in Linux.
     /** Too many users */
     EUSERS,
     /** Disc quota exceeded */
@@ -180,41 +180,41 @@ public enum Errno {
     /** Too many levels of remote in path */
     EREMOTE,
     /** RPC struct is bad */
-    //EBADRPC,
+    //EBADRPC, // Does not exist in Linux.
     /** RPC version wrong */
-    //ERPCMISMATCH,
+    //ERPCMISMATCH, // Does not exist in Linux.
     /** RPC prog. not avail */
-    //EPROGUNAVAIL,
+    //EPROGUNAVAIL, // Does not exist in Linux.
     /** Program version wrong */
-    //EPROGMISMATCH,
+    //EPROGMISMATCH, // Does not exist in Linux.
     /** Bad procedure for program */
-    //EPROCUNAVAIL,
+    //EPROCUNAVAIL, // Does not exist in Linux.
     /** No locks available */
     ENOLCK,
     /** Function not implemented */
     ENOSYS,
     /** Inappropriate file type or format */
-    //EFTYPE,
+    //EFTYPE, // Does not exist in Linux.
     /** Authentication error */
-    //EAUTH,
+    //EAUTH, // Does not exist in Linux.
     /** Need authenticator */
-    //ENEEDAUTH,
+    //ENEEDAUTH, // Does not exist in Linux.
     /* Intelligent device errors */
     /** Device power is off */
-    //EPWROFF,
+    //EPWROFF, // Does not exist in Linux.
     /** Device error, e.g. paper out */
-    //EDEVERR,
+    //EDEVERR, // Does not exist in Linux.
     /** Value too large to be stored in data type */
     EOVERFLOW,
     /* Program loading errors */
     /** Bad executable */
-    //EBADEXEC,
+    //EBADEXEC, // Does not exist in Linux.
     /** Bad CPU type in executable */
-    //EBADARCH,
+    //EBADARCH, // Does not exist in Linux.
     /** Shared library version mismatch */
-    //ESHLIBVERS,
+    //ESHLIBVERS, // Does not exist in Linux.
     /** Malformed Mach-O file */
-    //EBADMACHO,
+    //EBADMACHO, // Does not exist in Linux.
     /** Operation canceled */
     ECANCELED,
     /** Identifier removed */
@@ -224,25 +224,26 @@ public enum Errno {
     /** Illegal byte sequence */
     EILSEQ,
     /** Attribute not found */
-    //ENOATTR,
+    //ENOATTR, // Does not exist in Linux.
     /** Bad message */
     EBADMSG,
     /** Reserved */
     EMULTIHOP,
     /** No message available on STREAM */
-    ENODATA,
+    //ENODATA, // Does not exist in FreeBSD.
     /** Reserved */
     ENOLINK,
     /** No STREAM resources */
-    ENOSR,
+    //ENOSR, // Does not exist in FreeBSD.
     /** Not a STREAM */
-    ENOSTR,
+    //ENOSTR, // Does not exist in FreeBSD.
     /** Protocol error */
     EPROTO,
     /** STREAM ioctl timeout */
-    ETIME;
+    //ETIME, // Does not exist in FreeBSD.
     /** Must be equal largest errno */
-    //ELAST;
+    //ELAST, // Does not exist in Linux.
+    ;
 
     private final int nativeErrnoValue;
 

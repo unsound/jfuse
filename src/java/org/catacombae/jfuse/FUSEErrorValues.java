@@ -249,17 +249,17 @@ public interface FUSEErrorValues {
     /** Reserved */
     public static final int EMULTIHOP = Errno.EMULTIHOP.getNativeErrnoValue();
     /** No message available on STREAM */
-    public static final int ENODATA = Errno.ENODATA.getNativeErrnoValue();
+    //public static final int ENODATA = Errno.ENODATA.getNativeErrnoValue();
     /** Reserved */
     public static final int ENOLINK = Errno.ENOLINK.getNativeErrnoValue();
     /** No STREAM resources */
-    public static final int ENOSR = Errno.ENOSR.getNativeErrnoValue();
+    //public static final int ENOSR = Errno.ENOSR.getNativeErrnoValue();
     /** Not a STREAM */
-    public static final int ENOSTR = Errno.ENOSTR.getNativeErrnoValue();
+    //public static final int ENOSTR = Errno.ENOSTR.getNativeErrnoValue();
     /** Protocol error */
     public static final int EPROTO = Errno.EPROTO.getNativeErrnoValue();
     /** STREAM ioctl timeout */
-    public static final int ETIME = Errno.ETIME.getNativeErrnoValue();
+    //public static final int ETIME = Errno.ETIME.getNativeErrnoValue();
     /** Must be equal largest errno */
     //public static final int ELAST = Errno.ELAST.getNativeErrnoValue();
 }
