@@ -4,23 +4,24 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>../../../src/native/CSLog.h</itemPath>
-      <itemPath>../../../src/native/FUSE26Util.h</itemPath>
-      <itemPath>../../../src/native/FUSEDirFilContext.h</itemPath>
-      <itemPath>../../../src/native/FUSEFillDirContext.h</itemPath>
-      <itemPath>../../../src/native/JNIUtil.h</itemPath>
-      <itemPath>../../../src/native/JavaSignatures.h</itemPath>
-      <itemPath>../../../src/native/MacFUSE20Util.h</itemPath>
-      <itemPath>../../../src/native/common.h</itemPath>
-      <itemPath>../../../src/native/fuse26_module.h</itemPath>
-      <itemPath>../../../src/native/jFUSEContext.h</itemPath>
-      <itemPath>../../../src/native/macfuse20_module.h</itemPath>
-      <itemPath>../../../src/native/org_catacombae_jfuse_FUSE.h</itemPath>
-      <itemPath>../../../src/native/org_catacombae_jfuse_types_fuse26_FUSEDirFil.h</itemPath>
-      <itemPath>../../../src/native/org_catacombae_jfuse_types_fuse26_FUSEFillDir.h</itemPath>
-      <itemPath>../../../src/native/org_catacombae_jfuse_types_system_Errno.h</itemPath>
-      <itemPath>../../../src/native/org_catacombae_jfuse_types_system_StatConstant.h</itemPath>
-      <itemPath>../../../src/native/org_catacombae_jfuse_util_FUSEUtil.h</itemPath>
+      <itemPath>../../../libjfuse/include/CSLog.h</itemPath>
+      <itemPath>../../../libjfuse/include/FUSE26Util.h</itemPath>
+      <itemPath>../../../libjfuse/include/FUSEDirFilContext.h</itemPath>
+      <itemPath>../../../libjfuse/include/FUSEFillDirContext.h</itemPath>
+      <itemPath>../../../libjfuse/include/JNIUtil.h</itemPath>
+      <itemPath>../../../libjfuse/include/JavaSignatures.h</itemPath>
+      <itemPath>../../../libjfuse/include/MacFUSE20Util.h</itemPath>
+      <itemPath>../../../libjfuse/include/common.h</itemPath>
+      <itemPath>../../../libjfuse/include/fuse26_module.h</itemPath>
+      <itemPath>../../../libjfuse/include/jFUSEContext.h</itemPath>
+      <itemPath>../../../libjfuse/include/macfuse20_module.h</itemPath>
+      <itemPath>../../../libjfuse/include/org_catacombae_jfuse_FUSE.h</itemPath>
+      <itemPath>../../../libjfuse/include/org_catacombae_jfuse_JNILoader.h</itemPath>
+      <itemPath>../../../libjfuse/include/org_catacombae_jfuse_types_fuse26_FUSEDirFil.h</itemPath>
+      <itemPath>../../../libjfuse/include/org_catacombae_jfuse_types_fuse26_FUSEFillDir.h</itemPath>
+      <itemPath>../../../libjfuse/include/org_catacombae_jfuse_types_system_Errno.h</itemPath>
+      <itemPath>../../../libjfuse/include/org_catacombae_jfuse_types_system_StatConstant.h</itemPath>
+      <itemPath>../../../libjfuse/include/org_catacombae_jfuse_util_FUSEUtil.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -29,21 +30,22 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>../../../src/native/FUSE26Util.cpp</itemPath>
-      <itemPath>../../../src/native/FUSEDirFilContext.cpp</itemPath>
-      <itemPath>../../../src/native/FUSEFillDirContext.cpp</itemPath>
-      <itemPath>../../../src/native/JNIUtil.cpp</itemPath>
-      <itemPath>../../../src/native/MacFUSE20Util.cpp</itemPath>
-      <itemPath>../../../src/native/common.cpp</itemPath>
-      <itemPath>../../../src/native/fuse26_module.cpp</itemPath>
-      <itemPath>../../../src/native/jFUSEContext.cpp</itemPath>
-      <itemPath>../../../src/native/macfuse20_module.cpp</itemPath>
-      <itemPath>../../../src/native/org_catacombae_jfuse_FUSE_26.cpp</itemPath>
-      <itemPath>../../../src/native/org_catacombae_jfuse_types_fuse26_FUSEDirFil.cpp</itemPath>
-      <itemPath>../../../src/native/org_catacombae_jfuse_types_fuse26_FUSEFillDir.cpp</itemPath>
-      <itemPath>../../../src/native/org_catacombae_jfuse_types_system_Errno.cpp</itemPath>
-      <itemPath>../../../src/native/org_catacombae_jfuse_types_system_StatConstant.cpp</itemPath>
-      <itemPath>../../../src/native/org_catacombae_jfuse_util_FUSEUtil.cpp</itemPath>
+      <itemPath>../../../libjfuse/src/FUSE26Util.cpp</itemPath>
+      <itemPath>../../../libjfuse/src/FUSEDirFilContext.cpp</itemPath>
+      <itemPath>../../../libjfuse/src/FUSEFillDirContext.cpp</itemPath>
+      <itemPath>../../../libjfuse/src/JNIUtil.cpp</itemPath>
+      <itemPath>../../../libjfuse/src/MacFUSE20Util.cpp</itemPath>
+      <itemPath>../../../libjfuse/src/common.cpp</itemPath>
+      <itemPath>../../../libjfuse/src/fuse26_module.cpp</itemPath>
+      <itemPath>../../../libjfuse/src/jFUSEContext.cpp</itemPath>
+      <itemPath>../../../libjfuse/src/macfuse20_module.cpp</itemPath>
+      <itemPath>../../../libjfuse/src/org_catacombae_jfuse_FUSE_26.cpp</itemPath>
+      <itemPath>../../../libjfuse/src/org_catacombae_jfuse_JNILoader.cpp</itemPath>
+      <itemPath>../../../libjfuse/src/org_catacombae_jfuse_types_fuse26_FUSEDirFil.cpp</itemPath>
+      <itemPath>../../../libjfuse/src/org_catacombae_jfuse_types_fuse26_FUSEFillDir.cpp</itemPath>
+      <itemPath>../../../libjfuse/src/org_catacombae_jfuse_types_system_Errno.cpp</itemPath>
+      <itemPath>../../../libjfuse/src/org_catacombae_jfuse_types_system_StatConstant.cpp</itemPath>
+      <itemPath>../../../libjfuse/src/org_catacombae_jfuse_util_FUSEUtil.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -52,7 +54,8 @@
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
-    <Elem>../../../src/native</Elem>
+    <Elem>../../../libjfuse/include</Elem>
+    <Elem>../../../libjfuse/src</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -77,6 +80,7 @@
         <ccTool>
           <incDir>
             <pElem>/System/Library/Frameworks/JavaVM.framework/Headers</pElem>
+            <pElem>../../../libjfuse/include</pElem>
           </incDir>
           <commandLine>-mmacosx-version-min=10.4 -arch i386 -arch ppc -arch x86_64 -arch ppc64</commandLine>
           <preprocessorList>
@@ -89,7 +93,6 @@
           <output>dist/darwin-Debug/libjfuse.dylib</output>
           <linkerLibItems>
             <linkerOptionItem>-lfuse</linkerOptionItem>
-            <linkerOptionItem>-framework JavaVM</linkerOptionItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
@@ -107,7 +110,7 @@
         <ccTool>
           <architecture>2</architecture>
           <incDir>
-            <pElem>../../../src/native</pElem>
+            <pElem>../../../libjfuse/include</pElem>
             <pElem>/usr/lib/jvm/default-java/include</pElem>
           </incDir>
           <preprocessorList>
@@ -136,7 +139,7 @@
         <ccTool>
           <architecture>1</architecture>
           <incDir>
-            <pElem>../../../src/native</pElem>
+            <pElem>../../../libjfuse/include</pElem>
             <pElem>/usr/lib/jvm/default-java/include</pElem>
           </incDir>
           <preprocessorList>
