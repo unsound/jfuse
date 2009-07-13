@@ -116,6 +116,8 @@ public class JNILoader {
             return ExecutionEnvironment.DARWIN;
         else if(osName.toLowerCase().startsWith("linux"))
             return ExecutionEnvironment.GNU_LINUX;
+        else if(osName.toLowerCase().startsWith("freebsd"))
+            return ExecutionEnvironment.FREEBSD;
         else
             return ExecutionEnvironment.UNKNOWN;
     }
