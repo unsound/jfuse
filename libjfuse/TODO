@@ -1,0 +1,10 @@
+High priority
+-------------
+- Check for memory leaks. Currently there doesn't seem to be any catastrophic
+  ones, but JNI memory management with local/global refs is not intuitive.
+
+Medium priority
+---------------
+
+Low priority
+---------------

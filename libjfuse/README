@@ -1,0 +1,5 @@
+libjfuse version history
+
+0.1
+---
+- First release. The lower-level API is somewhat finished.
