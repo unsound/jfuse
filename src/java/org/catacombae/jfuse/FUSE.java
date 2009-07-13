@@ -19,6 +19,7 @@
 
 package org.catacombae.jfuse;
 
+import java.io.File;
 import org.catacombae.jfuse.types.fuse26.FUSEContext;
 import org.catacombae.jfuse.util.Log;
 
@@ -45,6 +46,11 @@ public class FUSE {
         String[] adjustedArgs = new String[args.length - 1];
         if(adjustedArgs.length > 0)
             System.arraycopy(args, 1, adjustedArgs, 0, adjustedArgs.length);
+        
+        // Get absolute path to mountPoint (safest)
+        Log.debug("Getting absolute path for \"" + mountPoint + "\":");
+        mountPoint = new File(mountPoint).getAbsolutePath();
+        Log.debug("    \"" + mountPoint + "\"");
 
         synchronized(mountSync) {
             System.err.println("Calling mountNative26 with args:");
