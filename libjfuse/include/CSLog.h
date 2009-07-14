@@ -44,7 +44,7 @@ extern "C" {
 #endif
 
 #ifndef LOG_ENABLE_DEBUG
-#define LOG_ENABLE_DEBUG 1
+#define LOG_ENABLE_DEBUG 0
 #endif
 
 #ifndef LOG_ENABLE_WARNING
