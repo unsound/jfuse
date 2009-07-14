@@ -1,3 +1,3 @@
 #!/bin/sh
 
-java -Xmx512M -Djava.library.path=. -cp lib/jfuse.jar org.catacombae.jfuse.test.TestFS "$@"
+LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:lib" java -Xmx512M -cp lib/jfuse.jar org.catacombae.jfuse.test.TestFS "$@"
