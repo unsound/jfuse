@@ -177,7 +177,18 @@ FUSE_LIB_PATH=`$PKG_CONFIG --libs-only-L fuse | sed -e 's,/[/]*,/,g' -e 's,[ ]*$
 #	AC_MSG_ERROR([[Could not find JNI headers.]])
 #)
 
-JAVAC=javac
+if test -z "${JAVAC}"; then
+   JAVAC=javac
+fi
+
+case "$host_os" in
+freebsd*)
+	JAVA_HOME=`env JAVAVM_DRYRUN=yes /usr/local/bin/java | grep '^JAVA_HOME' | cut -c11-`
+	PATH=$JAVA_HOME/bin:$PATH
+	;;
+esac
+
+
 AC_JNI_INCLUDE_DIR
 for JNI_INCLUDE_DIR in $JNI_INCLUDE_DIRS
 do
