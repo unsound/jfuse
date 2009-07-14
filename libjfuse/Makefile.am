@@ -2,7 +2,7 @@
 AUTOMAKE_OPTIONS = gnu
 ACLOCAL_AMFLAGS = -I m4
 
-EXTRA_DIST = autogen.sh build_generic.sh build_macosx.sh
+EXTRA_DIST = autogen.sh m4/ac_jni_include_dir.m4
 
 MAINTAINERCLEANFILES=\
 	$(srcdir)/configure \

@@ -248,7 +248,7 @@ fatintel)
 	ARCH_FLAGS="-arch i386 -arch x86_64" ;;
 esac
 
-if [ ! -z ${ARCH_FLAGS} ]; then
+if test ! -z "${ARCH_FLAGS}"; then
    CFLAGS="${ARCH_FLAGS} ${CFLAGS}"
    CPPFLAGS="${ARCH_FLAGS} ${CPPFLAGS}"
    LDFLAGS="${ARCH_FLAGS} ${LDFLAGS}"
