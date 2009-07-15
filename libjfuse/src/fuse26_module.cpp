@@ -27,9 +27,8 @@
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
+#include <fuse_common.h>
 #include <fuse.h>
-#include <fuse/fuse_common.h>
-#include <fuse/fuse.h>
 
 #include "JavaSignatures.h"
 

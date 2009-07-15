@@ -30,7 +30,7 @@
 
 #define FUSE_USE_VERSION 26
 #include <fuse.h>
-#include <fuse/fuse_common.h>
+#include <fuse_common.h>
 #include <sys/mount.h>
 
 #include "fuse26_module.h"

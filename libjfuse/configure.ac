@@ -111,7 +111,7 @@ AC_GNU_SOURCE
 
 # Programs
 AC_PROG_CC(gcc cc)
-AC_PROG_CC_C99
+AC_PROG_CXX
 AC_PROG_LN_S
 AM_PROG_CC_C_O
 
@@ -145,15 +145,22 @@ fi
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_HEADER_STDBOOL
 
-#AC_CHECK_HEADER(
-#	[fuse.h],
-#	[],
-#	AC_MSG_ERROR([[Could not find libfuse headers.]])
-#)
+AC_CHECK_HEADERS(
+	[ \
+		fcntl.h \
+		inttypes.h \
+		sys/mount.h \
+		sys/stat.h \
+		sys/time.h \
+		sys/types.h \
+		unistd.h
+	],
+	,
+	AC_MSG_ERROR([[Could not find one of the required headers!]])
+)
 
-# (customized FUSE check)
+# FUSE check, using pkg-config
 if test -z "$PKG_CONFIG"; then
 	AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
 fi
@@ -171,29 +178,25 @@ PKG_CHECK_MODULES(
 )
 FUSE_LIB_PATH=`$PKG_CONFIG --libs-only-L fuse | sed -e 's,/[/]*,/,g' -e 's,[ ]*$,,'`
 
-#AC_CHECK_HEADERS(
-#	[jni.h jni_md.h],
-#	[],
-#	AC_MSG_ERROR([[Could not find JNI headers.]])
-#)
+# Attempt to locate JNI headers
+if test -z "${JAVAC}"; then
+   JAVAC=javac
+fi
 
-JAVAC=javac
+case "$host_os" in
+freebsd*)
+	# Attempt to work around FreeBSD's dirty tricks. See javavm(1).
+	JAVA_HOME=`env JAVAVM_DRYRUN=yes /usr/local/bin/java | grep '^JAVA_HOME' | cut -c11-`
+	PATH=$JAVA_HOME/bin:$PATH
+	;;
+esac
+
+
 AC_JNI_INCLUDE_DIR
 for JNI_INCLUDE_DIR in $JNI_INCLUDE_DIRS
 do
 	CPPFLAGS="$CPPFLAGS -I$JNI_INCLUDE_DIR"
 done
-
-AC_CHECK_HEADERS(
-	[ \
-		fcntl.h \
-		sys/time.h \
-		sys/types.h \
-		unistd.h
-	],
-	,
-	AC_MSG_ERROR([[Could not find one of the required headers!]])
-)
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -245,7 +248,7 @@ fatintel)
 	ARCH_FLAGS="-arch i386 -arch x86_64" ;;
 esac
 
-if [ ! -z ${ARCH_FLAGS} ]; then
+if test ! -z "${ARCH_FLAGS}"; then
    CFLAGS="${ARCH_FLAGS} ${CFLAGS}"
    CPPFLAGS="${ARCH_FLAGS} ${CPPFLAGS}"
    LDFLAGS="${ARCH_FLAGS} ${LDFLAGS}"

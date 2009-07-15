@@ -76,6 +76,7 @@ osf*)           _JNI_INC_SUBDIRS="alpha";;
 solaris*)       _JNI_INC_SUBDIRS="solaris";;
 mingw*)			_JNI_INC_SUBDIRS="win32";;
 cygwin*)		_JNI_INC_SUBDIRS="win32";;
+freebsd*)		_JNI_INC_SUBDIRS="freebsd";;
 *)              _JNI_INC_SUBDIRS="genunix";;
 esac
 

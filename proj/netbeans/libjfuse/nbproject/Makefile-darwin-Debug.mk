@@ -74,67 +74,67 @@ dist/darwin-Debug/libjfuse.dylib: ${OBJECTFILES}
 
 ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_types_system_StatConstant.o: nbproject/Makefile-${CND_CONF}.mk ../../../libjfuse/src/org_catacombae_jfuse_types_system_StatConstant.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src
-	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_types_system_StatConstant.o ../../../libjfuse/src/org_catacombae_jfuse_types_system_StatConstant.cpp
+	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/include/fuse -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_types_system_StatConstant.o ../../../libjfuse/src/org_catacombae_jfuse_types_system_StatConstant.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_FUSE_26.o: nbproject/Makefile-${CND_CONF}.mk ../../../libjfuse/src/org_catacombae_jfuse_FUSE_26.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src
-	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_FUSE_26.o ../../../libjfuse/src/org_catacombae_jfuse_FUSE_26.cpp
+	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/include/fuse -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_FUSE_26.o ../../../libjfuse/src/org_catacombae_jfuse_FUSE_26.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/FUSEFillDirContext.o: nbproject/Makefile-${CND_CONF}.mk ../../../libjfuse/src/FUSEFillDirContext.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src
-	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/FUSEFillDirContext.o ../../../libjfuse/src/FUSEFillDirContext.cpp
+	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/include/fuse -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/FUSEFillDirContext.o ../../../libjfuse/src/FUSEFillDirContext.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/common.o: nbproject/Makefile-${CND_CONF}.mk ../../../libjfuse/src/common.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src
-	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/common.o ../../../libjfuse/src/common.cpp
+	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/include/fuse -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/common.o ../../../libjfuse/src/common.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/MacFUSE20Util.o: nbproject/Makefile-${CND_CONF}.mk ../../../libjfuse/src/MacFUSE20Util.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src
-	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/MacFUSE20Util.o ../../../libjfuse/src/MacFUSE20Util.cpp
+	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/include/fuse -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/MacFUSE20Util.o ../../../libjfuse/src/MacFUSE20Util.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_types_fuse26_FUSEDirFil.o: nbproject/Makefile-${CND_CONF}.mk ../../../libjfuse/src/org_catacombae_jfuse_types_fuse26_FUSEDirFil.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src
-	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_types_fuse26_FUSEDirFil.o ../../../libjfuse/src/org_catacombae_jfuse_types_fuse26_FUSEDirFil.cpp
+	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/include/fuse -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_types_fuse26_FUSEDirFil.o ../../../libjfuse/src/org_catacombae_jfuse_types_fuse26_FUSEDirFil.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/FUSE26Util.o: nbproject/Makefile-${CND_CONF}.mk ../../../libjfuse/src/FUSE26Util.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src
-	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/FUSE26Util.o ../../../libjfuse/src/FUSE26Util.cpp
+	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/include/fuse -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/FUSE26Util.o ../../../libjfuse/src/FUSE26Util.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_util_FUSEUtil.o: nbproject/Makefile-${CND_CONF}.mk ../../../libjfuse/src/org_catacombae_jfuse_util_FUSEUtil.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src
-	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_util_FUSEUtil.o ../../../libjfuse/src/org_catacombae_jfuse_util_FUSEUtil.cpp
+	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/include/fuse -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_util_FUSEUtil.o ../../../libjfuse/src/org_catacombae_jfuse_util_FUSEUtil.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/JNIUtil.o: nbproject/Makefile-${CND_CONF}.mk ../../../libjfuse/src/JNIUtil.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src
-	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/JNIUtil.o ../../../libjfuse/src/JNIUtil.cpp
+	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/include/fuse -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/JNIUtil.o ../../../libjfuse/src/JNIUtil.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/fuse26_module.o: nbproject/Makefile-${CND_CONF}.mk ../../../libjfuse/src/fuse26_module.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src
-	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/fuse26_module.o ../../../libjfuse/src/fuse26_module.cpp
+	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/include/fuse -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/fuse26_module.o ../../../libjfuse/src/fuse26_module.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_types_fuse26_FUSEFillDir.o: nbproject/Makefile-${CND_CONF}.mk ../../../libjfuse/src/org_catacombae_jfuse_types_fuse26_FUSEFillDir.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src
-	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_types_fuse26_FUSEFillDir.o ../../../libjfuse/src/org_catacombae_jfuse_types_fuse26_FUSEFillDir.cpp
+	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/include/fuse -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_types_fuse26_FUSEFillDir.o ../../../libjfuse/src/org_catacombae_jfuse_types_fuse26_FUSEFillDir.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/jFUSEContext.o: nbproject/Makefile-${CND_CONF}.mk ../../../libjfuse/src/jFUSEContext.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src
-	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/jFUSEContext.o ../../../libjfuse/src/jFUSEContext.cpp
+	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/include/fuse -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/jFUSEContext.o ../../../libjfuse/src/jFUSEContext.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/FUSEDirFilContext.o: nbproject/Makefile-${CND_CONF}.mk ../../../libjfuse/src/FUSEDirFilContext.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src
-	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/FUSEDirFilContext.o ../../../libjfuse/src/FUSEDirFilContext.cpp
+	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/include/fuse -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/FUSEDirFilContext.o ../../../libjfuse/src/FUSEDirFilContext.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/macfuse20_module.o: nbproject/Makefile-${CND_CONF}.mk ../../../libjfuse/src/macfuse20_module.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src
-	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/macfuse20_module.o ../../../libjfuse/src/macfuse20_module.cpp
+	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/include/fuse -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/macfuse20_module.o ../../../libjfuse/src/macfuse20_module.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_types_system_Errno.o: nbproject/Makefile-${CND_CONF}.mk ../../../libjfuse/src/org_catacombae_jfuse_types_system_Errno.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src
-	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_types_system_Errno.o ../../../libjfuse/src/org_catacombae_jfuse_types_system_Errno.cpp
+	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/include/fuse -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_types_system_Errno.o ../../../libjfuse/src/org_catacombae_jfuse_types_system_Errno.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_JNILoader.o: nbproject/Makefile-${CND_CONF}.mk ../../../libjfuse/src/org_catacombae_jfuse_JNILoader.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src
-	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_JNILoader.o ../../../libjfuse/src/org_catacombae_jfuse_JNILoader.cpp
+	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/include/fuse -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_JNILoader.o ../../../libjfuse/src/org_catacombae_jfuse_JNILoader.cpp
 
 # Subprojects
 .build-subprojects:
