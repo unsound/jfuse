@@ -218,10 +218,13 @@ public class TestFS extends MacFUSEFileSystemAdapter {
         if(parent instanceof Symlink)
             parent = resolveSymlink((Symlink) parent);
 
-        if(parent == null)
-            return -ENOENT; // A component of the path name that must exist does not exist.
+        if(parent == null) {
+            // A component of the path name that must exist does not exist.
+            return -ENOENT;
+        }
         else if(!(parent instanceof Directory)) {
-            return -ENOTDIR; // A component of the path prefix is not a directory.
+            // A component of the path prefix is not a directory.
+            return -ENOTDIR;
         }
         else {
             long createTime = System.currentTimeMillis();
@@ -257,7 +260,8 @@ public class TestFS extends MacFUSEFileSystemAdapter {
         if(parent == null)
             return -ENOENT;
         else if(!(parent instanceof Directory)) {
-            return -ENOTDIR; // A component of the path prefix is not a directory.
+            // A component of the path prefix is not a directory.
+            return -ENOTDIR;
         }
         else {
             Directory parentDir = (Directory) parent;
@@ -307,7 +311,8 @@ public class TestFS extends MacFUSEFileSystemAdapter {
             return -ENOENT;
         else if(!(parent instanceof Directory) ||
                 !(newParent instanceof Directory)) {
-            return -ENOTDIR; // A component of the path prefix is not a directory.
+            // A component of the path prefix is not a directory.
+            return -ENOTDIR;
         }
         else {
             Directory parentDir = (Directory) parent;
@@ -515,7 +520,8 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                     if(buffer.capacity() > 0) {
                         Symlink link = (Symlink) e;
                         byte[] encodedTarget = FUSEUtil.encodeUTF8(link.target);
-                        int copySize = Math.min(buffer.capacity() - 1, encodedTarget.length);
+                        int copySize = Math.min(buffer.capacity() - 1,
+                                encodedTarget.length);
                         buffer.put(encodedTarget, 0, copySize);
                         buffer.put((byte)0); // Null terminator
                     }
