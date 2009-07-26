@@ -23,6 +23,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.TreeMap;
 import org.catacombae.jfuse.FUSE;
 import org.catacombae.jfuse.types.fuse26.FUSEConnInfo;
@@ -84,6 +85,8 @@ public class TestFS extends MacFUSEFileSystemAdapter {
         public final Timespec backupTime = new Timespec();
 
         private int flags = 0;
+
+        private ArrayList<Xattr> xattrs = new ArrayList<Xattr>();
     }
 
     private static class Directory extends Inode {
@@ -97,6 +100,11 @@ public class TestFS extends MacFUSEFileSystemAdapter {
 
     private static class Symlink extends Inode {
         public String target;
+    }
+
+    private static class Xattr {
+        private String name;
+        private byte[] data;
     }
     
     private Hashtable<String, Inode> fileTable = new Hashtable<String, Inode>();
@@ -218,10 +226,13 @@ public class TestFS extends MacFUSEFileSystemAdapter {
         if(parent instanceof Symlink)
             parent = resolveSymlink((Symlink) parent);
 
-        if(parent == null)
-            return -ENOENT; // A component of the path name that must exist does not exist.
+        if(parent == null) {
+            // A component of the path name that must exist does not exist.
+            return -ENOENT;
+        }
         else if(!(parent instanceof Directory)) {
-            return -ENOTDIR; // A component of the path prefix is not a directory.
+            // A component of the path prefix is not a directory.
+            return -ENOTDIR;
         }
         else {
             long createTime = System.currentTimeMillis();
@@ -257,7 +268,8 @@ public class TestFS extends MacFUSEFileSystemAdapter {
         if(parent == null)
             return -ENOENT;
         else if(!(parent instanceof Directory)) {
-            return -ENOTDIR; // A component of the path prefix is not a directory.
+            // A component of the path prefix is not a directory.
+            return -ENOTDIR;
         }
         else {
             Directory parentDir = (Directory) parent;
@@ -307,7 +319,8 @@ public class TestFS extends MacFUSEFileSystemAdapter {
             return -ENOENT;
         else if(!(parent instanceof Directory) ||
                 !(newParent instanceof Directory)) {
-            return -ENOTDIR; // A component of the path prefix is not a directory.
+            // A component of the path prefix is not a directory.
+            return -ENOTDIR;
         }
         else {
             Directory parentDir = (Directory) parent;
@@ -515,7 +528,8 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                     if(buffer.capacity() > 0) {
                         Symlink link = (Symlink) e;
                         byte[] encodedTarget = FUSEUtil.encodeUTF8(link.target);
-                        int copySize = Math.min(buffer.capacity() - 1, encodedTarget.length);
+                        int copySize = Math.min(buffer.capacity() - 1,
+                                encodedTarget.length);
                         buffer.put(encodedTarget, 0, copySize);
                         buffer.put((byte)0); // Null terminator
                     }
@@ -925,6 +939,96 @@ public class TestFS extends MacFUSEFileSystemAdapter {
         Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, buf, offset,
                 fi);
         return res;
+    }
+    
+    @Override
+    public int listxattr(ByteBuffer path,
+            ByteBuffer namebuf) {
+        final String METHOD_NAME = "listxattr";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, namebuf);
+
+        final int res;
+        String pathString = FUSEUtil.decodeUTF8(path);
+        Log.trace("  pathString = \"" + pathString + "\"");
+        if(pathString == null) { // Invalid UTF-8 sequence.
+            Log.warning("Recieved byte sequence that could not be decoded.");
+            res = -ENOENT;
+        }
+        else {
+            Inode e = lookupInode(pathString);
+            if(e == null)
+                res = -ENOENT;
+            else {
+                int len = 0;
+                for(Xattr cur : e.xattrs) {
+                    byte[] utf8Name = FUSEUtil.encodeUTF8(cur.name);
+                    int curLen = utf8Name.length + 1;
+                    
+                    if(namebuf != null) {
+                        if(namebuf.remaining() < curLen) {
+                            len = -ERANGE;
+                            break;
+                        }
+                        else {
+                            namebuf.put(utf8Name);
+                            namebuf.put((byte) 0); // Each name is null terminated.
+                        }
+                    }
+
+                    len += curLen;
+                }
+                res = len;
+            }
+        }
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, namebuf);
+        return res;
+
+    }
+
+    @Override
+    public int removexattr(ByteBuffer path,
+            ByteBuffer name) {
+        final String METHOD_NAME = "removexattr";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, name);
+
+        final int res;
+        String pathString = FUSEUtil.decodeUTF8(path);
+        String nameString = FUSEUtil.decodeUTF8(name);
+        Log.trace("  pathString = \"" + pathString + "\"");
+        Log.trace("  nameString = \"" + nameString + "\"");
+        if(pathString == null) { // Invalid UTF-8 sequence.
+            Log.warning("Recieved byte sequence (path) that could not be decoded.");
+            res = -ENOENT;
+        }
+        else if(nameString == null) { // Invalid UTF-8 sequence.
+            Log.warning("Recieved byte sequence (name) that could not be decoded.");
+            res = -ENOENT;
+        }
+        else {
+            Inode e = lookupInode(pathString);
+            if(e == null)
+                res = -ENOENT;
+            else {
+                boolean removed = false;
+                for(Iterator<Xattr> it = e.xattrs.iterator(); it.hasNext();) {
+                    Xattr cur = it.next();
+                    if(cur.name.equals(nameString)) {
+                        it.remove();
+                        removed = true;
+                        break;
+                    }
+                }
+                if(removed)
+                    res = 0;
+                else
+                    res = -ENOATTR;
+            }
+        }
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, name);
+        return res;
+
     }
 
     @Override

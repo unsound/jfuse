@@ -243,7 +243,7 @@ public interface FUSEErrorValues {
     /** Illegal byte sequence */
     public static final int EILSEQ = Errno.EILSEQ.getNativeErrnoValue();
     /** Attribute not found */
-    //public static final int ENOATTR = Errno.ENOATTR.getNativeErrnoValue();
+    public static final int ENOATTR = Errno.ENOATTR.getNativeErrnoValue();
     /** Bad message */
     public static final int EBADMSG = Errno.EBADMSG.getNativeErrnoValue();
     /** Reserved */

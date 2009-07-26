@@ -224,7 +224,7 @@ public enum Errno {
     /** Illegal byte sequence */
     EILSEQ,
     /** Attribute not found */
-    //ENOATTR, // Does not exist in Linux.
+    ENOATTR, // Should exist in Linux. Check man removexattr(2) / <attr/xattr.h>
     /** Bad message */
     EBADMSG,
     /** Reserved */
