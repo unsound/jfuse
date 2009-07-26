@@ -434,34 +434,8 @@ public interface FUSE26Operations extends SystemConstants {
      * <pre>
      * Set extended attributes.
      * </pre>
-     * @param opt__uint32_t_options Optional argument. Only FreeBSD-compatible
-     * operating systems will bother about this argument. This is what Mac OS X
-     * says about it: <pre>
-     * controls how the attribute is set:
      *
-     * XATTR_NOFOLLOW  do not follow symbolic links.  setxattr() normally sets
-     *                 attributes on the target of path if it is a symbolic
-     *                 link.  With this option, setxattr() will act on the link
-     *                 itself.
-     * 
-     * XATTR_CREATE    fail if the named attribute already exists.
-     * 
-     * XATTR_REPLACE   fail if the named attribute does not exist.  Failure to
-     *                 specify XATTR_REPLACE or XATTR_CREATE allows creation and
-     *                 replacement.
-     * </pre>
-     *
-     * @return 0 if successful, or one of the defined error values. If a user
-     * defined error value should be returned, bit 32 in the return value should
-     * be set to 1, and bits 0-31 should contain the user defined return value.
-     */
-
-    /**
-     * <pre>
-     * Set extended attributes.
-     * </pre>
-     *
-     * This is the FreeBSD version of the callback. If you want your application
+     * This is the MacFUSE version of the callback. If you want your application
      * to respond properly to the setxattr call on all platforms, you need to
      * implement both setxattr and setxattr_BSD.
      *
@@ -484,7 +458,7 @@ public interface FUSE26Operations extends SystemConstants {
      * Set extended attributes.
      * </pre>
      *
-     * This is the non-BSD version of the callback. If you want your application
+     * This is the regular version of the callback. If you want your application
      * to respond properly to the setxattr call on all platforms, you need to
      * implement both setxattr and setxattr_BSD.
      *
@@ -499,14 +473,13 @@ public interface FUSE26Operations extends SystemConstants {
             ByteBuffer name,
             ByteBuffer value,
             int flags);
-    //#endif /* __FreeBSD__ >= 10 */
 
     /**
      * <pre>
      * Get extended attributes.
      * </pre>
      *
-     * This is the FreeBSD version of the callback. If you want your application
+     * This is the MacFUSE version of the callback. If you want your application
      * to respond properly to the getxattr call on all platforms, you need to
      * implement both getxattr and getxattr_BSD.
      *
@@ -527,7 +500,7 @@ public interface FUSE26Operations extends SystemConstants {
      * Get extended attributes.
      * </pre>
      *
-     * This is the non-BSD version of the callback. If you want your application
+     * This is the regular version of the callback. If you want your application
      * to respond properly to the getxattr call on all platforms, you need to
      * implement both getxattr and getxattr_BSD.
      *
