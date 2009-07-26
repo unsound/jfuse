@@ -19,69 +19,53 @@
 
 #define LOG_ENABLE_TRACE 0
 
-#include "org_catacombae_jfuse_types_system_StatConstant.h"
+#include "org_catacombae_jfuse_types_system_StringConstant.h"
 
 #include "common.h"
 #include "CSLog.h"
+#include "JavaSignatures.h"
 
 #include <string.h>
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
-#include <sys/stat.h>
+
+#include <sys/xattr.h>
 
 /*
- * Class:     org_catacombae_jfuse_types_system_StatConstant
+ * Class:     org_catacombae_jfuse_types_system_StringConstant
  * Method:    getNativeValue
- * Signature: (Ljava/lang/String;)I
+ * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
-JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_StatConstant_getNativeValue
+JNIEXPORT jstring JNICALL Java_org_catacombae_jfuse_types_system_StringConstant_getNativeValue
   (JNIEnv *env, jclass cls, jstring constantName) {
-#define _FNAME_ "Java_org_catacombae_jfuse_types_system_StatConstant_getNativeValue"
+#define _FNAME_ "Java_org_catacombae_jfuse_types_system_StringConstant_getNativeValue"
 
-    CSLogTraceEnter("jint %s(%p, %p, %p)", _FNAME_, env, cls, constantName);
-    jint result = -1;
+    CSLogTraceEnter("jstring %s(%p, %p, %p)", _FNAME_, env, cls, constantName);
+    jstring result = NULL;
     const char *constantNameChars = env->GetStringUTFChars(constantName, NULL);
 
     // One truth.
-#define ifconstant(a) else if(strcmp(#a, constantNameChars) == 0) result = a
+#define else_if_constant(a) \
+    else if(strcmp(#a, constantNameChars) == 0) \
+        result = env->NewStringUTF(a)
 
     if(0);
-    ifconstant(S_IFMT);
-    ifconstant(S_IFIFO);
-    ifconstant(S_IFCHR);
-    ifconstant(S_IFDIR);
-    ifconstant(S_IFBLK);
-    ifconstant(S_IFREG);
-    ifconstant(S_IFLNK);
-    ifconstant(S_IFSOCK);
-    //ifconstant(S_IFWHT);
-    ifconstant(S_IRWXU);
-    ifconstant(S_IRUSR);
-    ifconstant(S_IWUSR);
-    ifconstant(S_IXUSR);
-    ifconstant(S_IRWXG);
-    ifconstant(S_IRGRP);
-    ifconstant(S_IWGRP);
-    ifconstant(S_IXGRP);
-    ifconstant(S_IRWXO);
-    ifconstant(S_IROTH);
-    ifconstant(S_IWOTH);
-    ifconstant(S_IXOTH);
-    ifconstant(S_ISUID);
-    ifconstant(S_ISGID);
-    ifconstant(S_ISVTX);
 
-#undef ifconstant
+    // Constants from sys/xattr.h
+    else_if_constant(XATTR_FINDERINFO_NAME);
+    else_if_constant(XATTR_RESOURCEFORK_NAME);
+    
     else {
         // If we got here, the constant is unrecognized.
         CSLogError("Could not find a matching constant value for \"%s\"", constantNameChars);
-        throwByName(env, "java/lang/RuntimeException", "Unrecognized constant value!");
+        throwByName(env, NOSUCHCONSTANTEXCEPTION_CLASS, "Unrecognized constant value!");
     }
+
+#undef else_if_constant
 
     env->ReleaseStringUTFChars(constantName, constantNameChars);
 
-    CSLogTraceLeave("jint %s(%p, %p, %p): %" PRId32, _FNAME_, env, cls,
-            constantName, (int32_t)result);
+    CSLogTraceLeave("jstring %s(%p, %p, %p): %p", _FNAME_, env, cls,
+            constantName, result);
     return result;
-
 }

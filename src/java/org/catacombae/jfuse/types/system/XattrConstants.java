@@ -19,14 +19,15 @@
 
 package org.catacombae.jfuse.types.system;
 
-import org.catacombae.jfuse.FUSEErrorValues;
-
 /**
- * This interface gathers a lot of system constants that may be useful when
- * developing jFUSE filesystems.
  *
- * @author Erik Larsson
+ * @author erik
  */
-public interface SystemConstants extends FileStatusFlags, FileModeFlags, XattrConstants, FUSEErrorValues {
+public interface XattrConstants {
+    public static final int XATTR_CREATE = NumericalConstant.XATTR_CREATE.getValue();
+    public static final int XATTR_REPLACE = NumericalConstant.XATTR_REPLACE.getValue();
+    public static final int XATTR_MAXNAMELEN = NumericalConstant.XATTR_MAXNAMELEN.getValue();
 
+    public static final String XATTR_FINDERINFO_NAME = StringConstant.XATTR_FINDERINFO_NAME.getValue();
+    public static final String XATTR_RESOURCEFORK_NAME = StringConstant.XATTR_RESOURCEFORK_NAME.getValue();
 }

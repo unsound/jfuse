@@ -20,7 +20,9 @@ privateheaders = \
 	org_catacombae_jfuse_types_fuse26_FUSEDirFil.h \
 	org_catacombae_jfuse_types_fuse26_FUSEFillDir.h \
 	org_catacombae_jfuse_types_system_Errno.h \
+	org_catacombae_jfuse_types_system_NumericalConstant.h \
 	org_catacombae_jfuse_types_system_StatConstant.h \
+	org_catacombae_jfuse_types_system_StringConstant.h \
 	org_catacombae_jfuse_util_FUSEUtil.h
 
 if INSTALL_LIBRARY

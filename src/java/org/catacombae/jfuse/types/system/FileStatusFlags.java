@@ -33,44 +33,53 @@ public interface FileStatusFlags {
      */
 
     /** Mask for open modes (O_RDONLY, O_WRONLY and O_RDWR). */
-    public static final int O_ACCMODE = 0x0003;
+    public static final int O_ACCMODE = NumericalConstant.O_ACCMODE.getValue();
 
     /* flags present in the read(2) manpage.. */
 
     /** Open for reading only. */
-    public static final int O_RDONLY = 0x0000;
+    public static final int O_RDONLY = NumericalConstant.O_RDONLY.getValue();
     /** Open for writing only */
-    public static final int O_WRONLY = 0x0001;
+    public static final int O_WRONLY = NumericalConstant.O_WRONLY.getValue();
     /** Open for reading and writing. */
-    public static final int O_RDWR = 0x0002;
+    public static final int O_RDWR = NumericalConstant.O_RDWR.getValue();
     /** Do not block on open or for data to become available. */
-    public static final int O_NONBLOCK = 0x0004;
+    public static final int O_NONBLOCK = NumericalConstant.O_NONBLOCK.getValue();
     /** Set append mode (append on each write). */
-    public static final int O_APPEND = 0x0008;
+    public static final int O_APPEND = NumericalConstant.O_APPEND.getValue();
     /** Create file if it does not exist. */
-    public static final int O_CREAT = 0x0200;
+    public static final int O_CREAT = NumericalConstant.O_CREAT.getValue();
     /** Truncate size to 0. */
-    public static final int O_TRUNC = 0x0400;
+    public static final int O_TRUNC = NumericalConstant.O_TRUNC.getValue();
     /** Error if O_CREAT and the file exists. */
-    public static final int O_EXCL = 0x0800;
+    public static final int O_EXCL = NumericalConstant.O_EXCL.getValue();
     /** Atomically obtain a shared lock. */
-    public static final int O_SHLOCK = 0x0010;
+    public static final int O_SHLOCK = NumericalConstant.O_SHLOCK.getValue();
     /** Atomically obtain an exclusive lock. */
-    public static final int O_EXLOCK = 0x0020;
+    public static final int O_EXLOCK = NumericalConstant.O_EXLOCK.getValue();
     /** Don't follow symlinks. */
-    public static final int O_NOFOLLOW = 0x0100;
+    public static final int O_NOFOLLOW = NumericalConstant.O_NOFOLLOW.getValue();
     /** Allow open of a symlink. */
-    public static final int O_SYMLINK = 0x200000;
+    public static final int O_SYMLINK = NumericalConstant.O_SYMLINK.getValue();
 
     /* additional #defines found in fcntl.h. */
 
     /** Synchronous writes. */
-    public static final int O_SYNC = 0x0080;
+    public static final int O_SYNC = NumericalConstant.O_SYNC.getValue();
     /** Signal pgrp when data ready. */
-    public static final int O_ASYNC = 0x0040;
+    public static final int O_ASYNC = NumericalConstant.O_ASYNC.getValue();
     /** Descriptor requested for event notifications only. */
-    public static final int O_EVTONLY = 0x8000;
+    public static final int O_EVTONLY = NumericalConstant.O_EVTONLY.getValue();
     /** Don't assign controlling terminal. */
-    public static final int O_NOCTTY = 0x20000;
-    public static final int O_DIRECTORY = 0x100000;
+    public static final int O_NOCTTY = NumericalConstant.O_NOCTTY.getValue();
+    public static final int O_DIRECTORY = NumericalConstant.O_DIRECTORY.getValue();
+
+    public static class Print {
+        public static void main(String[] args) throws Exception {
+            Class c = FileStatusFlags.class;
+            for(java.lang.reflect.Field f : c.getFields()) {
+                System.out.println(f.getName() + " = " + f.getInt(null));
+            }
+        }
+    }
 }

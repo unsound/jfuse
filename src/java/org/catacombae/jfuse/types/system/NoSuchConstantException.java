@@ -19,14 +19,30 @@
 
 package org.catacombae.jfuse.types.system;
 
-import org.catacombae.jfuse.FUSEErrorValues;
-
 /**
- * This interface gathers a lot of system constants that may be useful when
- * developing jFUSE filesystems.
+ * An exception that gets thrown by the native code when the requested constant could not be found
+ * in the headers of the current system.
  *
  * @author Erik Larsson
  */
-public interface SystemConstants extends FileStatusFlags, FileModeFlags, XattrConstants, FUSEErrorValues {
+public class NoSuchConstantException extends Exception {
+    /** @see Exception#Exception() */
+    public NoSuchConstantException() {
+        super();
+    }
 
+    /** @see Exception#Exception(java.lang.String)  */
+    public NoSuchConstantException(String message) {
+        super(message);
+    }
+
+    /** @see Exception#Exception(java.lang.Throwable) */
+    public NoSuchConstantException(Throwable cause) {
+        super(cause);
+    }
+
+    /** @see Exception#Exception(java.lang.String, java.lang.Throwable) */
+    public NoSuchConstantException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

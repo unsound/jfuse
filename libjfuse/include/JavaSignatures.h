@@ -32,6 +32,8 @@
 
 // Class / method signatures for certain classes
 
+#define NOSUCHCONSTANTEXCEPTION_CLASS   JFUSE_PACKAGE "/types/system/NoSuchConstantException"
+
 #define FUSECONTEXT_CLASS           JFUSE_PACKAGE "/types/fuse26/FUSEContext"
 #define FUSECONTEXT_INIT_NAME       "<init>"
 #define FUSECONTEXT_INIT_SIGNATURE  "(JJJ" JAVA_CLASS(OBJECT_CLASS) ")V"

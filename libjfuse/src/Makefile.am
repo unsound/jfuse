@@ -29,5 +29,7 @@ libjfuse_la_SOURCES   = \
 	org_catacombae_jfuse_types_fuse26_FUSEDirFil.cpp \
 	org_catacombae_jfuse_types_fuse26_FUSEFillDir.cpp \
 	org_catacombae_jfuse_types_system_Errno.cpp \
+	org_catacombae_jfuse_types_system_NumericalConstant.cpp \
 	org_catacombae_jfuse_types_system_StatConstant.cpp \
+	org_catacombae_jfuse_types_system_StringConstant.cpp \
 	org_catacombae_jfuse_util_FUSEUtil.cpp
