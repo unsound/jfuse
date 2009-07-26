@@ -47,8 +47,6 @@ public interface JFUSEOperations {
      *
      * @param path <b>(const char*)</b>
      * @param stat <b>(struct stat*)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void getattr(String path,
 			Stat stat) throws JFUSEException;
@@ -69,8 +67,6 @@ public interface JFUSEOperations {
      *
      * @param path <b>(const char*)</b>
      * @param buffer <b>(char*)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void readlink(String path,
 			 ByteBuffer buffer) throws JFUSEException;
@@ -82,8 +78,6 @@ public interface JFUSEOperations {
      *
      * @param path <b>(const char*)</b>
      * @param filler <b>(fuse_dirfil_t)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      * @deprecated
      */
     public void getdir(String path,
@@ -101,7 +95,6 @@ public interface JFUSEOperations {
      * @param path <b>(const char*)</b>
      * @param fileMode <b>(mode_t)</b>
      * @param deviceNumber <b>(dev_t)</b>
-     * @return 0 if successful, an inverted error value from FUSEErrorValues otherwise.
      */
     public void mknod(String path,
 		      short fileMode,
@@ -115,7 +108,6 @@ public interface JFUSEOperations {
      * @param path <b>(const char*)</b> the path to the file system node on
      * which the operation is to be applied.
      * @param createMode <b>(mode_t)</b>
-     * @return 0 if successful, an inverted error value from FUSEErrorValues otherwise.
      */
     public void mkdir(String path,
 		      short createMode) throws JFUSEException;
@@ -127,7 +119,6 @@ public interface JFUSEOperations {
      *
      * @param path <b>(const char*)</b> the path to the file system node on
      * which the operation is to be applied.
-     * @return 0 if successful, an inverted error value from FUSEErrorValues otherwise.
      */
     public void unlink(String path) throws JFUSEException;
 
@@ -138,7 +129,6 @@ public interface JFUSEOperations {
      *
      * @param path <b>(const char*)</b> the path to the file system node on
      * which the operation is to be applied.
-     * @return 0 if successful, an inverted error value from FUSEErrorValues otherwise.
      */
     public void rmdir(String path) throws JFUSEException;
 
@@ -149,8 +139,6 @@ public interface JFUSEOperations {
      *
      * @param sourcePath <b>(const char*)</b>
      * @param destPath <b>(const char*)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void symlink(String sourcePath,
 			String destPath) throws JFUSEException;
@@ -162,8 +150,6 @@ public interface JFUSEOperations {
      *
      * @param oldPath <b>(const char*)</b>
      * @param newPath <b>(const char*)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void rename(String oldPath,
 		       String newPath) throws JFUSEException;
@@ -175,8 +161,6 @@ public interface JFUSEOperations {
      *
      * @param sourcePath <b>(const char*)</b>
      * @param destPath <b>(const char*)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void link(String sourcePath,
 		     String destPath) throws JFUSEException;
@@ -189,8 +173,6 @@ public interface JFUSEOperations {
      * @param path <b>(const char*)</b> the path to the file system node on
      * which the operation is to be applied.
      * @param newMode <b>(mode_t)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void chmod(String path,
 		      short newMode) throws JFUSEException;
@@ -204,8 +186,6 @@ public interface JFUSEOperations {
      * which the operation is to be applied.
      * @param userId <b>(uid_t)</b>
      * @param groupId <b>(uid_t)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void chown(String path,
 		      long userId,
@@ -219,8 +199,6 @@ public interface JFUSEOperations {
      * @param path <b>(const char*)</b> the path to the file system node on
      * which the operation is to be applied.
      * @param newSize <b>(off_t)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void truncate(String path,
 			 long newSize) throws JFUSEException;
@@ -235,8 +213,6 @@ public interface JFUSEOperations {
      * @param path <b>(const char*)</b> the path to the file system node on
      * which the operation is to be applied.
      * @param time <b>(struct utimbuf*)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      * @deprecated
      */
     public void utime(String path,
@@ -258,8 +234,6 @@ public interface JFUSEOperations {
      * @param path <b>(const char*)</b> the path to the file system node on
      * which the operation is to be applied.
      * @param fi <b>(struct fuse_file_info*)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void open(String path,
 		     FUSEFileInfo fi) throws JFUSEException;
@@ -282,17 +256,6 @@ public interface JFUSEOperations {
      * @param dest <b>(char*)</b> the destination buffer.
      * @param off <b>(off_t)</b> offset in file to start reading.
      * @param fi <b>(struct fuse_file_info*)</b> file info.
-     * @return  the number of bytes read (a positive number) if the operation
-     *          completed successfully, or a negated value from
-     *          {@link FUSEErrorValues} if an error occurred.<br>
-     *          Typical error return values for read:
-     *          <ul>
-     *          <li>-{@link #EBADF EBADF}</li>
-     *          <li>-{@link #EINVAL EINVAL}</li>
-     *          <li>-{@link #EISDIR EISDIR}</li>
-     *          <li>-{@link #ENOMEM ENOMEM}</li>
-     *          <li>-{@link #EIO EIO}</li>
-     *          </ul>
      */
     public int read(String path,
 		     ByteBuffer dest,
@@ -315,8 +278,6 @@ public interface JFUSEOperations {
      * @param src <b>(const char*)</b> the data to write.
      * @param off <b>(off_t)</b> offset in file where data should be written.
      * @param fi <b>(struct fuse_file_info*)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public int write(String path,
 		      ByteBuffer src,
@@ -336,8 +297,6 @@ public interface JFUSEOperations {
      * @param path <b>(const char*)</b> the path to the file system node on
      * which the operation is to be applied.
      * @param stat <b>(struct statvfs*)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void statfs(String path,
 		       StatVFS stat) throws JFUSEException;
@@ -371,8 +330,6 @@ public interface JFUSEOperations {
      * @param path <b>(const char*)</b> the path to the file system node on
      * which the operation is to be applied.
      * @param fi <b>(struct fuse_file_info*)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void flush(String path,
 		      FUSEFileInfo fi) throws JFUSEException;
@@ -397,8 +354,6 @@ public interface JFUSEOperations {
      * @param path <b>(const char*)</b> the path to the file system node on
      * which the operation is to be applied.
      * @param fi <b>(struct fuse_file_info*)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise. (ignored)
      */
     public void release(String path,
 			FUSEFileInfo fi) throws JFUSEException;
@@ -418,8 +373,6 @@ public interface JFUSEOperations {
      * @param datasync <b>(int)</b> set to <code>true</code> if only the user data should be
      * flushed, and not the meta-data.
      * @param fi <b>(struct fuse_file_info*)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void fsync(String path, boolean datasync, FUSEFileInfo fi) throws JFUSEException;
 
@@ -542,8 +495,6 @@ public interface JFUSEOperations {
      *
      * @param path <b>(const char*)</b>
      * @param fi <b>(struct fuse_file_info*)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void opendir(String path,
 			FUSEFileInfo fi) throws JFUSEException;
@@ -576,8 +527,6 @@ public interface JFUSEOperations {
      * @param filler <b>(fuse_fill_dir_t)</b>
      * @param offset <b>(off_t)</b>
      * @param fi <b>(struct fuse_file_info*)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void readdir(String path,
 			FUSEFillDir filler,
@@ -593,8 +542,6 @@ public interface JFUSEOperations {
      *
      * @param path <b>(const char*)</b>
      * @param fi <b>(struct fuse_file_info*)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void releasedir(String path,
 			   FUSEFileInfo fi) throws JFUSEException;
@@ -612,8 +559,6 @@ public interface JFUSEOperations {
      * @param path <b>(const char*)</b>
      * @param datasync <b>(int)</b>
      * @param fi <b>(struct fuse_file_info*)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void fsyncdir(String path,
 			 boolean datasync,
@@ -664,8 +609,6 @@ public interface JFUSEOperations {
      *
      * @param path <b>(const char*)</b>
      * @param mode <b>(int)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void access(String path,
 		       int mode) throws JFUSEException;
@@ -687,8 +630,6 @@ public interface JFUSEOperations {
      * @param path <b>(const char*)</b> path to the newly created file.
      * @param mode <b>(mode_t)</b> the mode flags for the created file.
      * @param fi <b>(struct fuse_file_info*)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void create(String path,
 		       short mode,
@@ -711,8 +652,6 @@ public interface JFUSEOperations {
      * @param path <b>(const char*)</b>
      * @param length <b>(off_t)</b>
      * @param fi <b>(struct fuse_file_info*)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void ftruncate(String path,
 			  long length,
@@ -735,8 +674,6 @@ public interface JFUSEOperations {
      * @param path <b>(const char*)</b>
      * @param stat <b>(struct stat*)</b>
      * @param fi <b>(struct fuse_file_info*)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void fgetattr(String path,
 			 Stat stat,
@@ -780,8 +717,6 @@ public interface JFUSEOperations {
      * @param fi <b>(struct fuse_file_info*)</b>
      * @param cmd <b>(int)</b>
      * @param flock <b>(struct flock*)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void lock(String path,
 		     FUSEFileInfo fi,
@@ -799,8 +734,6 @@ public interface JFUSEOperations {
      * @param path <b>(const char*)</b>
      * @param accessTime <b>(const struct timespec)</b>
      * @param modificationTime <b>(const struct timespec)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void utimens(String path,
 			Timespec accessTime,
@@ -819,8 +752,6 @@ public interface JFUSEOperations {
      * @param path <b>(const char*)</b>
      * @param blocksize <b>(size_t)</b>
      * @param idx <b>(uint64_t*)</b>
-     * @return 0 if successful or an inverted error value from FUSEErrorValues
-     * otherwise.
      */
     public void bmap(String path,
 		     long blocksize,
