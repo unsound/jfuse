@@ -443,7 +443,9 @@ public interface FUSE26Operations extends SystemConstants {
      * @param name <b>(const char*)</b>
      * @param value <b>(const char*)</b>
      * @param flags <b>(int)</b>
-     * @param position <b>(uint32_t)</b>
+     * @param position <b>(uint32_t)</b> specifies an offset within the extended attribute. In the
+     * current implementation, this argument is only used with the Mac OS X resource fork attribute.
+     * For all other extended attributes, this parameter is reserved and should be zero.
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
@@ -451,7 +453,7 @@ public interface FUSE26Operations extends SystemConstants {
 			 ByteBuffer name,
 			 ByteBuffer value,
 			 int flags,
-			 int position);
+			 long position);
 
     /**
      * <pre>
@@ -486,14 +488,16 @@ public interface FUSE26Operations extends SystemConstants {
      * @param path <b>(const char*)</b>
      * @param name <b>(const char*)</b>
      * @param value <b>(char*)</b> (out)
-     * @param position <b>(uint32_t)</b>
+     * @param position <b>(uint32_t)</b> specifies an offset within the extended attribute. In the
+     * current implementation, this argument is only used with the Mac OS X resource fork attribute.
+     * For all other extended attributes, this parameter is reserved and should be zero.
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
     public int getxattr_BSD(ByteBuffer path,
 			 ByteBuffer name,
 			 ByteBuffer value,
-			 int position);
+			 long position);
 
     /**
      * <pre>

@@ -142,7 +142,7 @@ public abstract class FUSE26FileSystemAdapter implements FUSEFileSystem {
     }
 
     //@Override
-    public int setxattr_BSD(ByteBuffer path, ByteBuffer name, ByteBuffer value, int flags, int position) {
+    public int setxattr_BSD(ByteBuffer path, ByteBuffer name, ByteBuffer value, int flags, long position) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
@@ -152,7 +152,7 @@ public abstract class FUSE26FileSystemAdapter implements FUSEFileSystem {
     }
 
     //@Override
-    public int getxattr_BSD(ByteBuffer path, ByteBuffer name, ByteBuffer value, int position) {
+    public int getxattr_BSD(ByteBuffer path, ByteBuffer name, ByteBuffer value, long position) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
