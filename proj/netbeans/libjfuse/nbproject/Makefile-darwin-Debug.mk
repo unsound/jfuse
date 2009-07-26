@@ -34,9 +34,9 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_types_system_StatConstant.o \
 	${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_FUSE_26.o \
 	${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/FUSEFillDirContext.o \
-	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/libjfuse/include/org_catacombae_jfuse_types_system_NumericalConstant.o \
 	${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/common.o \
 	${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/MacFUSE20Util.o \
+	${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/libjfuse/src/org_catacombae_jfuse_types_system_NumericalConstant.o \
 	${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_types_fuse26_FUSEDirFil.o \
 	${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/FUSE26Util.o \
 	${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_util_FUSEUtil.o \
@@ -86,10 +86,6 @@ ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/FUSEFillDirContext.o: nbp
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src
 	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/include/fuse -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/FUSEFillDirContext.o ../../../libjfuse/src/FUSEFillDirContext.cpp
 
-${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/libjfuse/include/org_catacombae_jfuse_types_system_NumericalConstant.o: nbproject/Makefile-${CND_CONF}.mk /Users/erik/devel/git/jfuse/libjfuse/include/org_catacombae_jfuse_types_system_NumericalConstant.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/libjfuse/include
-	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/include/fuse -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/libjfuse/include/org_catacombae_jfuse_types_system_NumericalConstant.o /Users/erik/devel/git/jfuse/libjfuse/include/org_catacombae_jfuse_types_system_NumericalConstant.cpp
-
 ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/common.o: nbproject/Makefile-${CND_CONF}.mk ../../../libjfuse/src/common.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src
 	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/include/fuse -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/common.o ../../../libjfuse/src/common.cpp
@@ -97,6 +93,10 @@ ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/common.o: nbproject/Makef
 ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/MacFUSE20Util.o: nbproject/Makefile-${CND_CONF}.mk ../../../libjfuse/src/MacFUSE20Util.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src
 	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/include/fuse -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/MacFUSE20Util.o ../../../libjfuse/src/MacFUSE20Util.cpp
+
+${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/libjfuse/src/org_catacombae_jfuse_types_system_NumericalConstant.o: nbproject/Makefile-${CND_CONF}.mk /Users/erik/devel/git/jfuse/libjfuse/src/org_catacombae_jfuse_types_system_NumericalConstant.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/libjfuse/src
+	$(COMPILE.cc) -g -Wall -D_FILE_OFFSET_BITS=64 -D__FreeBSD__=10 -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/include/fuse -I../../../libjfuse/include -fPIC  -o ${OBJECTDIR}/_ext/Users/erik/devel/git/jfuse/libjfuse/src/org_catacombae_jfuse_types_system_NumericalConstant.o /Users/erik/devel/git/jfuse/libjfuse/src/org_catacombae_jfuse_types_system_NumericalConstant.cpp
 
 ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src/org_catacombae_jfuse_types_fuse26_FUSEDirFil.o: nbproject/Makefile-${CND_CONF}.mk ../../../libjfuse/src/org_catacombae_jfuse_types_fuse26_FUSEDirFil.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/_DOTDOT/_DOTDOT/libjfuse/src

@@ -46,7 +46,7 @@
       <itemPath>../../../libjfuse/src/org_catacombae_jfuse_types_fuse26_FUSEDirFil.cpp</itemPath>
       <itemPath>../../../libjfuse/src/org_catacombae_jfuse_types_fuse26_FUSEFillDir.cpp</itemPath>
       <itemPath>../../../libjfuse/src/org_catacombae_jfuse_types_system_Errno.cpp</itemPath>
-      <itemPath>/Users/erik/devel/git/jfuse/libjfuse/include/org_catacombae_jfuse_types_system_NumericalConstant.cpp</itemPath>
+      <itemPath>/Users/erik/devel/git/jfuse/libjfuse/src/org_catacombae_jfuse_types_system_NumericalConstant.cpp</itemPath>
       <itemPath>../../../libjfuse/src/org_catacombae_jfuse_types_system_StatConstant.cpp</itemPath>
       <itemPath>/Users/erik/devel/git/jfuse/libjfuse/src/org_catacombae_jfuse_types_system_StringConstant.cpp</itemPath>
       <itemPath>../../../libjfuse/src/org_catacombae_jfuse_util_FUSEUtil.cpp</itemPath>
