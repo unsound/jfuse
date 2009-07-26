@@ -753,7 +753,7 @@ int jfuse_listxattr(const char *path, char *namebuf, size_t namebuf_len) {
     JAVA_ARG_CLEANUP(2);
     JAVA_ARG_CLEANUP(1);
 
-    JAVA_EXCEPTION_CHECK("jfuse_removexattr");
+    JAVA_EXCEPTION_CHECK("jfuse_listxattr");
 
     CSLogTraceLeave("int jfuse_listxattr(%p, %p, %zu): %d",
                 path, namebuf, namebuf_len, retval);
