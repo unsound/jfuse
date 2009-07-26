@@ -140,7 +140,7 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_Errno_getNativeErr
     iferrno(EIDRM);
     iferrno(ENOMSG);
     iferrno(EILSEQ);
-    //iferrno(ENOATTR);
+    iferrno(ENOATTR);
     iferrno(EBADMSG);
     iferrno(EMULTIHOP);
     //iferrno(ENODATA);
