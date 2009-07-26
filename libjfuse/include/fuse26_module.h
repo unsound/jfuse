@@ -141,11 +141,16 @@ static inline jFUSEContext* getjFUSEContext() {
 */
 #define JAVA_ARG_CSTRING_BYTEBUFFER(num, str) \
     CSLogDebug("Processing argument %d (%s) of type read-only ByteBuffer (from C string)...", num, #str); \
-    jobject java_arg##num = JNIUtil::cstringToReadonlyByteBuffer(env, str); \
-    if(java_arg##num == NULL) { \
-        if(env->ExceptionCheck() == JNI_TRUE) \
-            env->ExceptionDescribe(); \
-        CSPanicWithMessage("Could not create new Java read-only ByteBuffer from C string \"%s\".", str); \
+    jobject java_arg##num; \
+    if(str == NULL) \
+        java_arg##num = NULL; \
+    else { \
+        java_arg##num = JNIUtil::cstringToReadonlyByteBuffer(env, str); \
+        if(java_arg##num == NULL) { \
+            if(env->ExceptionCheck() == JNI_TRUE) \
+                env->ExceptionDescribe(); \
+            CSPanicWithMessage("Could not create new Java read-only ByteBuffer from C string \"%s\".", str); \
+        } \
     }
 
 /*
@@ -177,24 +182,34 @@ static inline jFUSEContext* getjFUSEContext() {
             env->ExceptionDescribe(); \
         CSPanicWithMessage("Could not create new Java byte array from char* buffer."); \
     }
-*/
+ */
 
 #define JAVA_ARG_BYTEBUFFER(num, buf, len) \
     CSLogDebug("Processing argument %d (%s) of type ByteByffer...", num, #buf); \
-    jobject java_arg##num = JNIUtil::bytesToByteBuffer(env, buf, len); \
-    if(java_arg##num == NULL) { \
-        if(env->ExceptionCheck() == JNI_TRUE) \
-            env->ExceptionDescribe(); \
-        CSPanicWithMessage("Could not create new Java ByteBuffer from char* buffer."); \
+    jobject java_arg##num; \
+    if(buf == NULL) \
+        java_arg##num = NULL; \
+    else { \
+        java_arg##num = JNIUtil::bytesToByteBuffer(env, buf, len); \
+        if(java_arg##num == NULL) { \
+            if(env->ExceptionCheck() == JNI_TRUE) \
+                env->ExceptionDescribe(); \
+            CSPanicWithMessage("Could not create new Java ByteBuffer from char* buffer."); \
+        } \
     }
 
 #define JAVA_ARG_READONLY_BYTEBUFFER(num, buf, len) \
     CSLogDebug("Processing argument %d (%s) of type ByteByffer (read-only)...", num, #buf); \
-    jobject java_arg##num = JNIUtil::bytesToReadonlyByteBuffer(env, buf, len); \
-    if(java_arg##num == NULL) { \
-        if(env->ExceptionCheck() == JNI_TRUE) \
-            env->ExceptionDescribe(); \
-        CSPanicWithMessage("Could not create new Java read-only ByteBuffer from const char* buffer."); \
+    jobject java_arg##num; \
+    if(buf == NULL) \
+        java_arg##num = NULL; \
+    else { \
+        java_arg##num = JNIUtil::bytesToReadonlyByteBuffer(env, buf, len); \
+        if(java_arg##num == NULL) { \
+            if(env->ExceptionCheck() == JNI_TRUE) \
+                env->ExceptionDescribe(); \
+            CSPanicWithMessage("Could not create new Java read-only ByteBuffer from const char* buffer."); \
+        } \
     }
 
 #define JAVA_ARG_STAT(num, stbuf) \
