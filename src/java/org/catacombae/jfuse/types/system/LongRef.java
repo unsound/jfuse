@@ -20,7 +20,7 @@
 package org.catacombae.jfuse.types.system;
 
 /**
- * Container which holds a a long value.
+ * Container which holds a long value.
  *
  * @author Erik Larsson
  */

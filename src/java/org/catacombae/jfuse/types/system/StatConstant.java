@@ -19,7 +19,7 @@
 
 package org.catacombae.jfuse.types.system;
 
-import org.catacombae.jfuse.*;
+import org.catacombae.jfuse.JNILoader;
 
 /**
  *

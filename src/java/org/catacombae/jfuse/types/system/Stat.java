@@ -20,7 +20,6 @@
 package org.catacombae.jfuse.types.system;
 
 import java.io.PrintStream;
-import java.util.Date;
 
 /**
  *
