@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.TreeMap;
 import org.catacombae.jfuse.FUSE;
 import org.catacombae.jfuse.types.fuse26.FUSEConnInfo;
@@ -32,6 +33,7 @@ import org.catacombae.jfuse.MacFUSEFileSystemAdapter;
 import org.catacombae.jfuse.types.fuse26.FUSEFillDir;
 import org.catacombae.jfuse.util.FUSEUtil;
 import org.catacombae.jfuse.types.system.Stat;
+import org.catacombae.jfuse.types.system.StatVFS;
 import org.catacombae.jfuse.types.system.Timespec;
 import org.catacombae.jfuse.util.Log;
 
@@ -46,6 +48,31 @@ import org.catacombae.jfuse.util.Log;
 public class TestFS extends MacFUSEFileSystemAdapter {
 
     private static final String CLASS_NAME = "TestFS";
+
+    /** No-op Iterable used in some internal operations. */
+    private static final Iterable<String> nullStringIterable =
+            new Iterable<String>() {
+
+                public Iterator<String> iterator() {
+                    return new Iterator<String>() {
+
+                        public boolean hasNext() {
+                            return false;
+                        }
+
+                        public String next() {
+                            throw new NoSuchElementException();
+                        }
+
+                        public void remove() {
+                            throw new UnsupportedOperationException();
+                        }
+                    };
+                }
+            };
+
+    private final Object inodeIdSync = new Object();
+    private int lastInodeId = 0;
 
     private final int blockSize = 65535;
     private final byte[] zeroBlock;
@@ -71,7 +98,8 @@ public class TestFS extends MacFUSEFileSystemAdapter {
         }
     }
 
-    private static abstract class Inode {
+    private abstract class Inode {
+        public final int id;
 
         public long uid;
         public long gid;
@@ -86,25 +114,59 @@ public class TestFS extends MacFUSEFileSystemAdapter {
 
         private int flags = 0;
 
-        private ArrayList<Xattr> xattrs = new ArrayList<Xattr>();
+        public TreeMap<String, byte[]> xattrMap = null;
+
+        {
+            synchronized(inodeIdSync) {
+                id = lastInodeId++;
+            }
+        }
+
+        public byte[] getXattr(String name) {
+            if(xattrMap == null)
+                return null;
+            else
+                return xattrMap.get(name);
+        }
+
+        public void setXattr(String name, byte[] value) {
+            if(name == null)
+                throw new IllegalArgumentException("No null names allowed.");
+            if(value == null)
+                throw new IllegalArgumentException("No null values allowed.");
+
+            if(xattrMap == null)
+                xattrMap = new TreeMap<String, byte[]>();
+            xattrMap.put(name, value);
+        }
+
+        public byte[] removeXattr(String name) {
+            if(xattrMap == null)
+                return null;
+            else
+                return xattrMap.remove(name);
+        }
+
+        private Iterable<String> getXattrNames() {
+            if(xattrMap == null)
+                return nullStringIterable;
+            else
+                return xattrMap.keySet();
+            //return keySet.toArray(new String[keySet.size()]);
+        }
     }
 
-    private static class Directory extends Inode {
+    private class Directory extends Inode {
         public final TreeMap<String, Inode> children = new TreeMap<String, Inode>();
     }
 
-    private static class File extends Inode {
+    private class File extends Inode {
         public final ArrayList<byte[]> blocks = new ArrayList<byte[]>();
         public long length;
     }
 
-    private static class Symlink extends Inode {
+    private class Symlink extends Inode {
         public String target;
-    }
-
-    private static class Xattr {
-        private String name;
-        private byte[] data;
     }
     
     private Hashtable<String, Inode> fileTable = new Hashtable<String, Inode>();
@@ -418,8 +480,8 @@ public class TestFS extends MacFUSEFileSystemAdapter {
         else {
             Inode e = lookupInode(pathString);
             if(e != null) {
-                Log.debug("stbuf before:");
-                stbuf.printFields("  ", System.err);
+                //Log.debug("stbuf before:");
+                //stbuf.printFields("  ", System.err);
 
                 stbuf.st_uid = e.uid;
                 stbuf.st_gid = e.gid;
@@ -435,8 +497,8 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                 else
                     stbuf.st_size = 0;
 
-                Log.debug("stbuf after:");
-                stbuf.printFields("  ", System.err);
+                //Log.debug("stbuf after:");
+                //stbuf.printFields("  ", System.err);
             }
             else
                 res = -ENOENT;
@@ -685,15 +747,17 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                 while(f.blocks.size() < numBlocks)
                     f.blocks.add(null);
 
-                byte[] lastBlock = f.blocks.get(numBlocks-1);
-                if(lastBlock != null) {
-                    // Zero out the truncated part of the last block.
-                    int activeBytesInBlock = (int)(f.length%blockSize);
-                    System.arraycopy(zeroBlock, activeBytesInBlock,
-                            lastBlock, activeBytesInBlock,
-                            blockSize-activeBytesInBlock);
+                if(numBlocks > 0) {
+                    byte[] lastBlock = f.blocks.get(numBlocks - 1);
+                    if(lastBlock != null) {
+                        // Zero out the truncated part of the last block.
+                        int activeBytesInBlock = (int) (f.length % blockSize);
+                        System.arraycopy(zeroBlock, activeBytesInBlock,
+                                lastBlock, activeBytesInBlock,
+                                blockSize - activeBytesInBlock);
+                    }
                 }
-
+                
                 f.modificationTime.setToMillis(System.currentTimeMillis());
 
                 res = 0;
@@ -940,7 +1004,186 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                 fi);
         return res;
     }
+
+    @Override
+    public int statfs(ByteBuffer path,
+		       StatVFS st) {
+        final String METHOD_NAME = "statfs";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, st);
+
+        final int res;
+        String pathString = FUSEUtil.decodeUTF8(path);
+        Log.trace("  pathString = \"" + pathString + "\"");
+        if(pathString == null) { // Invalid UTF-8 sequence.
+            Log.warning("Recieved byte sequence that could not be decoded.");
+            res = -ENOENT;
+        }
+        else {
+            Inode e = lookupInode(pathString);
+            if(e == null)
+                res = -ENOENT;
+            else {
+                Runtime rt = Runtime.getRuntime();
+                long freeMem = rt.freeMemory();
+                long maxMem = rt.maxMemory();
+                long totalMem = rt.totalMemory();
+
+                st.f_frsize = blockSize;
+                st.f_bsize = blockSize; // Could be something else... this is our "preferred" I/O chunk size.
+
+                st.f_blocks = maxMem / blockSize;
+                st.f_bfree = (freeMem + (maxMem - totalMem)) / blockSize;
+                st.f_bavail = st.f_bfree;
+
+                st.f_flag = 0;
+                st.f_namemax = Integer.MAX_VALUE; // yes?
+
+                // We do not set the inode number limits... not sure about that yet.
+                st.f_files = Integer.MAX_VALUE;
+                st.f_ffree = Integer.MAX_VALUE - lastInodeId;
+                st.f_favail = st.f_ffree;
+
+                res = 0;
+            }
+        }
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, st);
+        return res;
+    }
     
+    @Override
+    public int setxattr_BSD(ByteBuffer path,
+            ByteBuffer name,
+            ByteBuffer value,
+            int flags,
+            long position) {
+        final String METHOD_NAME = "setxattr_BSD";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, name, value, flags, position);
+
+        final int res;
+        String pathString = FUSEUtil.decodeUTF8(path);
+        String nameString = FUSEUtil.decodeUTF8(name);
+        Log.trace("  pathString = \"" + pathString + "\"");
+        Log.trace("  nameString = \"" + nameString + "\"");
+        if(pathString == null) { // Invalid UTF-8 sequence.
+            Log.warning("Recieved byte sequence (path) that could not be decoded.");
+            res = -ENOENT;
+        }
+        else if(nameString == null) { // Invalid UTF-8 sequence.
+            Log.warning("Recieved byte sequence (name) that could not be decoded.");
+            res = -ENOENT;
+        }
+        else if(position < 0 || position > Integer.MAX_VALUE) {
+            Log.warning("'position' argument out of int range: " + position);
+            res = -EINVAL;
+        }
+        else {
+            Inode e = lookupInode(pathString);
+            if(e == null)
+                res = -ENOENT;
+            else {
+                byte[] xattrData = e.getXattr(nameString);
+
+                if((flags & XATTR_CREATE) != 0 && xattrData != null)
+                    res = -EEXIST;
+                else if((flags & XATTR_REPLACE) != 0 && xattrData == null)
+                    res = -ENOATTR;
+                else {
+                    byte[] data = new byte[value.remaining()];
+                    value.get(data);
+                    e.setXattr(nameString, data);
+                    res = 0;
+                }
+            }
+        }
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, name, value, flags, position);
+        return res;
+    }
+
+    @Override
+    public int setxattr(ByteBuffer path,
+            ByteBuffer name,
+            ByteBuffer value,
+            int flags) {
+        final String METHOD_NAME = "getxattr";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, name, value);
+
+        final int res = getxattr_BSD(path, name, value, 0);
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, name, value);
+        return res;
+    }
+
+    @Override
+    public int getxattr_BSD(ByteBuffer path,
+            ByteBuffer name,
+            ByteBuffer value,
+            long position) {
+        final String METHOD_NAME = "getxattr_BSD";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, name, value, position);
+
+        final int res;
+        String pathString = FUSEUtil.decodeUTF8(path);
+        String nameString = FUSEUtil.decodeUTF8(name);
+        Log.trace("  pathString = \"" + pathString + "\"");
+        Log.trace("  nameString = \"" + nameString + "\"");
+        if(pathString == null) { // Invalid UTF-8 sequence.
+            Log.warning("Recieved byte sequence (path) that could not be decoded.");
+            res = -ENOENT;
+        }
+        else if(nameString == null) { // Invalid UTF-8 sequence.
+            Log.warning("Recieved byte sequence (name) that could not be decoded.");
+            res = -ENOENT;
+        }
+        else if(position < 0 || position > Integer.MAX_VALUE) {
+            Log.warning("'position' argument out of int range: " + position);
+            res = -EINVAL;
+        }
+        else {
+            Inode e = lookupInode(pathString);
+            if(e == null)
+                res = -ENOENT;
+            else {
+                byte[] xattrData = e.getXattr(nameString);
+                if(xattrData != null) {
+                    int remainingInXattr = (int)(xattrData.length-position);
+                    if(remainingInXattr < 0)
+                        res = -EINVAL;
+                    else if(value != null) {
+                        if(value.remaining() < remainingInXattr)
+                            res = -ERANGE;
+                        else {
+                            value.put(xattrData, (int)position, remainingInXattr);
+                            res = remainingInXattr;
+                        }
+                    }
+                    else
+                        // A null value means we should return the size of the extended attribute data.
+                        res = remainingInXattr;
+                }
+                else
+                    res = -ENOATTR;
+            }
+        }
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, name, value, position);
+        return res;
+    }
+
+    @Override
+    public int getxattr(ByteBuffer path,
+            ByteBuffer name,
+            ByteBuffer value) {
+        final String METHOD_NAME = "getxattr";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, name, value);
+
+        final int res = getxattr_BSD(path, name, value, 0);
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, name, value);
+        return res;
+    }
+
     @Override
     public int listxattr(ByteBuffer path,
             ByteBuffer namebuf) {
@@ -960,8 +1203,8 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                 res = -ENOENT;
             else {
                 int len = 0;
-                for(Xattr cur : e.xattrs) {
-                    byte[] utf8Name = FUSEUtil.encodeUTF8(cur.name);
+                for(String cur : e.getXattrNames()) {
+                    byte[] utf8Name = FUSEUtil.encodeUTF8(cur);
                     int curLen = utf8Name.length + 1;
                     
                     if(namebuf != null) {
@@ -1010,16 +1253,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
             if(e == null)
                 res = -ENOENT;
             else {
-                boolean removed = false;
-                for(Iterator<Xattr> it = e.xattrs.iterator(); it.hasNext();) {
-                    Xattr cur = it.next();
-                    if(cur.name.equals(nameString)) {
-                        it.remove();
-                        removed = true;
-                        break;
-                    }
-                }
-                if(removed)
+                if(e.removeXattr(nameString) != null)
                     res = 0;
                 else
                     res = -ENOATTR;
