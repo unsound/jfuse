@@ -30,7 +30,7 @@ import org.catacombae.jfuse.types.system.Timespec;
  *
  * @author erik
  */
-public class MacFUSE20FileSystemAdapter extends FUSEFileSystemAdapter
+public abstract class MacFUSE20FileSystemAdapter extends FUSEFileSystemAdapter
         implements MacFUSE20FileSystem {
 
     public MacFUSE20Capabilities getMacFUSECapabilities() {

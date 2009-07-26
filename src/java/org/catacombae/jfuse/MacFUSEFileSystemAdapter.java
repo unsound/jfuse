@@ -24,6 +24,6 @@ package org.catacombae.jfuse;
  *
  * @author Erik Larsson
  */
-public class MacFUSEFileSystemAdapter extends MacFUSE20FileSystemAdapter {
+public abstract class MacFUSEFileSystemAdapter extends MacFUSE20FileSystemAdapter {
 
 }
