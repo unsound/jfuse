@@ -1029,7 +1029,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                 long totalMem = rt.totalMemory();
 
                 st.f_frsize = blockSize;
-                st.f_bsize = blockSize; // Could be something else... this is our "preferred" I/O chunk size.
+                st.f_bsize = 1*1024*1024; // As much data as possible in each op
 
                 st.f_blocks = maxMem / blockSize;
                 st.f_bfree = (freeMem + (maxMem - totalMem)) / blockSize;
