@@ -20,6 +20,7 @@
 package org.catacombae.jfuse.types.system;
 
 import org.catacombae.jfuse.JNILoader;
+import org.catacombae.jfuse.util.Log;
 
 /**
  *
@@ -47,6 +48,8 @@ enum StringConstant {
         try {
             nativeValue = getNativeValue(name());
         } catch(NoSuchConstantException e) {
+            Log.warning("No native string constant value found for " +
+                    name() + ". Message: " + e.getMessage());
             nativeValue = null;
         }
 
