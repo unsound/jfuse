@@ -278,6 +278,44 @@ public class TestFS extends MacFUSEFileSystemAdapter {
         }
     }
 
+    private int createHardlink(String source, String destination) {
+        String parentPath = FUSEUtil.dirname(destination);
+        String childName = FUSEUtil.basename(destination);
+        if(childName.length() == 0)
+            return -ENOENT; // Invalid filename (empty)
+
+
+        Inode parent = lookupInode(parentPath);
+        if(parent instanceof Symlink)
+            parent = resolveSymlink((Symlink) parent);
+
+        if(parent == null) {
+            // A component of the path name that must exist does not exist.
+            return -ENOENT;
+        }
+        else if(!(parent instanceof Directory)) {
+            // A component of the path prefix is not a directory.
+            return -ENOTDIR;
+        }
+        else {
+            Directory parentDir = (Directory) parent;
+
+            Inode sourceNode = lookupInode(source);
+            if(sourceNode == null)
+                return -ENOENT;
+            else if(sourceNode instanceof Directory)
+                return -EPERM;
+            else {
+                parentDir.children.put(childName, sourceNode);
+                fileTable.put(destination, sourceNode);
+                ++sourceNode.nlink;
+                sourceNode.statusChangeTime.setToMillis(System.currentTimeMillis());
+                
+                return 0;
+            }
+        }
+    }
+
     private int createSymlink(String source, String destination) {
         String parentPath = FUSEUtil.dirname(destination);
         String childName = FUSEUtil.basename(destination);
@@ -623,6 +661,26 @@ public class TestFS extends MacFUSEFileSystemAdapter {
             res = -ENOENT;
         else
             res = createSymlink(sourceString, destString);
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, source, dest);
+        return res;
+    }
+
+    @Override
+    public int link(ByteBuffer source,
+            ByteBuffer dest) {
+        final String METHOD_NAME = "link";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, source, dest);
+
+        int res;
+        String sourceString = FUSEUtil.decodeUTF8(source);
+        String destString = FUSEUtil.decodeUTF8(dest);
+        Log.trace("  sourceString = \"" + sourceString + "\"");
+        Log.trace("  destString = \"" + destString + "\"");
+        if(sourceString == null || destString == null) // Invalid UTF-8 sequence.
+            res = -ENOENT;
+        else
+            res = createHardlink(sourceString, destString);
 
         Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, source, dest);
         return res;
