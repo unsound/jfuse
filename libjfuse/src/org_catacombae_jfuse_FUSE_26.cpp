@@ -178,6 +178,7 @@ static bool fillMacFUSE20Operations(JNIEnv *env, jobject capabilities,
     AddOperationIfSupported(getxtimes);
     AddOperationIfSupported(setbkuptime);
     AddOperationIfSupported(setcrtime);
+    AddOperationIfSupported(setchgtime);
     AddOperationIfSupported(chflags);
     AddOperationIfSupported(setattr_x);
     AddOperationIfSupported(fsetattr_x);
@@ -228,7 +229,8 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSE_mountNative26(
             CSLogDebug("Filled MacFUSE 2.0 operations.");
             if(jfuse_operations.getxtimes != NULL ||
                     jfuse_operations.setbkuptime != NULL ||
-                    jfuse_operations.setcrtime != NULL) {
+                    jfuse_operations.setcrtime != NULL ||
+                    jfuse_operations.setchgtime != NULL) {
                 CSLogDebug("Requesting enabling of xtimes.");
                 context->setXtimesEnabled(true);
             }

@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#define LOG_ENABLE_TRACE 0
+#define LOG_ENABLE_TRACE 1
 
 #include "macfuse20_module.h"
 
@@ -154,7 +154,6 @@ int jfuse_setbkuptime(const char *path, const struct timespec *tv) {
 #undef _FNAME_
 }
 
-/*
 int jfuse_setchgtime(const char *path, const struct timespec *tv) {
 #define _FNAME_ "jfuse_setchgtime"
     CSLogTraceEnter("int " _FNAME_ "(%p, %p)", path, tv);
@@ -182,7 +181,6 @@ int jfuse_setchgtime(const char *path, const struct timespec *tv) {
     return retval;
 #undef _FNAME_
 }
-*/
 
 int jfuse_setcrtime(const char *path, const struct timespec *tv) {
 #define _FNAME_ "jfuse_setcrtime"

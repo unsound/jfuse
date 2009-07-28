@@ -83,6 +83,10 @@ public abstract class MacFUSE20FileSystemAdapter extends FUSEFileSystemAdapter
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }
 
+    public int setchgtime(ByteBuffer path, Timespec tv) {
+        throw new UnsupportedOperationException("Not supposed to call this method.");
+    }
+
     public int chflags(ByteBuffer path, int flags) {
         throw new UnsupportedOperationException("Not supposed to call this method.");
     }

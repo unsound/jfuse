@@ -46,6 +46,11 @@ public interface MacFUSE20Operations {
 
     /**
      * Get the Mac OS X extended time values "backup time" and "create time".
+     * <br/>
+     * Note: For things to work as smoothly as possible in Mac OS X, you should
+     * implement all of the extended time callbacks (getxtimes, setcrtime,
+     * setbkuptime and setcrtim), or none at all. (For a read-only file system,
+     * the set-callbacks don't need to be implemented.)
      *
      * @param path <b>(const char*)</b>
      * @param bkuptime <b>(struct timespec*)</b>
@@ -56,7 +61,11 @@ public interface MacFUSE20Operations {
     public int getxtimes(ByteBuffer path, Timespec bkuptime, Timespec crtime);
 
     /**
-     * Set the Mac OS X extended time value "backup time".
+     * Set the Mac OS X extended time value "backup time".<br/>
+     * Note: For things to work as smoothly as possible in Mac OS X, you should
+     * implement all of the extended time callbacks (getxtimes, setcrtime,
+     * setbkuptime and setcrtim), or none at all. (For a read-only file system,
+     * the set-callbacks don't need to be implemented.)
      *
      * @param path <b>(const char*)</b>
      * @param tv <b>(const struct timespec*)</b>
@@ -66,7 +75,11 @@ public interface MacFUSE20Operations {
     public int setbkuptime(ByteBuffer path, Timespec tv);
 
     /**
-     * Set the Mac OS X extended time value "create time".
+     * Set the Mac OS X extended time value "create time".<br/>
+     * Note: For things to work as smoothly as possible in Mac OS X, you should
+     * implement all of the extended time callbacks (getxtimes, setcrtime,
+     * setbkuptime and setcrtim), or none at all. (For a read-only file system,
+     * the set-callbacks don't need to be implemented.)
      *
      * @param path <b>(const char*)</b>
      * @param tv <b>(const struct timespec*)</b>
@@ -74,6 +87,22 @@ public interface MacFUSE20Operations {
      * otherwise.
      */
     public int setcrtime(ByteBuffer path, Timespec tv);
+
+    /**
+     * Set the UNIX time value ctime ("Time when file status was last changed").
+     * This time value can not normally be set explicitly, but Mac OS X allows
+     * it.<br/>
+     * Note: For things to work as smoothly as possible in Mac OS X, you should
+     * implement all of the extended time callbacks (getxtimes, setcrtime,
+     * setbkuptime and setcrtim), or none at all. (For a read-only file system,
+     * the set-callbacks don't need to be implemented.)
+     *
+     * @param path <b>(const char*)</b>
+     * @param tv <b>(const struct timespec*)</b>
+     * @return 0 if successful and a negated error value from FUSEErrorValues
+     * otherwise.
+     */
+    public int setchgtime(ByteBuffer path, Timespec tv);
 
     /**
      * Change file flags. See chflags(2) for more info.

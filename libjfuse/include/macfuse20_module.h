@@ -42,7 +42,7 @@ int jfuse_getxtimes(const char *path, struct timespec *bkuptime,
 
 int jfuse_setbkuptime(const char *path, const struct timespec *tv);
 
-//int jfuse_setchgtime(const char *path, const struct timespec *tv);
+int jfuse_setchgtime(const char *path, const struct timespec *tv);
 
 int jfuse_setcrtime(const char *path, const struct timespec *tv);
 

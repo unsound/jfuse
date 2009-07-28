@@ -31,6 +31,7 @@ public class MacFUSE20Capabilities {
     public boolean getxtimes = false;
     public boolean setbkuptime = false;
     public boolean setcrtime = false;
+    public boolean setchgtime = false;
     public boolean chflags = false;
     public boolean setattr_x = false;
     public boolean fsetattr_x = false;
