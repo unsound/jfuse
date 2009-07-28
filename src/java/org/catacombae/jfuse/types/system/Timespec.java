@@ -104,4 +104,9 @@ public class Timespec {
         ps.println(prefix + getClass().getSimpleName());
         printFields(prefix + " ", ps);
     }
+
+    @Override
+    public String toString() {
+        return getClass().getName() + "[sec=" + sec + " nsec=" + nsec + "]";
+    }
 }

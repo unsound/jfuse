@@ -82,12 +82,13 @@
           <warningLevel>2</warningLevel>
         </cTool>
         <ccTool>
+          <developmentMode>0</developmentMode>
           <incDir>
             <pElem>/System/Library/Frameworks/JavaVM.framework/Headers</pElem>
             <pElem>/usr/local/include/fuse</pElem>
             <pElem>../../../libjfuse/include</pElem>
           </incDir>
-          <commandLine>-mmacosx-version-min=10.4 -arch i386 -arch ppc -arch x86_64 -arch ppc64</commandLine>
+          <commandLine>-mmacosx-version-min=10.4 -arch i386 -arch ppc -arch x86_64 -arch ppc64 -gstabs3</commandLine>
           <preprocessorList>
             <Elem>_FILE_OFFSET_BITS=64</Elem>
             <Elem>__FreeBSD__=10</Elem>

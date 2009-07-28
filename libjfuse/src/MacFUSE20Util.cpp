@@ -42,7 +42,7 @@ bool MacFUSE20Util::mergeSetattr_x(JNIEnv *env, jobject source,
             break;
         }
 
-        jint valid;
+        //jint valid;
         jshort mode;
         jlong uid;
         jlong gid;
@@ -54,8 +54,8 @@ bool MacFUSE20Util::mergeSetattr_x(JNIEnv *env, jobject source,
         jobject bkuptime;
         jint flags;
 
-        if(!getIntField(env, clazz, source, "valid", &valid))
-            break;
+        //if(!getIntField(env, clazz, source, "valid", &valid))
+        //    break;
         if(!getShortField(env, clazz, source, "mode", &mode))
             break;
         if(!getLongField(env, clazz, source, "uid", &uid))
@@ -100,7 +100,7 @@ bool MacFUSE20Util::mergeSetattr_x(JNIEnv *env, jobject source,
         env->DeleteLocalRef(chgtime);
         env->DeleteLocalRef(bkuptime);
 
-        target->valid = valid;
+        //target->valid = valid;
         target->mode = mode;
         target->uid = uid;
         target->gid = gid;
@@ -162,8 +162,8 @@ bool MacFUSE20Util::fillSetattr_x(JNIEnv *env,
                 JAVA_CLASS(TIMESPEC_CLASS), &bkuptime))
             break;
 
-        if(!setIntField(env, clazz, target, "value", source->valid))
-            break;
+        //if(!setIntField(env, clazz, target, "valid", source->valid))
+        //    break;
         if(!setShortField(env, clazz, target, "mode", source->mode))
             break;
         if(!setLongField(env, clazz, target, "uid", source->uid))

@@ -30,8 +30,8 @@ import org.catacombae.jfuse.types.system.Timespec;
  * @author Erik Larsson
  */
 public class Setattr_x {
-    /** What is this? Whether or not the struct is valid? TODO: check this. <b>(int32_t)</b> */
-    public int valid;
+    ///** What is this? Whether or not the struct is valid? TODO: check this. <b>(int32_t)</b> */
+    //public int valid; // Not needed.
 
     /** File mode. <b>(mode_t)</b> */
     public short mode;
@@ -67,6 +67,7 @@ public class Setattr_x {
     private boolean wantsUid = false;
     private boolean wantsGid = false;
     private boolean wantsSize = false;
+    private boolean wantsAcctime = false;
     private boolean wantsModtime = false;
     private boolean wantsCrtime = false;
     private boolean wantsChgtime = false;
@@ -103,6 +104,14 @@ public class Setattr_x {
      */
     public boolean wantsSize() {
         return wantsSize;
+    }
+
+    /**
+     * Whether or not this setattr_x session wants the file system to set the
+     * variable 'acctime'.
+     */
+    public boolean wantsAcctime() {
+        return wantsAcctime;
     }
 
     /**
@@ -144,4 +153,31 @@ public class Setattr_x {
     public boolean wantsFlags() {
         return wantsFlags;
     }
+
+    @Override
+    public String toString() {
+        return getClass().getName() +
+                "[mode=0" + Integer.toOctalString(mode) +
+                " uid=" + uid +
+                " gid=" + gid +
+                " size=" + size +
+                " acctime=" + acctime +
+                " modtime=" + modtime +
+                " crtime=" + crtime +
+                " chgtime=" + chgtime +
+                " bkuptime=" + bkuptime +
+                " flags=0x" + Integer.toHexString(flags) +
+                " wantsMode=" + wantsMode +
+                " wantsUid=" + wantsUid +
+                " wantsGid=" + wantsGid +
+                " wantsSize=" + wantsSize +
+                " wantsAcctime=" + wantsAcctime +
+                " wantsModtime=" + wantsModtime +
+                " wantsCrtime=" + wantsCrtime +
+                " wantsChgtime=" + wantsChgtime +
+                " wantsBkuptime=" + wantsBkuptime +
+                " wantsFlags=" + wantsFlags +
+                "]";
+    }
+
 }

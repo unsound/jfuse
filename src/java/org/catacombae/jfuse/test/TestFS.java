@@ -31,6 +31,7 @@ import org.catacombae.jfuse.types.fuse26.FUSEConnInfo;
 import org.catacombae.jfuse.types.fuse26.FUSEFileInfo;
 import org.catacombae.jfuse.MacFUSEFileSystemAdapter;
 import org.catacombae.jfuse.types.fuse26.FUSEFillDir;
+import org.catacombae.jfuse.types.macfuse20.Setattr_x;
 import org.catacombae.jfuse.util.FUSEUtil;
 import org.catacombae.jfuse.types.system.Stat;
 import org.catacombae.jfuse.types.system.StatVFS;
@@ -154,6 +155,23 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                 return xattrMap.keySet();
             //return keySet.toArray(new String[keySet.size()]);
         }
+
+        /** Sets file mode, preserving the file type. */
+        public void setRWXSModeBits(short mode) {
+            this.mode = (short) ((this.mode & S_IFMT) | // Preserve file type.
+                    (mode & S_IRWXU) | // Set user bits
+                    (mode & S_IRWXG) | // Set group bits
+                    (mode & S_IRWXO) | // Set other bits
+                    (mode & S_ISUID) | // Set setuid bit
+                    (mode & S_ISGID) | // Set setgid bit
+                    (mode & S_ISVTX)); // Set sticky bit
+        }
+        public void setRWXModeBits(short mode) {
+            this.mode = (short) ((this.mode & S_IFMT) | // Preserve file type.
+                    (mode & S_IRWXU) | // Set user bits
+                    (mode & S_IRWXG) | // Set group bits
+                    (mode & S_IRWXO)); // Set other bits
+        }
     }
 
     private class Directory extends Inode {
@@ -215,12 +233,12 @@ public class TestFS extends MacFUSEFileSystemAdapter {
             File f = new File();
             f.uid = parent.uid;
             f.gid = parent.gid;
+            f.mode = (short)S_IFREG;
             if(mode != null)
-                f.mode = (short)(Stat.S_IFREG | (mode & ~Stat.S_IFMT));
+                f.setRWXSModeBits(mode);
             else
-                f.mode = (short) (Stat.S_IFREG |
-                        ((Stat.S_IRWXU | Stat.S_IRWXG | Stat.S_IRWXO) &
-                        parent.mode));
+                // Inherit mode, but not the suid/sticky bits. TODO: What does POSIX say?
+                f.setRWXModeBits(parent.mode);
             f.blocks.clear();
             f.blocks.add(new byte[blockSize]);
             f.length = 0;
@@ -256,19 +274,16 @@ public class TestFS extends MacFUSEFileSystemAdapter {
             Directory node = new Directory();
             node.uid = parent.uid;
             node.gid = parent.gid;
+            node.mode = (short)S_IFDIR;
             if(mode != null) {
                 Log.debug("mode supplied: 0x" + Integer.toHexString(mode));
-                node.mode = (short)(Stat.S_IFDIR | (mode & ~Stat.S_IFMT));
-                Log.debug("mode set: 0x" + Integer.toHexString(node.mode));
+                node.setRWXSModeBits(mode);
             }
             else {
                 Log.debug("no mode supplied... setting mode to standard:");
-                node.mode = (short) (Stat.S_IFDIR |
-                        ((Stat.S_IRWXU | Stat.S_IRWXG | Stat.S_IRWXO) &
-                        parent.mode));
-                Log.debug("no mode supplied... setting mode to standard:");
-                Log.debug("  0x" + Integer.toHexString(node.mode));
+                node.setRWXModeBits(parent.mode);
             }
+            Log.debug("mode set: 0x" + Integer.toHexString(node.mode));
             setCreateTimes(node, createTime);
             node.nlink = 1;
 
@@ -342,9 +357,8 @@ public class TestFS extends MacFUSEFileSystemAdapter {
             Symlink l = new Symlink();
             l.uid = parent.uid;
             l.gid = parent.gid;
-            l.mode = (short) (Stat.S_IFLNK |
-                    ((Stat.S_IRWXU | Stat.S_IRWXG | Stat.S_IRWXO) &
-                    parent.mode));
+            l.mode = (short)S_IFLNK;
+            l.setRWXModeBits(parent.mode); // Inherit.
             setCreateTimes(l, createTime);
             l.nlink = 1;
             l.target = source;
@@ -457,6 +471,30 @@ public class TestFS extends MacFUSEFileSystemAdapter {
         }
     }
 
+    private void truncateFile(File f, long size) {
+        f.length = size;
+
+        int numBlocks = (int) (f.length / blockSize +
+                (f.length % blockSize != 0 ? 1 : 0));
+
+        while(f.blocks.size() > numBlocks)
+            f.blocks.remove(f.blocks.size() - 1);
+
+        while(f.blocks.size() < numBlocks)
+            f.blocks.add(null);
+
+        if(numBlocks > 0) {
+            byte[] lastBlock = f.blocks.get(numBlocks - 1);
+            if(lastBlock != null) {
+                // Zero out the truncated part of the last block.
+                int activeBytesInBlock = (int) (f.length % blockSize);
+                System.arraycopy(zeroBlock, activeBytesInBlock,
+                        lastBlock, activeBytesInBlock,
+                        blockSize - activeBytesInBlock);
+            }
+        }
+    }
+
     private Inode lookupInode(String path) {
         return fileTable.get(path);
     }
@@ -482,7 +520,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
         rootNode.gid = FUSEUtil.getProcessGid();
         Log.debug("root directory gid set to: " + rootNode.gid +
                 " (0x" + Long.toHexString(rootNode.gid) + ")");
-        rootNode.nlink = 2;
+        rootNode.nlink = 2; // Always 2 for root dir?
         rootNode.mode = (short)(S_IFDIR | 0777);
         setCreateTimes(rootNode, mountTime);
         fileTable.put("/", rootNode);
@@ -532,6 +570,9 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                 
                 if(e instanceof File)
                     stbuf.st_size = ((File) e).length;
+                else if(e instanceof Symlink)
+                     // TODO: Don't waste memory and CPU cycles here.
+                    stbuf.st_size = FUSEUtil.encodeUTF8(((Symlink)e).target).length;
                 else
                     stbuf.st_size = 0;
 
@@ -562,9 +603,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                 Log.debug("newMode: 0x" + Integer.toHexString(newMode));
                 Log.debug("permissions before chmod: 0x" +
                         Integer.toHexString(e.mode));
-                int permissionMask = S_IRWXU | S_IRWXG | S_IRWXO;
-                e.mode = (short)(((e.mode & 0xFFFF) & ~permissionMask) |
-                        ((newMode & 0xFFFF) & permissionMask));
+                e.setRWXSModeBits(newMode);
                 Log.debug("permissions after chmod: 0x" +
                         Integer.toHexString(e.mode));
 
@@ -766,8 +805,9 @@ public class TestFS extends MacFUSEFileSystemAdapter {
         Log.trace("  pathString = \"" + pathString + "\"");
         if(pathString == null) // Invalid UTF-8 sequence.
             res = -ENOENT;
-        else
+        else {
             res = removeNode(pathString, null);
+        }
 
         Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path);
         return res;
@@ -794,28 +834,9 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                 res = -EACCES; // ?
             else {
                 File f = (File) e;
-                f.length = newSize;
-                
-                int numBlocks = (int)(f.length/blockSize +
-                        (f.length%blockSize != 0 ? 1 : 0));
 
-                while(f.blocks.size() > numBlocks)
-                    f.blocks.remove(f.blocks.size()-1);
+                truncateFile(f, newSize);
 
-                while(f.blocks.size() < numBlocks)
-                    f.blocks.add(null);
-
-                if(numBlocks > 0) {
-                    byte[] lastBlock = f.blocks.get(numBlocks - 1);
-                    if(lastBlock != null) {
-                        // Zero out the truncated part of the last block.
-                        int activeBytesInBlock = (int) (f.length % blockSize);
-                        System.arraycopy(zeroBlock, activeBytesInBlock,
-                                lastBlock, activeBytesInBlock,
-                                blockSize - activeBytesInBlock);
-                    }
-                }
-                
                 f.modificationTime.setToMillis(System.currentTimeMillis());
 
                 res = 0;
@@ -1432,6 +1453,75 @@ public class TestFS extends MacFUSEFileSystemAdapter {
         return res;
     }
 
+    @Override
+    public int setattr_x(ByteBuffer path, Setattr_x attr) {
+        final String METHOD_NAME = "setattr_x";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, attr);
+
+        final int res;
+        String pathString = FUSEUtil.decodeUTF8(path);
+        Log.trace("  pathString = \"" + pathString + "\"");
+        if(pathString == null) { // Invalid UTF-8 sequence.
+            Log.warning("Recieved byte sequence that could not be decoded.");
+            res = -ENOENT;
+        }
+        else {
+            Inode e = lookupInode(pathString);
+            if(e == null)
+                res = -ENOENT;
+            else {
+                int status = 0;
+                do {
+                    if(attr.wantsMode())
+                        e.setRWXSModeBits(attr.mode);
+
+                    if(attr.wantsUid())
+                        e.uid = attr.uid;
+
+                    if(attr.wantsGid())
+                        e.gid = attr.gid;
+
+                    if(attr.wantsSize()) {
+                        if(e instanceof File)
+                            truncateFile(((File)e), attr.size);
+                        else {
+                            if(e instanceof Directory)
+                                status = -EISDIR;
+                            else
+                                status = -EACCES; // Access denied for non-file inode.
+                            break;
+                        }
+                    }
+
+                    if(attr.wantsAcctime())
+                        e.accessTime.setToTimespec(attr.acctime);
+
+                    if(attr.wantsModtime())
+                        e.modificationTime.setToTimespec(attr.modtime);
+
+                    if(attr.wantsCrtime())
+                        e.createTime.setToTimespec(attr.crtime);
+
+                    if(attr.wantsChgtime())
+                        e.statusChangeTime.setToTimespec(attr.chgtime);
+                    else
+                        e.statusChangeTime.setToMillis(System.currentTimeMillis());
+
+                    if(attr.wantsBkuptime())
+                        e.backupTime.setToTimespec(attr.bkuptime);
+
+                    if(attr.wantsFlags())
+                        e.flags = attr.flags;
+                } while(false);
+
+                res = status;
+            }
+        }
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, attr);
+        return res;
+    }
+    
     public static void main(String[] args) {
         System.err.print(CLASS_NAME + ".main(");
         for(String s : args)
