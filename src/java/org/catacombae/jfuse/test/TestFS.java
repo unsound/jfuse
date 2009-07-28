@@ -620,6 +620,37 @@ public class TestFS extends MacFUSEFileSystemAdapter {
     }
 
     @Override
+    public int chown(ByteBuffer path, long userId, long groupId) {
+        final String METHOD_NAME = "chown";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, userId, groupId);
+
+        final int res;
+        String pathString = FUSEUtil.decodeUTF8(path);
+        Log.trace("  pathString = \"" + pathString + "\"");
+        if(pathString == null) // Invalid UTF-8 sequence.
+            res = -ENOENT;
+        else {
+            Inode e = lookupInode(pathString);
+            if(e != null) {
+                if(userId != -1)
+                    e.uid = userId;
+                if(groupId != -1)
+                    e.gid = groupId;
+
+                e.statusChangeTime.setToMillis(System.currentTimeMillis());
+
+                res = 0;
+            }
+            else
+                res = -ENOENT;
+        }
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, userId,
+                groupId);
+        return res;
+    }
+
+    @Override
     public int readdir(ByteBuffer path, FUSEFillDir filler, long offset,
             FUSEFileInfo fi) {
         final String METHOD_NAME = "readdir";
@@ -1400,7 +1431,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
 
     @Override
     public int setcrtime(ByteBuffer path, Timespec tv) {
-        final String METHOD_NAME = "setbkuptime";
+        final String METHOD_NAME = "setcrtime";
         Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, tv);
 
         final int res;
@@ -1416,6 +1447,32 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                 res = -ENOENT;
             else {
                 e.createTime.setToTimespec(tv);
+                res = 0;
+            }
+        }
+
+        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, tv);
+        return res;
+    }
+
+    @Override
+    public int setchgtime(ByteBuffer path, Timespec tv) {
+        final String METHOD_NAME = "setchgtime";
+        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, tv);
+
+        final int res;
+        String pathString = FUSEUtil.decodeUTF8(path);
+        Log.trace("  pathString = \"" + pathString + "\"");
+        if(pathString == null) { // Invalid UTF-8 sequence.
+            Log.warning("Recieved byte sequence that could not be decoded.");
+            res = -ENOENT;
+        }
+        else {
+            Inode e = lookupInode(pathString);
+            if(e == null)
+                res = -ENOENT;
+            else {
+                e.statusChangeTime.setToTimespec(tv);
                 res = 0;
             }
         }
@@ -1453,8 +1510,9 @@ public class TestFS extends MacFUSEFileSystemAdapter {
         return res;
     }
 
-    @Override
-    public int setattr_x(ByteBuffer path, Setattr_x attr) {
+    //@Override
+    //public int setattr_x(ByteBuffer path, Setattr_x attr) {
+    public int setattr_x_disabled(ByteBuffer path, Setattr_x attr) {
         final String METHOD_NAME = "setattr_x";
         Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, attr);
 
