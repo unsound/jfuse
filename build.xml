@@ -20,16 +20,16 @@
     <!-- empty because jFUSE doesn't depend on any external libraries at the moment -->
   </path>
 
-  <target name="all" depends="cleanall,jar,javadoc"/>
+  <target name="all" description="Builds everything from scratch and generates the internal development javadocs." depends="cleanall,jar,javadoc-internal"/>
   <target name="init">
     <mkdir dir="${builddir}"/>
   </target>
-  <target name="clean">
+  <target name="clean" description="Cleans all intermediate build files.">
     <delete dir="${builddir}"/>
   </target>
   <target name="cleanall" depends="clean"/>
-  <target name="build" depends="build-subprojects,build-project"/>
-  <target name="build-subprojects"/>
+  <!--<target name="build" depends="build-subprojects,build-project"/>-->
+  <!--<target name="build-subprojects"/>-->
   <target name="build-project" depends="init">
     <!-- <echo message="${ant.project.name}: ${ant.file}"/> -->
     <javac debug="true"
@@ -43,12 +43,12 @@
       <classpath refid="build.classpath"/>
     </javac>
   </target>
-  <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
-  <target name="jar" depends="build">
+  <!--<target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>-->
+  <target name="jar" description="Build the jfuse.jar file." depends="build-project">
     <jar destfile="${outjar.filename}" basedir="${builddir}" manifest="${manifest.filename}"/>
   </target>
   
-  <target name="javadoc">
+  <target name="javadoc-internal" description="Builds the internal development javadocs (all private fields included).">
     <javadoc destdir="javadoc.~"
 	     packagenames="org.catacombae.*"
 	     sourcepath="${java.source.dir}"
@@ -65,7 +65,7 @@
     </javadoc>
   </target>
   
-  <target name="javadoc-user">
+  <target name="javadoc-user" description="Builds the API javadocs.">
     <javadoc destdir="javadoc"
 	     packagenames="org.catacombae.*"
 	     sourcepath="${java.source.dir}"
