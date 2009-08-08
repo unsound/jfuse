@@ -115,7 +115,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
 
         private int flags = 0;
 
-        public TreeMap<String, byte[]> xattrMap = null;
+        public TreeMap<String, DataStream> xattrMap = null;
 
         {
             synchronized(inodeIdSync) {
@@ -123,37 +123,50 @@ public class TestFS extends MacFUSEFileSystemAdapter {
             }
         }
 
-        public byte[] getXattr(String name) {
+        public DataStream getXattr(String name) {
             if(xattrMap == null)
                 return null;
             else
                 return xattrMap.get(name);
         }
 
-        public void setXattr(String name, byte[] value) {
+        public DataStream createXattr(String name)
+                throws IllegalArgumentException {
             if(name == null)
                 throw new IllegalArgumentException("No null names allowed.");
-            if(value == null)
-                throw new IllegalArgumentException("No null values allowed.");
 
             if(xattrMap == null)
-                xattrMap = new TreeMap<String, byte[]>();
-            xattrMap.put(name, value);
-        }
+                xattrMap = new TreeMap<String, DataStream>();
 
-        public byte[] removeXattr(String name) {
-            if(xattrMap == null)
-                return null;
+            DataStream stream = xattrMap.get(name);
+            if(stream == null) {
+                stream = new DataStream();
+                xattrMap.put(name, stream);
+                return stream;
+            }
             else
-                return xattrMap.remove(name);
+                return null;
         }
 
-        private Iterable<String> getXattrNames() {
+        public boolean removeXattr(String name) {
+            if(xattrMap == null)
+                return false;
+            else
+                return xattrMap.remove(name) != null;
+        }
+
+        public Iterable<String> listXattrs() {
             if(xattrMap == null)
                 return nullStringIterable;
             else
                 return xattrMap.keySet();
-            //return keySet.toArray(new String[keySet.size()]);
+        }
+
+        public boolean existsXattr(String nameString) {
+            if(xattrMap == null)
+                return false;
+            else
+                return xattrMap.get(nameString) != null;
         }
 
         /** Sets file mode, preserving the file type. */
@@ -179,14 +192,133 @@ public class TestFS extends MacFUSEFileSystemAdapter {
     }
 
     private class File extends Inode {
-        public final ArrayList<byte[]> blocks = new ArrayList<byte[]>();
-        public long length;
+        public final DataStream data = new DataStream();
     }
 
     private class Symlink extends Inode {
         public String target;
     }
-    
+
+    private class DataStream {
+        private final ArrayList<byte[]> blocks = new ArrayList<byte[]>();
+        private long length = 0;
+
+        public int read(ByteBuffer target, long position) {
+            long bytesLeftInFile = this.length - position;
+            if(bytesLeftInFile > 0) {
+                int len = (int) Math.min(bytesLeftInFile, target.remaining());
+
+                int totalBytesRead = 0;
+                while(totalBytesRead < len) {
+                    long curOffset = position + totalBytesRead;
+                    int currentBlock = (int) (curOffset / blockSize);
+                    int offsetInBlock =
+                            (int) (curOffset - (currentBlock * blockSize));
+                    int bytesToRead = Math.min(len - totalBytesRead,
+                            blockSize - offsetInBlock);
+
+                    byte[] block = this.blocks.get(currentBlock);
+                    if(block != null)
+                        target.put(block, offsetInBlock, bytesToRead);
+                    else
+                        target.put(zeroBlock, offsetInBlock, bytesToRead);
+
+                    totalBytesRead += bytesToRead;
+                    ++currentBlock;
+                }
+
+                if(totalBytesRead != len)
+                    throw new RuntimeException("totalBytesRead != len (" +
+                            totalBytesRead + " != " + len);
+
+                return len;
+            }
+            else
+                return 0;
+
+        }
+
+        public void write(ByteBuffer source, long position) {
+            final int len = source.remaining();
+
+            Log.debug("len = " + len);
+
+            int totalBytesWritten = 0;
+            while(totalBytesWritten < len) {
+
+                long curOffset = position + totalBytesWritten;
+                int currentBlockIndex = (int) (curOffset / blockSize);
+                int offsetInBlock =
+                        (int) (curOffset - (currentBlockIndex * blockSize));
+                int bytesToWrite = Math.min(len - totalBytesWritten,
+                        blockSize - offsetInBlock);
+                Log.debug("write: copying " + bytesToWrite + " bytes " +
+                        "to block " + currentBlockIndex + " starting at " +
+                        offsetInBlock);
+
+                while(this.blocks.size() <= currentBlockIndex) {
+                    this.blocks.add(null);
+                    Log.debug("added empty block. this.blocks.size()=" +
+                            this.blocks.size());
+                }
+
+                byte[] currentBlock = this.blocks.get(currentBlockIndex);
+
+                if(currentBlock == null) {
+                    currentBlock = new byte[blockSize];
+                    this.blocks.set(currentBlockIndex, currentBlock);
+                }
+
+                source.get(currentBlock, offsetInBlock,
+                        bytesToWrite);
+
+                if(this.length < curOffset + bytesToWrite)
+                    this.length = curOffset + bytesToWrite;
+
+                totalBytesWritten += bytesToWrite;
+            }
+
+            if(totalBytesWritten != len)
+                throw new RuntimeException("totalBytesWritten != len (" +
+                        totalBytesWritten + " != " + len);
+        }
+
+        public void truncate(long newLength) {
+            if(newLength == 0) {
+                this.blocks.clear();
+                this.blocks.add(new byte[blockSize]);
+                this.length = 0;
+            }
+            else {
+                this.length = newLength;
+
+                int numBlocks = (int) (this.length / blockSize +
+                        (this.length % blockSize != 0 ? 1 : 0));
+
+                while(this.blocks.size() > numBlocks)
+                    this.blocks.remove(this.blocks.size() - 1);
+
+                while(this.blocks.size() < numBlocks)
+                    this.blocks.add(null);
+
+                if(numBlocks > 0) {
+                    byte[] lastBlock = this.blocks.get(numBlocks - 1);
+                    if(lastBlock != null) {
+                        // Zero out the truncated part of the last block.
+                        int activeBytesInBlock = (int)(this.length % blockSize);
+                        System.arraycopy(zeroBlock, activeBytesInBlock,
+                                lastBlock, activeBytesInBlock,
+                                blockSize - activeBytesInBlock);
+                    }
+                }
+            }
+        }
+
+        public long getLength() {
+            return length;
+        }
+    }
+
     private Hashtable<String, Inode> fileTable = new Hashtable<String, Inode>();
 
     public TestFS() {
@@ -239,9 +371,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
             else
                 // Inherit mode, but not the suid/sticky bits. TODO: What does POSIX say?
                 f.setRWXModeBits(parent.mode);
-            f.blocks.clear();
-            f.blocks.add(new byte[blockSize]);
-            f.length = 0;
+            f.data.truncate(0);
             f.nlink = 1;
             setCreateTimes(f, createTime);
 
@@ -472,27 +602,8 @@ public class TestFS extends MacFUSEFileSystemAdapter {
     }
 
     private void truncateFile(File f, long size) {
-        f.length = size;
+        f.data.truncate(size);
 
-        int numBlocks = (int) (f.length / blockSize +
-                (f.length % blockSize != 0 ? 1 : 0));
-
-        while(f.blocks.size() > numBlocks)
-            f.blocks.remove(f.blocks.size() - 1);
-
-        while(f.blocks.size() < numBlocks)
-            f.blocks.add(null);
-
-        if(numBlocks > 0) {
-            byte[] lastBlock = f.blocks.get(numBlocks - 1);
-            if(lastBlock != null) {
-                // Zero out the truncated part of the last block.
-                int activeBytesInBlock = (int) (f.length % blockSize);
-                System.arraycopy(zeroBlock, activeBytesInBlock,
-                        lastBlock, activeBytesInBlock,
-                        blockSize - activeBytesInBlock);
-            }
-        }
     }
 
     private Inode lookupInode(String path) {
@@ -569,7 +680,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                 stbuf.st_flags = e.flags;
                 
                 if(e instanceof File)
-                    stbuf.st_size = ((File) e).length;
+                    stbuf.st_size = ((File) e).data.getLength();
                 else if(e instanceof Symlink)
                      // TODO: Don't waste memory and CPU cycles here.
                     stbuf.st_size = FUSEUtil.encodeUTF8(((Symlink)e).target).length;
@@ -784,11 +895,8 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                     else if(fi.getFlagSharedLock() || fi.getFlagExclusiveLock())
                         res = -EOPNOTSUPP;
                     else {
-                        if(fi.getFlagTruncate()) {
-                            f.length = 0;
-                            f.blocks.clear();
-                            f.blocks.add(new byte[blockSize]);
-                        }
+                        if(fi.getFlagTruncate())
+                            f.data.truncate(0);
 
                         res = 0;
                     }
@@ -994,36 +1102,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                 res = -EACCES; // ?
             else {
                 File f = (File) e;
-                long bytesLeftInFile = f.length - offset;
-                if(bytesLeftInFile > 0) {
-                    int len = (int)Math.min(bytesLeftInFile, buf.remaining());
-
-                    int totalBytesRead = 0;
-                    while(totalBytesRead < len) {
-                        long curOffset = offset+totalBytesRead;
-                        int currentBlock = (int) (curOffset / blockSize);
-                        int offsetInBlock = (int) (curOffset - (currentBlock * blockSize));
-                        int bytesToRead = Math.min(len - totalBytesRead,
-                                blockSize - offsetInBlock);
-
-                        byte[] block = f.blocks.get(currentBlock);
-                        if(block != null)
-                            buf.put(block, offsetInBlock, bytesToRead);
-                        else
-                            buf.put(zeroBlock, offsetInBlock, bytesToRead);
-
-                        totalBytesRead += bytesToRead;
-                        ++currentBlock;
-                    }
-                    
-                    if(totalBytesRead != len)
-                        throw new RuntimeException("totalBytesRead != len (" +
-                                totalBytesRead + " != " + len);
-
-                    res = len;
-                }
-                else
-                    res = 0;
+                res = f.data.read(buf, offset);
 
                 // Update access time.
                 f.accessTime.setToMillis(System.currentTimeMillis());
@@ -1062,46 +1141,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                 File f = (File) e;
                 final int len = buf.remaining();
 
-                Log.debug("len = " + len);
-
-                int totalBytesWritten = 0;
-                while(totalBytesWritten < len) {
-
-                    long curOffset = offset + totalBytesWritten;
-                    int currentBlockIndex = (int) (curOffset / blockSize);
-                    int offsetInBlock =
-                            (int) (curOffset - (currentBlockIndex * blockSize));
-                    int bytesToWrite = Math.min(len - totalBytesWritten,
-                            blockSize - offsetInBlock);
-                    Log.debug("write: copying " + bytesToWrite + " bytes " +
-                            "to block " + currentBlockIndex + " starting at " +
-                            offsetInBlock);
-
-                    while(f.blocks.size() <= currentBlockIndex) {
-                        f.blocks.add(null);
-                        Log.debug("added empty block. f.blocks.size()=" +
-                                f.blocks.size());
-                    }
-
-                    byte[] currentBlock = f.blocks.get(currentBlockIndex);
-
-                    if(currentBlock == null) {
-                        currentBlock = new byte[blockSize];
-                        f.blocks.set(currentBlockIndex, currentBlock);
-                    }
-
-                    buf.get(currentBlock, offsetInBlock,
-                            bytesToWrite);
-
-                    if(f.length < curOffset + bytesToWrite)
-                        f.length = curOffset + bytesToWrite;
-
-                    totalBytesWritten += bytesToWrite;
-                }
-
-                if(totalBytesWritten != len)
-                    throw new RuntimeException("totalBytesWritten != len (" +
-                            totalBytesWritten + " != " + len);
+                f.data.write(buf, offset);
 
                 // Update modification time.
                 f.modificationTime.setToMillis(System.currentTimeMillis());
@@ -1187,21 +1227,41 @@ public class TestFS extends MacFUSEFileSystemAdapter {
             Log.warning("'position' argument out of int range: " + position);
             res = -EINVAL;
         }
+        else if(position != 0 && !nameString.equals("com.apple.ResourceFork")) {
+            Log.warning("'position' argument not zero (=" + position +
+                    ") for non-resource fork argument \"" + nameString + "\"");
+            res = -EINVAL;
+        }
         else {
             Inode e = lookupInode(pathString);
             if(e == null)
                 res = -ENOENT;
             else {
-                byte[] xattrData = e.getXattr(nameString);
+                boolean existsXattr = e.existsXattr(nameString);
 
-                if((flags & XATTR_CREATE) != 0 && xattrData != null)
+                if((flags & XATTR_CREATE) != 0 && existsXattr)
                     res = -EEXIST;
-                else if((flags & XATTR_REPLACE) != 0 && xattrData == null)
+                else if((flags & XATTR_REPLACE) != 0 && !existsXattr)
                     res = -ENOATTR;
                 else {
-                    byte[] data = new byte[value.remaining()];
-                    value.get(data);
-                    e.setXattr(nameString, data);
+
+                    DataStream stream;
+                    if(existsXattr)
+                        stream = e.getXattr(nameString);
+                    else
+                        stream = e.createXattr(nameString);
+
+                    if(stream == null) {
+                        if(existsXattr)
+                            throw new RuntimeException("Unexpected: No \"" +
+                                    nameString + "\" attribute found!");
+                        else
+                            throw new RuntimeException("Unexpected: Could " +
+                                    "not create attribute \"" + nameString +
+                                    "\"");
+                    }
+
+                    stream.write(value, position);
                     res = 0;
                 }
             }
@@ -1255,25 +1315,31 @@ public class TestFS extends MacFUSEFileSystemAdapter {
             if(e == null)
                 res = -ENOENT;
             else {
-                byte[] xattrData = e.getXattr(nameString);
-                if(xattrData != null) {
-                    int remainingInXattr = (int)(xattrData.length-position);
-                    if(remainingInXattr < 0)
-                        res = -EINVAL;
-                    else if(value != null) {
-                        if(value.remaining() < remainingInXattr)
-                            res = -ERANGE;
-                        else {
-                            value.put(xattrData, (int)position, remainingInXattr);
-                            res = remainingInXattr;
-                        }
-                    }
+                DataStream stream = e.getXattr(nameString);
+                if(stream == null)
+                    res = -ENOATTR; // No such attribute.
+                else if(value == null) {
+                    /* We are supposed to return the length of the extended
+                     * attribute. position argument is in this case ignored,
+                     * as this is how Mac OS X behaves. */
+                    long len = stream.getLength();
+                    if(len > 0xFFFFFFFFL)
+                        res = (int) 0xFFFFFFFFL;
                     else
-                        // A null value means we should return the size of the extended attribute data.
-                        res = remainingInXattr;
+                        res = (int) len;
+
                 }
-                else
-                    res = -ENOATTR;
+                else {
+                    int remainingData = (int) (stream.getLength() - position);
+                    if(remainingData <= 0)
+                        res = 0;
+                    else {
+                        if(value.remaining() < remainingData)
+                            res = -ERANGE;
+                        else
+                            res = stream.read(value, position);
+                    }
+                }
             }
         }
 
@@ -1313,7 +1379,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                 res = -ENOENT;
             else {
                 int len = 0;
-                for(String cur : e.getXattrNames()) {
+                for(String cur : e.listXattrs()) {
                     byte[] utf8Name = FUSEUtil.encodeUTF8(cur);
                     int curLen = utf8Name.length + 1;
                     
@@ -1363,7 +1429,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
             if(e == null)
                 res = -ENOENT;
             else {
-                if(e.removeXattr(nameString) != null)
+                if(e.removeXattr(nameString))
                     res = 0;
                 else
                     res = -ENOATTR;
