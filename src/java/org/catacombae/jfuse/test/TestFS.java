@@ -1261,7 +1261,12 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                                     "\"");
                     }
 
-                    stream.write(value, position);
+                    if(nameString.equals("com.apple.ResourceFork"))
+                        stream.write(value, position);
+                    else {
+                        stream.truncate(0);
+                        stream.write(value, 0);
+                    }
                     res = 0;
                 }
             }
