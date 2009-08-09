@@ -147,6 +147,7 @@
           <incDir>
             <pElem>../../../libjfuse/include</pElem>
             <pElem>/usr/lib/jvm/default-java/include</pElem>
+            <pElem>/usr/include/fuse</pElem>
           </incDir>
           <preprocessorList>
             <Elem>_FILE_OFFSET_BITS=64</Elem>
