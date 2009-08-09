@@ -418,6 +418,14 @@ JNIEXPORT jobject JNICALL Java_org_catacombae_jfuse_FUSE_getContextNative
 #undef _FNAME_
 }
 
+static int do_unmount(const char* mountpoint, int flags) {
+#ifdef __linux__
+    return umount2(mountpoint, flags);
+#else
+    return unmount(mountpoint, flags);
+#endif
+}
+
 /*
  * Class:     org_catacombae_jfuse_FUSE
  * Method:    unmountNative
@@ -433,7 +441,7 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSE_unmountNative
 
     const char *mountPointChars = env->GetStringUTFChars(mountPoint, NULL);
 
-    if(unmount(mountPointChars, (force == JNI_TRUE ? MNT_FORCE : 0)) == 0)
+    if(do_unmount(mountPointChars, (force == JNI_TRUE ? MNT_FORCE : 0)) == 0)
         res = JNI_TRUE;
     else
         CSLogError("Could not unmount \"%s\". errno=%d (%s)", mountPointChars,
