@@ -327,7 +327,8 @@ int jfuse_chown(const char *path, uid_t uid, gid_t gid) {
     JAVA_ARG_CSTRING_BYTEBUFFER(1, path);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_CHOWN_NAME, OPS_CHOWN_SIGNATURE) {
-        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), (jlong)uid, (jlong)gid);
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), (jlong)((signed)uid),
+                (jlong)((signed)gid));
 
         JFUSE_SET_RETVAL();
     }
