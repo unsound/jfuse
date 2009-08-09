@@ -28,6 +28,12 @@
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
+#ifdef __linux__
+// For ENOATTR
+#include <sys/types.h>
+#include <attr/xattr.h>
+#endif
+
 /*
  * Class:     org_catacombae_jfuse_types_system_Errno
  * Method:    getNativeErrnoValue

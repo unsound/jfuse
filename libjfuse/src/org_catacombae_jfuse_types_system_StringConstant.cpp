@@ -51,6 +51,12 @@ JNIEXPORT jstring JNICALL Java_org_catacombae_jfuse_types_system_StringConstant_
 
     if(0);
 
+#ifdef __linux__
+    // Getting these variables dynamically from headers is just madness.
+    #define XATTR_FINDERINFO_NAME	  "com.apple.FinderInfo"
+    #define XATTR_RESOURCEFORK_NAME	  "com.apple.ResourceFork"
+#endif
+
     // Constants from sys/xattr.h
     else_if_constant(XATTR_FINDERINFO_NAME);
     else_if_constant(XATTR_RESOURCEFORK_NAME);

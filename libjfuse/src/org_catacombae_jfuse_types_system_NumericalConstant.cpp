@@ -26,6 +26,9 @@
 #include "JavaSignatures.h"
 
 #include <string.h>
+#ifdef __linux__
+#define __STDC_LIMIT_MACROS
+#endif
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
@@ -51,6 +54,16 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_NumericalConstant_
         result = (jint)a
 
     if(0);
+
+#ifdef __linux__
+    /* Dummy definitions of these bitmasks to allow them to still be retrieved
+     * in Mac OS X. */
+    #define O_SHLOCK    0
+    #define O_EXLOCK    0
+    #define O_SYMLINK   0
+    #define O_EVTONLY   0
+    #define XATTR_MAXNAMELEN INT32_MAX
+#endif
 
     // Constants from sys/fcntl.h
     else_if_constant(O_ACCMODE);
