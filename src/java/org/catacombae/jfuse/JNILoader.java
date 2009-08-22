@@ -58,6 +58,10 @@ public class JNILoader {
         else if(osArch.equalsIgnoreCase("ia64") ||
                 osArch.equalsIgnoreCase("ia64n"))
             return CPUArchitecture.IA64;
+        else if(osArch.equalsIgnoreCase("ppc"))
+            return CPUArchitecture.POWERPC;
+        else if(osArch.equalsIgnoreCase("ppc64"))
+            return CPUArchitecture.POWERPC64;
         else
             return CPUArchitecture.UNKNOWN;
     }
