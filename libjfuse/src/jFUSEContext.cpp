@@ -31,6 +31,7 @@ jFUSEContext::jFUSEContext(JNIEnv* env, jobject fsProvider) {
     this->env = env;
     this->fsProvider = fsProvider;
     this->privateData = NULL;
+    this->initEnabled = false;
 #if defined(__APPLE__) || defined(__DARWIN__)
 #if __FreeBSD__ >= 10
     this->xtimesEnabled = false;
@@ -83,6 +84,14 @@ void jFUSEContext::setPrivateData(jobject obj) {
         env->DeleteGlobalRef(this->privateData);
 
     this->privateData = globj;
+}
+
+bool jFUSEContext::getInitEnabled() {
+    return this->initEnabled;
+}
+
+void jFUSEContext::setInitEnabled(bool b) {
+    this->initEnabled = b;
 }
 
 #if defined(__APPLE__) || defined(__DARWIN__)

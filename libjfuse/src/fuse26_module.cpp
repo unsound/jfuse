@@ -925,17 +925,21 @@ void* jfuse_init(struct fuse_conn_info *conn) {
 #endif /* __FreeBSD__ >= 10 */
 #endif /* defined(__APPLE__) || defined(__DARWIN__) */
 
-    JAVA_ARG_FUSE_CONN_INFO(1, conn);
+    // We might have got here just to enable xtimes, with no underlying 'init'.
+    if(context->getInitEnabled()) {
 
-    JFUSE_FS_PROVIDER_MID_OK(OPS_INIT_NAME, OPS_INIT_SIGNATURE) {
-        JFUSE_FS_INIT_CALL(JAVA_ARG(1));
+        JAVA_ARG_FUSE_CONN_INFO(1, conn);
 
-        JFUSE_HANDLE_INIT_RETVAL();
+        JFUSE_FS_PROVIDER_MID_OK(OPS_INIT_NAME, OPS_INIT_SIGNATURE) {
+            JFUSE_FS_INIT_CALL(JAVA_ARG(1));
+
+            JFUSE_HANDLE_INIT_RETVAL();
+        }
+
+        JAVA_ARG_CLEANUP(1);
+
+        JAVA_EXCEPTION_CHECK("jfuse_init");
     }
-
-    JAVA_ARG_CLEANUP(1);
-
-    JAVA_EXCEPTION_CHECK("jfuse_init");
 
     CSLogTraceLeave("int jfuse_init(%p): %p",
                 conn, retval);
