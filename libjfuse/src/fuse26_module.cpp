@@ -617,9 +617,10 @@ int jfuse_setxattr(const char *path, const char *name, const char *value,
     JAVA_ARG_CSTRING_BYTEBUFFER(2, name);
     JAVA_ARG_READONLY_BYTEBUFFER(3, value, value_len);
 
-    JFUSE_FS_PROVIDER_MID_OK(OPS_SETXATTR_BSD_NAME, OPS_SETXATTR_BSD_SIGNATURE) {
+    JFUSE_FS_PROVIDER_MID_OK(OPS_SETXATTR_NAME, OPS_SETXATTR_SIGNATURE) {
 
-        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), JAVA_ARG(3), (jint)flags, (jlong)position);
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), JAVA_ARG(3),
+                (jint)flags, (jlong)position);
 
         JFUSE_SET_RETVAL();
     }
@@ -651,7 +652,8 @@ int jfuse_setxattr(const char *path, const char *name, const char *value,
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_SETXATTR_NAME, OPS_SETXATTR_SIGNATURE) {
 
-        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), JAVA_ARG(3), (jint)flags);
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), JAVA_ARG(3),
+                (jint)flags, (jlong)0);
 
         JFUSE_SET_RETVAL();
     }
@@ -684,9 +686,10 @@ int jfuse_getxattr(const char *path, const char *name, char *value,
     JAVA_ARG_CSTRING_BYTEBUFFER(2, name);
     JAVA_ARG_BYTEBUFFER(3, value, value_len);
 
-    JFUSE_FS_PROVIDER_MID_OK(OPS_GETXATTR_BSD_NAME, OPS_GETXATTR_BSD_SIGNATURE) {
+    JFUSE_FS_PROVIDER_MID_OK(OPS_GETXATTR_NAME, OPS_GETXATTR_SIGNATURE) {
 
-        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), JAVA_ARG(3), (jlong)position);
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), JAVA_ARG(3),
+                (jlong)position);
 
         JFUSE_SET_RETVAL();
     }
@@ -719,7 +722,7 @@ int jfuse_getxattr(const char *path, const char *name, char *value,
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_GETXATTR_NAME, OPS_GETXATTR_SIGNATURE) {
 
-        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), JAVA_ARG(3));
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), JAVA_ARG(3), (jlong)0);
 
         JFUSE_SET_RETVAL();
     }
