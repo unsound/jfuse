@@ -40,9 +40,6 @@ public class Stat implements FileModeFlags {
     public long st_gid = 0;
     /** Device type, for special file inode. Type: dev_t (4 bytes) */
     public long st_rdev = 0;
-
-    /* TODO: st_?timespec should be of class Timespec. */
-
     /** Time of last access. */
     public final Timespec st_atimespec = new Timespec();
     /** Time of last data modification. */
