@@ -93,6 +93,7 @@ public interface FUSE26Operations extends SystemConstants {
      * otherwise.
      * @deprecated
      */
+    @Deprecated
     public int getdir(ByteBuffer path,
 		       FUSEDirFil filler);
 
@@ -246,6 +247,7 @@ public interface FUSE26Operations extends SystemConstants {
      * otherwise.
      * @deprecated
      */
+    @Deprecated
     public int utime(ByteBuffer path,
 		      Utimbuf time);
 

@@ -76,7 +76,7 @@ public interface FileStatusFlags {
 
     public static class Print {
         public static void main(String[] args) throws Exception {
-            Class c = FileStatusFlags.class;
+            Class<FileStatusFlags> c = FileStatusFlags.class;
             for(java.lang.reflect.Field f : c.getFields()) {
                 System.out.println(f.getName() + " = " + f.getInt(null));
             }

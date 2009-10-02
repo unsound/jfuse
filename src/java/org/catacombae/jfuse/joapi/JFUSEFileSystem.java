@@ -19,8 +19,6 @@
 
 package org.catacombae.jfuse.joapi;
 
-import org.catacombae.jfuse.FUSEFileSystem;
-
 /**
  *
  * @author erik

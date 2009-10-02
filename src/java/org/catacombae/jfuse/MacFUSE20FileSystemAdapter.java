@@ -37,7 +37,7 @@ public abstract class MacFUSE20FileSystemAdapter extends FUSEFileSystemAdapter
         MacFUSE20Capabilities c = new MacFUSE20Capabilities();
 
         // Find out our capabilities through reflection.
-        Class baseClass = MacFUSE20Operations.class;
+        Class<MacFUSE20Operations> baseClass = MacFUSE20Operations.class;
         Class<?> subClass = this.getClass();
 
         while(!subClass.equals(MacFUSE20FileSystemAdapter.class)) {

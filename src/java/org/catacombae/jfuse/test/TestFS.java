@@ -86,19 +86,6 @@ public class TestFS extends MacFUSEFileSystemAdapter {
         node.backupTime.setToMillis(0);
     }
 
-    /**
-     * A filesystem entry.
-     */
-    private static class Entry implements Comparable<Entry> {
-
-        public String name;
-        public Inode node;
-
-        public int compareTo(Entry other) {
-            return this.name.compareTo(other.name);
-        }
-    }
-
     private abstract class Inode {
         public final int id;
 

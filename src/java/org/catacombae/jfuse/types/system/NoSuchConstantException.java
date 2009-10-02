@@ -26,6 +26,8 @@ package org.catacombae.jfuse.types.system;
  * @author Erik Larsson
  */
 public class NoSuchConstantException extends Exception {
+    public static final long serialVersionUID = 1L;
+
     /** @see Exception#Exception() */
     public NoSuchConstantException() {
         super();

@@ -33,7 +33,7 @@ public class FUSE26Test {
     public static void main(String[] args) {
         FUSE26Capabilities c = new FUSE26Capabilities();
 
-        //c.print(System.out, "");
+        c.print(System.out, "");
 
         FUSE26FileSystemAdapter fs = new Yada() {
             @Override

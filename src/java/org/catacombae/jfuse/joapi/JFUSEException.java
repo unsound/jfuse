@@ -27,6 +27,8 @@ import org.catacombae.jfuse.types.system.Errno;
  * @author erik
  */
 public class JFUSEException extends Exception {
+    public static final long serialVersionUID = 1L;
+
     private final Errno errno;
 
     public JFUSEException(Errno errno) {

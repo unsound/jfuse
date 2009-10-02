@@ -67,19 +67,24 @@ public class JNILoader {
     }
 
     private static ExecutionEnvironment getExecutionEnvironment() {
-        final String osName = System.getProperty("os.name").toLowerCase();
-        final String osVersion = System.getProperty("os.version").toLowerCase();
+        String osName = System.getProperty("os.name");
+        String osVersion = System.getProperty("os.version");
 
         if(osName == null)
             return ExecutionEnvironment.UNKNOWN;
-        else if(osName.startsWith("windows"))
+
+        // "Decapitalize" for a more generic comparison.
+        osName = osName.toLowerCase();
+        osVersion = osVersion.toLowerCase();
+
+        if(osName.startsWith("windows"))
             return ExecutionEnvironment.WINDOWS;
         else if(osName.startsWith("mac os x") ||
                 osName.startsWith("darwin"))
             return ExecutionEnvironment.DARWIN;
-        else if(osName.toLowerCase().startsWith("linux"))
+        else if(osName.startsWith("linux"))
             return ExecutionEnvironment.GNU_LINUX;
-        else if(osName.toLowerCase().startsWith("freebsd"))
+        else if(osName.startsWith("freebsd"))
             return ExecutionEnvironment.FREEBSD;
         else
             return ExecutionEnvironment.UNKNOWN;

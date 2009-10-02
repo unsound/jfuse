@@ -231,7 +231,7 @@ public abstract class FUSE26FileSystemAdapter implements FUSEFileSystem {
         FUSE26Capabilities c = new FUSE26Capabilities();
 
         // Find out our capabilities through reflection.
-        Class baseClass = FUSE26Operations.class;
+        Class<FUSE26Operations> baseClass = FUSE26Operations.class;
         Class<?> subClass = this.getClass();
 
         while(!subClass.equals(FUSE26FileSystemAdapter.class)) {

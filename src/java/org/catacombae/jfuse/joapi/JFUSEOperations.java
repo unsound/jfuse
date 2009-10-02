@@ -80,6 +80,7 @@ public interface JFUSEOperations {
      * @param filler <b>(fuse_dirfil_t)</b>
      * @deprecated
      */
+    @Deprecated
     public void getdir(String path,
 		       FUSEDirFil filler) throws JFUSEException;
 
@@ -215,6 +216,7 @@ public interface JFUSEOperations {
      * @param time <b>(struct utimbuf*)</b>
      * @deprecated
      */
+    @Deprecated
     public void utime(String path,
 		      Utimbuf time) throws JFUSEException;
 
