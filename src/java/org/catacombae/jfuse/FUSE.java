@@ -37,7 +37,7 @@ public class FUSE {
     private static final Object mountSync = new Object();
 
     public static void main(String[] args, FUSE26FileSystem fileSystem) {
-        System.err.println("FUSE.main(...)");
+        Log.info("FUSE.main(...)");
         if(args.length < 1)
             throw new IllegalArgumentException("You need to specify the " +
                     "mountpoint as the first argument.");
@@ -53,13 +53,13 @@ public class FUSE {
         Log.debug("    \"" + mountPoint + "\"");
 
         synchronized(mountSync) {
-            System.err.println("Calling mountNative26 with args:");
+            Log.info("Calling mountNative26 with args:");
             for(int i = 0; i < adjustedArgs.length; ++i)
-                System.err.println("  adjustedArgs[" + i + "] = \"" +
+                Log.info("  adjustedArgs[" + i + "] = \"" +
                         adjustedArgs[i] + "\"");
-            System.err.println("  ...");
+            Log.info("  ...");
             boolean res = mount26(fileSystem, mountPoint, adjustedArgs);
-            System.err.println("  mountNative26 returned " + res + ".");
+            Log.info("  mountNative26 returned " + res + ".");
         }
     }
 
@@ -67,10 +67,10 @@ public class FUSE {
             FUSEOptions options) {
         // Never allow more than one mount at the same time.
         synchronized(mountSync) {
-            System.err.println("Calling mountNative26");
+            Log.info("Calling mountNative26");
             boolean res = mount26(fileSystem, mountPoint,
                     options.generateOptionStrings());
-            System.err.println("  mountNative26 returned " + res + ".");
+            Log.info("  mountNative26 returned " + res + ".");
         }
     }
 

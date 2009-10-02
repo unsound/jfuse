@@ -1652,10 +1652,10 @@ public class TestFS extends MacFUSEFileSystemAdapter {
     }
     
     public static void main(String[] args) {
-        System.err.print(CLASS_NAME + ".main(");
+        Log.info(CLASS_NAME + ".main(");
         for(String s : args)
-            System.err.print("\"" + s + "\" ");
-        System.err.println("\b)");
+            Log.info("\"" + s + "\" ");
+        Log.info("\b)");
         FUSE.main(args, new TestFS());
     }
 }
