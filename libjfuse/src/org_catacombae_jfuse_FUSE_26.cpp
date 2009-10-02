@@ -112,13 +112,8 @@ static bool fillFUSE26Operations(JNIEnv *env, jobject capabilities,
     AddOperationIfSupported(flush);
     AddOperationIfSupported(release);
     AddOperationIfSupported(fsync);
-#if (__FreeBSD__ >= 10)
-    AddOperationIfSupported2(setxattr, setxattr_BSD);
-    AddOperationIfSupported2(getxattr, getxattr_BSD);
-#else
     AddOperationIfSupported(setxattr);
     AddOperationIfSupported(getxattr);
-#endif
     AddOperationIfSupported(listxattr);
     AddOperationIfSupported(removexattr);
     AddOperationIfSupported(opendir);
@@ -219,6 +214,10 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSE_mountNative26(
     else
         CSLogDebug("Filled FUSE 2.6 operations.");
 
+    if(jfuse_operations.init != NULL) {
+        context->setInitEnabled(true);
+    }
+
 #if defined(__APPLE__) || defined(__DARWIN__)
 #if (__FreeBSD__ >= 10)
     if(macFuseCapabilities != NULL) {
@@ -233,6 +232,11 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSE_mountNative26(
                     jfuse_operations.setchgtime != NULL) {
                 CSLogDebug("Requesting enabling of xtimes.");
                 context->setXtimesEnabled(true);
+                if(jfuse_operations.init == NULL) {
+                    CSLogDebug("Adding operation 'init' to fuse_operations for "
+                            "support enabling of xtimes...");
+                    jfuse_operations.init = jfuse_init;
+                }
             }
         }
     }

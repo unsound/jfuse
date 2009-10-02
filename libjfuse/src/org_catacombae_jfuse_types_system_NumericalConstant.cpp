@@ -62,7 +62,11 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_NumericalConstant_
     #define O_EXLOCK    0
     #define O_SYMLINK   0
     #define O_EVTONLY   0
-    #define XATTR_MAXNAMELEN INT32_MAX
+    #define XATTR_MAXNAMELEN INT32_MAX // There's probably a real limit somewhere that I should respect.
+#endif
+
+#if (defined(__APPLE__) || defined(_DARWIN_)) && !defined(O_SYMLINK)
+    #define O_SYMLINK	0x200000
 #endif
 
     // Constants from sys/fcntl.h

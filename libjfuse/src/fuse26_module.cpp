@@ -65,7 +65,8 @@ int jfuse_getattr(const char *path, struct stat *stbuf) {
 
 
 int jfuse_readlink(const char *path, char *target, size_t target_len) {
-    CSLogTraceEnter("int jfuse_readlink(%p, %p, %zd)", path, target, target_len);
+    CSLogTraceEnter("int jfuse_readlink(%p, %p, %zd)", path, target,
+            target_len);
     CSLogTrace("  path=\"%s\"", path);
 
     int retval = -EIO;
@@ -117,7 +118,8 @@ int jfuse_getdir(const char *path, fuse_dirh_t dirh, fuse_dirfil_t dirfil) {
 }
 
 int jfuse_mknod(const char *path, mode_t mode, dev_t dev) {
-    CSLogTraceEnter("int jfuse_mknod(%p, %d, %" PRId64 ")", path, mode, (int64_t)dev);
+    CSLogTraceEnter("int jfuse_mknod(%p, %d, %" PRId64 ")", path, mode,
+            (int64_t)dev);
     CSLogTrace("  path=\"%s\"", path);
 
     int retval = -EIO;
@@ -424,8 +426,8 @@ int jfuse_open(const char *path, struct fuse_file_info *fi) {
 
 }
 
-int jfuse_read(const char *path, char *targetbuf, size_t targetbuf_len, off_t file_off,
-        struct fuse_file_info *fi) {
+int jfuse_read(const char *path, char *targetbuf, size_t targetbuf_len,
+        off_t file_off, struct fuse_file_info *fi) {
     CSLogTraceEnter("int jfuse_read(%p, %p, %zu, %" PRId64 ", %p)",
             path, targetbuf, targetbuf_len, file_off, fi);
     CSLogTrace("  path=\"%s\"", path);
@@ -584,7 +586,8 @@ int jfuse_fsync(const char *path, int datasync, struct fuse_file_info *fi) {
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_FSYNC_NAME, OPS_FSYNC_SIGNATURE) {
 
-        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), (datasync != 0 ? JNI_TRUE : JNI_FALSE), JAVA_ARG(3));
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1),
+                (datasync != 0 ? JNI_TRUE : JNI_FALSE), JAVA_ARG(3));
 
         JFUSE_MERGE_FUSE_FILE_INFO(JAVA_ARG(3), fi);
 
@@ -617,9 +620,10 @@ int jfuse_setxattr(const char *path, const char *name, const char *value,
     JAVA_ARG_CSTRING_BYTEBUFFER(2, name);
     JAVA_ARG_READONLY_BYTEBUFFER(3, value, value_len);
 
-    JFUSE_FS_PROVIDER_MID_OK(OPS_SETXATTR_BSD_NAME, OPS_SETXATTR_BSD_SIGNATURE) {
+    JFUSE_FS_PROVIDER_MID_OK(OPS_SETXATTR_NAME, OPS_SETXATTR_SIGNATURE) {
 
-        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), JAVA_ARG(3), (jint)flags, (jlong)position);
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), JAVA_ARG(3),
+                (jint)flags, (jlong)position);
 
         JFUSE_SET_RETVAL();
     }
@@ -638,7 +642,8 @@ int jfuse_setxattr(const char *path, const char *name, const char *value,
 
 int jfuse_setxattr(const char *path, const char *name, const char *value,
         size_t value_len, int flags) {
-    CSLogTraceEnter("int jfuse_setxattr(%p, %p, %p, %zu, %d)", path, name, value, value_len, flags);
+    CSLogTraceEnter("int jfuse_setxattr(%p, %p, %p, %zu, %d)", path, name,
+            value, value_len, flags);
     CSLogTrace("  path=\"%s\"", path);
     CSLogTrace("  name=\"%s\"", name);
 
@@ -651,7 +656,8 @@ int jfuse_setxattr(const char *path, const char *name, const char *value,
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_SETXATTR_NAME, OPS_SETXATTR_SIGNATURE) {
 
-        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), JAVA_ARG(3), (jint)flags);
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), JAVA_ARG(3),
+                (jint)flags, (jlong)0);
 
         JFUSE_SET_RETVAL();
     }
@@ -684,9 +690,10 @@ int jfuse_getxattr(const char *path, const char *name, char *value,
     JAVA_ARG_CSTRING_BYTEBUFFER(2, name);
     JAVA_ARG_BYTEBUFFER(3, value, value_len);
 
-    JFUSE_FS_PROVIDER_MID_OK(OPS_GETXATTR_BSD_NAME, OPS_GETXATTR_BSD_SIGNATURE) {
+    JFUSE_FS_PROVIDER_MID_OK(OPS_GETXATTR_NAME, OPS_GETXATTR_SIGNATURE) {
 
-        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), JAVA_ARG(3), (jlong)position);
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), JAVA_ARG(3),
+                (jlong)position);
 
         JFUSE_SET_RETVAL();
     }
@@ -719,7 +726,7 @@ int jfuse_getxattr(const char *path, const char *name, char *value,
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_GETXATTR_NAME, OPS_GETXATTR_SIGNATURE) {
 
-        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), JAVA_ARG(3));
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), JAVA_ARG(2), JAVA_ARG(3), (jlong)0);
 
         JFUSE_SET_RETVAL();
     }
@@ -737,7 +744,8 @@ int jfuse_getxattr(const char *path, const char *name, char *value,
 #endif /* __FreeBSD__ >= 10 */
 
 int jfuse_listxattr(const char *path, char *namebuf, size_t namebuf_len) {
-    CSLogTraceEnter("int jfuse_listxattr(%p, %p, %zu)", path, namebuf, namebuf_len);
+    CSLogTraceEnter("int jfuse_listxattr(%p, %p, %zu)", path, namebuf,
+            namebuf_len);
     CSLogTrace("  path=\"%s\"", path);
 
     int retval = -EIO;
@@ -893,7 +901,8 @@ int jfuse_fsyncdir(const char *path, int datasync, struct fuse_file_info *fi) {
     JAVA_ARG_FUSE_FILE_INFO(3, fi);
 
     JFUSE_FS_PROVIDER_MID_OK(OPS_FSYNCDIR_NAME, OPS_FSYNCDIR_SIGNATURE) {
-        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1), (datasync != 0 ? JNI_TRUE : JNI_FALSE), JAVA_ARG(3));
+        JFUSE_FS_PROVIDER_CALL(JAVA_ARG(1),
+                (datasync != 0 ? JNI_TRUE : JNI_FALSE), JAVA_ARG(3));
 
         JFUSE_MERGE_FUSE_FILE_INFO(JAVA_ARG(3), fi);
 
@@ -925,17 +934,21 @@ void* jfuse_init(struct fuse_conn_info *conn) {
 #endif /* __FreeBSD__ >= 10 */
 #endif /* defined(__APPLE__) || defined(__DARWIN__) */
 
-    JAVA_ARG_FUSE_CONN_INFO(1, conn);
+    // We might have got here just to enable xtimes, with no underlying 'init'.
+    if(context->getInitEnabled()) {
 
-    JFUSE_FS_PROVIDER_MID_OK(OPS_INIT_NAME, OPS_INIT_SIGNATURE) {
-        JFUSE_FS_INIT_CALL(JAVA_ARG(1));
+        JAVA_ARG_FUSE_CONN_INFO(1, conn);
 
-        JFUSE_HANDLE_INIT_RETVAL();
+        JFUSE_FS_PROVIDER_MID_OK(OPS_INIT_NAME, OPS_INIT_SIGNATURE) {
+            JFUSE_FS_INIT_CALL(JAVA_ARG(1));
+
+            JFUSE_HANDLE_INIT_RETVAL();
+        }
+
+        JAVA_ARG_CLEANUP(1);
+
+        JAVA_EXCEPTION_CHECK("jfuse_init");
     }
-
-    JAVA_ARG_CLEANUP(1);
-
-    JAVA_EXCEPTION_CHECK("jfuse_init");
 
     CSLogTraceLeave("int jfuse_init(%p): %p",
                 conn, retval);
@@ -1040,7 +1053,8 @@ int jfuse_ftruncate(const char *path, off_t size, struct fuse_file_info *fi) {
     return retval;
 }
 
-int jfuse_fgetattr(const char *path, struct stat *stbuf, struct fuse_file_info *fi) {
+int jfuse_fgetattr(const char *path, struct stat *stbuf,
+        struct fuse_file_info *fi) {
     CSLogTraceEnter("int jfuse_fgetattr(%p, %p, %p)", path, stbuf, fi);
     CSLogTrace("  path=\"%s\"", path);
 
@@ -1158,111 +1172,3 @@ int jfuse_bmap(const char *path, size_t blocksize, uint64_t *idx) {
                 path, blocksize, idx, retval);
     return retval;
 }
-
-#if (__FreeBSD__ >= 10)
-
-// Implement these MacFUSE callbacks some time in the future.
-/*
-int jfuse_setvolname(const char *name) {
-    CSLogTraceEnter("int jfuse_(%p, )", path, );
-    CSLogTrace("  path=\"%s\"", path);
-
-    int retval = -ENOTSUP;
-
-    CSLogTraceLeave("int jfuse_(%p, ): %d",
-                path, , retval);
-    return retval;
-}
-
-int jfuse_exchange(const char *, const char *, unsigned long) {
-    CSLogTraceEnter("int jfuse_(%p, )", path, );
-    CSLogTrace("  path=\"%s\"", path);
-
-    int retval = -ENOTSUP;
-
-    CSLogTraceLeave("int jfuse_(%p, ): %d",
-                path, , retval);
-    return retval;
-}
-
-int jfuse_getxtimes(const char *, struct timespec *bkuptime,
-        struct timespec *crtime) {
-    CSLogTraceEnter("int jfuse_(%p, )", path, );
-    CSLogTrace("  path=\"%s\"", path);
-
-    int retval = -ENOTSUP;
-
-    CSLogTraceLeave("int jfuse_(%p, ): %d",
-                path, , retval);
-    return retval;
-}
-
-int jfuse_setbkuptime(const char *, const struct timespec *tv) {
-    CSLogTraceEnter("int jfuse_(%p, )", path, );
-    CSLogTrace("  path=\"%s\"", path);
-
-    int retval = -ENOTSUP;
-
-    CSLogTraceLeave("int jfuse_(%p, ): %d",
-                path, , retval);
-    return retval;
-}
-
-int jfuse_setchgtime(const char *, const struct timespec *tv) {
-    CSLogTraceEnter("int jfuse_(%p, )", path, );
-    CSLogTrace("  path=\"%s\"", path);
-
-    int retval = -ENOTSUP;
-
-    CSLogTraceLeave("int jfuse_(%p, ): %d",
-                path, , retval);
-    return retval;
-}
-
-int jfuse_setcrtime(const char *, const struct timespec *tv) {
-    CSLogTraceEnter("int jfuse_(%p, )", path, );
-    CSLogTrace("  path=\"%s\"", path);
-
-    int retval = -ENOTSUP;
-
-    CSLogTraceLeave("int jfuse_(%p, ): %d",
-                path, , retval);
-    return retval;
-}
-
-int jfuse_chflags(const char *, uint32_t) {
-    CSLogTraceEnter("int jfuse_(%p, )", path, );
-    CSLogTrace("  path=\"%s\"", path);
-
-    int retval = -ENOTSUP;
-
-    CSLogTraceLeave("int jfuse_(%p, ): %d",
-                path, , retval);
-    return retval;
-}
-
-int jfuse_setattr_x(const char *, struct setattr_x *) {
-    CSLogTraceEnter("int jfuse_(%p, )", path, );
-    CSLogTrace("  path=\"%s\"", path);
-
-    int retval = -ENOTSUP;
-
-    CSLogTraceLeave("int jfuse_(%p, ): %d",
-                path, , retval);
-    return retval;
-}
-
-int jfuse_fsetattr_x(const char *, struct setattr_x *,
-        struct fuse_file_info *fi) {
-    CSLogTraceEnter("int jfuse_(%p, )", path, );
-    CSLogTrace("  path=\"%s\"", path);
-
-    int retval = -ENOTSUP;
-
-    CSLogTraceLeave("int jfuse_(%p, ): %d",
-                path, , retval);
-    return retval;
-}
-*/
-
-#endif /* __FreeBSD__ >= 10 */

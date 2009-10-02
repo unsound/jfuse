@@ -32,6 +32,8 @@ public:
     jmethodID getFSProviderMethod(const char *name, const char *descriptor);
     jobject getPrivateData();
     void setPrivateData(jobject obj);
+    bool getInitEnabled();
+    void setInitEnabled(bool b);
 #if defined(__APPLE__) || defined(__DARWIN__)
 #if __FreeBSD__ >= 10
     bool getXtimesEnabled();
@@ -42,6 +44,7 @@ protected:
     JNIEnv *env;
     jobject fsProvider;
     jobject privateData;
+    bool initEnabled;
 #if defined(__APPLE__) || defined(__DARWIN__)
 #if __FreeBSD__ >= 10
     bool xtimesEnabled;

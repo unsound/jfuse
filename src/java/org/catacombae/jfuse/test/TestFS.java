@@ -1202,12 +1202,12 @@ public class TestFS extends MacFUSEFileSystemAdapter {
     }
     
     @Override
-    public int setxattr_BSD(ByteBuffer path,
+    public int setxattr(ByteBuffer path,
             ByteBuffer name,
             ByteBuffer value,
             int flags,
             long position) {
-        final String METHOD_NAME = "setxattr_BSD";
+        final String METHOD_NAME = "setxattr";
         Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, name, value, flags, position);
 
         final int res;
@@ -1277,25 +1277,11 @@ public class TestFS extends MacFUSEFileSystemAdapter {
     }
 
     @Override
-    public int setxattr(ByteBuffer path,
-            ByteBuffer name,
-            ByteBuffer value,
-            int flags) {
-        final String METHOD_NAME = "getxattr";
-        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, name, value);
-
-        final int res = getxattr_BSD(path, name, value, 0);
-
-        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, name, value);
-        return res;
-    }
-
-    @Override
-    public int getxattr_BSD(ByteBuffer path,
+    public int getxattr(ByteBuffer path,
             ByteBuffer name,
             ByteBuffer value,
             long position) {
-        final String METHOD_NAME = "getxattr_BSD";
+        final String METHOD_NAME = "getxattr";
         Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, name, value, position);
 
         final int res;
@@ -1349,19 +1335,6 @@ public class TestFS extends MacFUSEFileSystemAdapter {
         }
 
         Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, name, value, position);
-        return res;
-    }
-
-    @Override
-    public int getxattr(ByteBuffer path,
-            ByteBuffer name,
-            ByteBuffer value) {
-        final String METHOD_NAME = "getxattr";
-        Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, path, name, value);
-
-        final int res = getxattr_BSD(path, name, value, 0);
-
-        Log.traceLeave(CLASS_NAME + "." + METHOD_NAME, res, path, name, value);
         return res;
     }
 

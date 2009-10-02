@@ -84,7 +84,7 @@ public class Stat implements FileModeFlags {
     public void printFields(String prefix, PrintStream ps) {
         ps.println(prefix + "st_dev = " + st_dev);
         ps.println(prefix + "st_ino = " + st_ino);
-        ps.println(prefix + "st_mode = 0x" + Integer.toHexString((short)st_mode));
+        ps.println(prefix + "st_mode = 0x" + Long.toHexString(st_mode));
         ps.println(prefix + "st_nlink = " + st_nlink);
         ps.println(prefix + "st_uid = " + st_uid);
         ps.println(prefix + "st_gid = " + st_gid);

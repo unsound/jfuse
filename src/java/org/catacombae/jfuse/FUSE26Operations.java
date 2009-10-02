@@ -449,11 +449,11 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int setxattr_BSD(ByteBuffer path,
-			 ByteBuffer name,
-			 ByteBuffer value,
-			 int flags,
-			 long position);
+    public int setxattr(ByteBuffer path,
+            ByteBuffer name,
+            ByteBuffer value,
+            int flags,
+            long position);
 
     /**
      * <pre>
@@ -471,10 +471,12 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
+    /*
     public int setxattr(ByteBuffer path,
             ByteBuffer name,
             ByteBuffer value,
             int flags);
+    */
 
     /**
      * <pre>
@@ -494,10 +496,10 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
-    public int getxattr_BSD(ByteBuffer path,
-			 ByteBuffer name,
-			 ByteBuffer value,
-			 long position);
+    public int getxattr(ByteBuffer path,
+            ByteBuffer name,
+            ByteBuffer value,
+            long position);
 
     /**
      * <pre>
@@ -514,9 +516,11 @@ public interface FUSE26Operations extends SystemConstants {
      * @return 0 if successful or an inverted error value from FUSEErrorValues
      * otherwise.
      */
+    /*
     public int getxattr(ByteBuffer path,
             ByteBuffer name,
             ByteBuffer value);
+    */
 
     /**
      * <pre>

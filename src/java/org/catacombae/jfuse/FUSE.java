@@ -36,6 +36,14 @@ public class FUSE {
 
     private static final Object mountSync = new Object();
 
+    /**
+     * Convenience 'main' method to mount a FUSE file system. The argument
+     * array <code>args</code> is assumed to be in the form { "mountpoint",
+     * "-ooption1", "-ooption2", ... }.
+     * @param args          the argument array, i.e. the mountpoint followed by
+     *                      zero or more options.
+     * @param fileSystem    the file system to mount.
+     */
     public static void main(String[] args, FUSE26FileSystem fileSystem) {
         Log.info("FUSE.main(...)");
         if(args.length < 1)
