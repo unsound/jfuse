@@ -30,7 +30,7 @@ public class Stat implements FileModeFlags {
     public long st_dev = 0;
     /** Inode's number. Type: ino_t (4 bytes) */
     public long st_ino = 0;
-    /** Inode protection mode. Type: mode_t (2 bytes) */
+    /** Inode protection mode. Type: mode_t (2 or 4 bytes) */
     public long st_mode = 0;
     /** Number of hard links to the file. Type: nlink_t (2 bytes) */
     public long st_nlink = 0;
@@ -95,5 +95,151 @@ public class Stat implements FileModeFlags {
         ps.println(prefix + "st_blocksize = " + st_blocksize);
         ps.println(prefix + "st_flags = " + st_flags);
         ps.println(prefix + "st_gen = " + st_gen);
+    }
+
+    /**
+     * Returns whether or not this stat structure represents a FIFO (pipe).
+     * <br/>
+     * This is a convenience method equivalent to
+     * <code>(mode & S_IFMT) == S_IFIFO</code>.
+     *
+     * @return whether of not this stat structure represents a FIFO (pipe).
+     */
+    public boolean isFifo() {
+        return isFifo((int)(st_mode & 0xFFFFFFFF));
+    }
+
+    /**
+     * Returns whether or not this stat structure represents a character device.
+     * <br/>
+     * This is a convenience method equivalent to
+     * <code>(mode & S_IFMT) == S_IFCHR</code>.
+     *
+     * @return whether of not this stat structure represents a character device.
+     */
+    public boolean isChr() {
+        return isChr((int)(st_mode & 0xFFFFFFFF));
+    }
+
+    /**
+     * Returns whether or not this stat structure represents a directory.
+     * <br/>
+     * This is a convenience method equivalent to
+     * <code>(st_mode & S_IFMT) == S_IFDIR</code>.
+     *
+     * @return whether of not this stat structure represents a directory.
+     */
+    public boolean isDir() {
+        return isDir((int)(st_mode & 0xFFFFFFFF));
+    }
+
+    /**
+     * Returns whether or not this stat structure represents a block device.
+     * <br/>
+     * This is a convenience method equivalent to
+     * <code>(st_mode & S_IFMT) == S_IFBLK</code>.
+     *
+     * @return whether of not this stat structure represents a block device.
+     */
+    public boolean isBlk() {
+        return isBlk((int)(st_mode & 0xFFFFFFFF));
+    }
+
+    /**
+     * Returns whether or not this stat structure represents a regular file.
+     * <br/>
+     * This is a convenience method equivalent to
+     * <code>(st_mode & S_IFMT) == S_IFREG</code>.
+     *
+     * @return whether of not this stat structure represents a regular file.
+     */
+    public boolean isReg() {
+        return isReg((int)(st_mode & 0xFFFFFFFF));
+    }
+
+    /**
+     * Returns whether or not this stat structure represents a symbolic link.
+     * <br/>
+     * This is a convenience method equivalent to
+     * <code>(st_mode & S_IFMT) == S_IFLNK</code>.
+     *
+     * @return whether of not this stat structure represents a symbolic link.
+     */
+    public boolean isLnk() {
+        return isLnk((int)(st_mode & 0xFFFFFFFF));
+    }
+
+    /**
+     * Returns whether or not this stat structure represents a socket.
+     * <br/>
+     * This is a convenience method equivalent to
+     * <code>(st_mode & S_IFMT) == S_IFSOCK</code>.
+     *
+     * @return whether of not this stat structure represents a socket.
+     */
+    public boolean isSock() {
+        return isSock((int)(st_mode & 0xFFFFFFFF));
+    }
+
+    /**
+     * Tests whether the file mode word <code>mode</code> denotes a FIFO
+     * (pipe).<br/>
+     * Convenience method equivalent to <code>(mode & S_IFMT) == S_IFIFO</code>.
+     */
+    public static boolean isFifo(final int mode) {
+        return (mode & S_IFMT) == S_IFIFO;
+    }
+
+    /**
+     * Tests whether the file mode word <code>mode</code> denotes a character
+     * device.<br/>
+     * Convenience method equivalent to <code>(mode & S_IFMT) == S_IFCHR</code>.
+     */
+    public static boolean isChr(final int mode) {
+        return (mode & S_IFMT) == S_IFCHR;
+    }
+
+    /**
+     * Tests whether the file mode word <code>mode</code> denotes a directory.
+     * <br/>
+     * Convenience method equivalent to <code>(mode & S_IFMT) == S_IFDIR</code>.
+     */
+    public static boolean isDir(final int mode) {
+        return (mode & S_IFMT) == S_IFDIR;
+    }
+
+    /**
+     * Tests whether the file mode word <code>mode</code> denotes a block
+     * device.<br/>
+     * Convenience method equivalent to <code>(mode & S_IFMT) == S_IFBLK</code>.
+     */
+    public static boolean isBlk(final int mode) {
+        return (mode & S_IFMT) == S_IFBLK;
+    }
+
+    /**
+     * Tests whether the file mode word <code>mode</code> denotes a regular
+     * file.<br/>
+     * Convenience method equivalent to <code>(mode & S_IFMT) == S_IFREG</code>.
+     */
+    public static boolean isReg(final int mode) {
+        return (mode & S_IFMT) == S_IFREG;
+    }
+
+    /**
+     * Tests whether the file mode word <code>mode</code> denotes a symbolic
+     * link.<br/>
+     * Convenience method equivalent to <code>(mode & S_IFMT) == S_IFLNK</code>.
+     */
+    public static boolean isLnk(final int mode) {
+        return (mode & S_IFMT) == S_IFLNK;
+    }
+
+    /**
+     * Tests whether the file mode word <code>mode</code> denotes a socket.<br/>
+     * Convenience method equivalent to <code>(mode & S_IFMT) == S_IFSOCK</code>.
+     */
+    public static boolean isSock(final int mode) {
+        return (mode & S_IFMT) == S_IFSOCK;
     }
 }
