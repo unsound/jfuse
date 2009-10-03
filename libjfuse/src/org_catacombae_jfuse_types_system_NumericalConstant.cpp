@@ -89,17 +89,22 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_NumericalConstant_
     else_if_constant(O_EVTONLY);
 #endif
 
-//#if !defined(__APPLE__) && !defined(__DARWIN__) && !defined(__linux__) && (__FreeBSD__ < 10)
-    else_if_constant(O_DSYNC); // Solaris only (?)
+#if !defined(__linux__) // && !(!defined(__APPLE__) && !defined(__DARWIN__) && (__FreeBSD__ >= 10))
+    // Solaris and Mac OS X has these. (TODO: What about FreeBSD?)
+    else_if_constant(O_DSYNC);
+    else_if_constant(O_NDELAY);
+#endif
+
+#if !defined(__APPLE__) && !defined(__DARWIN__) && !defined(__linux__) && !(__FreeBSD__ >= 10)
     else_if_constant(O_LARGEFILE); // Solaris only (?)
     else_if_constant(O_NOLINKS); // Solaris only (?)
-    else_if_constant(O_NDELAY); // Solaris only (?)
     else_if_constant(O_RSYNC); // Solaris only (?)
     else_if_constant(O_XATTR); // Solaris only (?)
-//#endif
+#endif
 
     // Constants from sys/xattr.h
 #if !defined(__sun__)
+    // Solaris doesn't have xattr.h.
     else_if_constant(XATTR_CREATE);
     else_if_constant(XATTR_REPLACE);
 #endif
