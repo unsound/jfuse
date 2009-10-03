@@ -171,9 +171,9 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_NumericalConstant_
     else_if_constant(O_EXLOCK);
 #endif
 
-#if !T_DARWIN
-    /* Confirmed on: Linux, FreeBSD */
-    /* Unavailable on: Darwin */
+#if !T_DARWIN && !T_SOLARIS
+    /* Confirmed on: Linux, FreeBSD, NetBSD */
+    /* Unavailable on: Darwin, Solaris */
     else_if_constant(O_FSYNC);
     else_if_constant(O_DIRECT);
 #endif
@@ -185,9 +185,9 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_NumericalConstant_
     else_if_constant(O_RSYNC);
 #endif
 
-#if !T_DARWIN && !T_FREEBSD && !T_NETBSD
+#if !T_DARWIN && !T_FREEBSD && !T_NETBSD && !T_SOLARIS
     /* Confirmed on: Linux */
-    /* Unavailable on: Darwin, FreeBSD, NetBSD */
+    /* Unavailable on: Darwin, FreeBSD, NetBSD, Solaris */
     else_if_constant(O_NOATIME);
     else_if_constant(O_CLOEXEC);
 #endif
