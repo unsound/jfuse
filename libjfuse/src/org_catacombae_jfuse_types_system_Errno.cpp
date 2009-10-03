@@ -18,6 +18,7 @@
  */
 
 #define LOG_ENABLE_TRACE 0
+#define LOG_ENABLE_DEBUG 0
 
 #include "org_catacombae_jfuse_types_system_Errno.h"
 #include "common.h"
@@ -48,7 +49,10 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_Errno_getNativeErr
     jint result = -1;
     const char *errnoNameChars = env->GetStringUTFChars(errnoName, NULL);
 
+    CSLogDebug("errnoNameChars = \"%s\"", errnoNameChars);
+
     // One truth.
+#define iferrno2(a, b) else if(strcmp(#a, errnoNameChars) == 0) result = b
 #define iferrno(a) else if(strcmp(#a, errnoNameChars) == 0) result = a
 
     if(0);
@@ -146,7 +150,13 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_Errno_getNativeErr
     iferrno(EIDRM);
     iferrno(ENOMSG);
     iferrno(EILSEQ);
+#if defined(__sun__)
+    /* Solaris doesn't seem to have ENOATTR, so we map it to ENOENT.
+     * TODO: Check if this is the proper behaviour. */
+    iferrno2(ENOATTR, ENOENT);
+#else
     iferrno(ENOATTR);
+#endif
     iferrno(EBADMSG);
     iferrno(EMULTIHOP);
     //iferrno(ENODATA);
@@ -158,6 +168,7 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_Errno_getNativeErr
     //iferrno(ELAST);
 
 #undef iferrno
+#undef iferrno2
     else {
         // If we got here, the ERRNO is unrecognized.
         CSLogError("Could not find a matching ERRNO value for \"%s\"", errnoNameChars);

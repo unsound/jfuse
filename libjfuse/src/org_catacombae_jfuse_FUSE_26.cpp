@@ -38,6 +38,12 @@
 #include "CSLog.h"
 #include "JavaSignatures.h"
 
+#if defined(__sun__)
+#define UNMOUNT_FORCE MS_FORCE
+#else
+#define UNMOUNT_FORCE MNT_FORCE
+#endif
+
 #define errorHandling(...) \
     do { \
         fprintf(stderr, "Panic!\n"); \
@@ -423,7 +429,7 @@ JNIEXPORT jobject JNICALL Java_org_catacombae_jfuse_FUSE_getContextNative
 }
 
 static int do_unmount(const char* mountpoint, int flags) {
-#ifdef __linux__
+#if defined(__linux__) || defined(__sun__)
     return umount2(mountpoint, flags);
 #else
     return unmount(mountpoint, flags);
@@ -445,7 +451,7 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSE_unmountNative
 
     const char *mountPointChars = env->GetStringUTFChars(mountPoint, NULL);
 
-    if(do_unmount(mountPointChars, (force == JNI_TRUE ? MNT_FORCE : 0)) == 0)
+    if(do_unmount(mountPointChars, (force == JNI_TRUE ? UNMOUNT_FORCE : 0)) == 0)
         res = JNI_TRUE;
     else
         CSLogError("Could not unmount \"%s\". errno=%d (%s)", mountPointChars,

@@ -20,8 +20,17 @@
 package org.catacombae.jfuse.types.system;
 
 /**
- * 
- * @author erik
+ * File status flags: these are used by open(2), fcntl(2).
+ * They are also used (indirectly) in the kernel file structure f_flags,
+ * which is a superset of the open/fcntl flags.  Open flags and f_flags
+ * are inter-convertible using OFLAGS(fflags) and FFLAGS(oflags).
+ * Open/fcntl flags begin with O_; kernel-internal flags begin with F.<br/>
+ *
+ * This interface only contains those flags that are portable across all
+ * platforms that jFUSE supports. Other flags, if present, can be found in the
+ * NumericalConstant enum.
+ *
+ * @author Erik Larsson
  */
 public interface FileStatusFlags {
     /*
@@ -54,25 +63,25 @@ public interface FileStatusFlags {
     /** Error if O_CREAT and the file exists. */
     public static final int O_EXCL = NumericalConstant.O_EXCL.getValue();
     /** Atomically obtain a shared lock. */
-    public static final int O_SHLOCK = NumericalConstant.O_SHLOCK.getValue();
+    //public static final int O_SHLOCK = NumericalConstant.O_SHLOCK.getValue();
     /** Atomically obtain an exclusive lock. */
-    public static final int O_EXLOCK = NumericalConstant.O_EXLOCK.getValue();
+    //public static final int O_EXLOCK = NumericalConstant.O_EXLOCK.getValue();
     /** Don't follow symlinks. */
     public static final int O_NOFOLLOW = NumericalConstant.O_NOFOLLOW.getValue();
     /** Allow open of a symlink. */
-    public static final int O_SYMLINK = NumericalConstant.O_SYMLINK.getValue();
+    //public static final int O_SYMLINK = NumericalConstant.O_SYMLINK.getValue();
 
     /* additional #defines found in fcntl.h. */
 
     /** Synchronous writes. */
     public static final int O_SYNC = NumericalConstant.O_SYNC.getValue();
     /** Signal pgrp when data ready. */
-    public static final int O_ASYNC = NumericalConstant.O_ASYNC.getValue();
+    //public static final int O_ASYNC = NumericalConstant.O_ASYNC.getValue();
     /** Descriptor requested for event notifications only. */
-    public static final int O_EVTONLY = NumericalConstant.O_EVTONLY.getValue();
+    //public static final int O_EVTONLY = NumericalConstant.O_EVTONLY.getValue();
     /** Don't assign controlling terminal. */
     public static final int O_NOCTTY = NumericalConstant.O_NOCTTY.getValue();
-    public static final int O_DIRECTORY = NumericalConstant.O_DIRECTORY.getValue();
+    //public static final int O_DIRECTORY = NumericalConstant.O_DIRECTORY.getValue();
 
     public static class Print {
         public static void main(String[] args) throws Exception {

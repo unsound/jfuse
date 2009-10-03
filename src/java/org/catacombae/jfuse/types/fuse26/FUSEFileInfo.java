@@ -23,6 +23,7 @@
 package org.catacombae.jfuse.types.fuse26;
 
 import org.catacombae.jfuse.types.system.FileStatusFlags;
+import org.catacombae.jfuse.types.system.NumericalConstant;
 
 /**
  *
@@ -115,23 +116,47 @@ public class FUSEFileInfo implements FileStatusFlags {
         return (flags & O_EXCL) != 0;
     }
 
-    /** Convenience method that checks if O_SHLOCK is set. */
-    public boolean getFlagSharedLock() {
-        return (flags & O_SHLOCK) != 0;
-    }
-
-    /** Convenience method that checks if O_EXLOCK is set. */
-    public boolean getFlagExclusiveLock() {
-        return (flags & O_EXLOCK) != 0;
-    }
-
     /** Convenience method that checks if O_NOFOLLOW is set. */
     public boolean getFlagNofollow() {
         return (flags & O_NOFOLLOW) != 0;
     }
 
-    /** Convenience method that checks if O_SYMLINK is set. */
+    /**
+     * Convenience method that checks if O_SHLOCK is set.
+     * If O_SHLOCK is not available on this system, <code>false</code> is
+     * returned.
+     */
+    public boolean getFlagSharedLock() {
+        Integer o_shlock = NumericalConstant.O_SHLOCK.getValue();
+        if(o_shlock != null)
+            return (flags & o_shlock) != 0;
+        else
+            return false;
+    }
+
+    /**
+     * Convenience method that checks if O_EXLOCK is set.
+     * If O_EXLOCK is not available on this system, <code>false</code> is
+     * returned.
+     */
+    public boolean getFlagExclusiveLock() {
+        Integer o_exlock = NumericalConstant.O_EXLOCK.getValue();
+        if(o_exlock != null)
+            return (flags & o_exlock) != 0;
+        else
+            return false;
+    }
+
+    /**
+     * Convenience method that checks if O_SYMLINK is set.
+     * If O_SYMLINK is not available on this system, <code>false</code> is
+     * returned.
+     */
     public boolean getFlagSymlink() {
-        return (flags & O_SYMLINK) != 0;
+        Integer o_symlink = NumericalConstant.O_SYMLINK.getValue();
+        if(o_symlink != null)
+            return (flags & o_symlink) != 0;
+        else
+            return false;
     }
 }

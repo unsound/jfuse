@@ -29,7 +29,9 @@
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
+#if !defined(__sun__)
 #include <sys/xattr.h>
+#endif
 
 /*
  * Class:     org_catacombae_jfuse_types_system_StringConstant
@@ -51,7 +53,7 @@ JNIEXPORT jstring JNICALL Java_org_catacombae_jfuse_types_system_StringConstant_
 
     if(0);
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__sun__)
     // Getting these variables dynamically from headers is just madness.
     #define XATTR_FINDERINFO_NAME	  "com.apple.FinderInfo"
     #define XATTR_RESOURCEFORK_NAME	  "com.apple.ResourceFork"

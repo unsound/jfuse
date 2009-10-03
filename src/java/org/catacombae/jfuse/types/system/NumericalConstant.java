@@ -23,17 +23,23 @@ import org.catacombae.jfuse.JNILoader;
 import org.catacombae.jfuse.util.Log;
 
 /**
+ * This enum enumerates some important system constants that may be useful when
+ * developing jFUSE file systems. Not all constans are guaranteed to be defined
+ * on the host system, in which case <code>getValue()</code> will return
+ * <code>null</code>.
+ * The interface SystemConstants contains all constants that are guaranteed to
+ * be available on all systems that jFUSE supports.
  *
- * @author erik
+ * @author Erik Larsson
  */
-enum NumericalConstant {
+public enum NumericalConstant {
 
     /* Begin: Constants from sys/fcntl.h */
 
     /** sys/fcntl.h: Mask for open modes (O_RDONLY, O_WRONLY and O_RDWR). */
     O_ACCMODE,
 
-    /* flags present in the read(2) manpage: */
+    /* flags present in the open(2) manpage: */
 
     /** sys/fcntl.h: Open for reading only. */
     O_RDONLY,
@@ -73,6 +79,38 @@ enum NumericalConstant {
     /** sys/fcntl.h: */
     O_DIRECTORY,
 
+    /* Begin: Solaris specific constants. */
+    /* The values of these constants will be null on all other platforms. */
+
+    /**
+     * sys/fcntl.h: <b>(Solaris only)</b> Synchronized update of file data.
+     */
+    O_DSYNC,
+    /**
+     * sys/fcntl.h: <b>(Solaris only)</b> Synchronized update of file
+     * (read/write file integrity).
+     */
+    O_RSYNC,
+    /**
+     * sys/fcntl.h: <b>(Solaris only)</b>  Maximum offset limit is the largest
+     * value of off64_t.
+     */
+    O_LARGEFILE,
+    /**
+     * sys/fcntl.h: <b>(Solaris only)</b> Don't allow multiple hard links.
+     */
+    O_NOLINKS,
+    /**
+     * sys/fcntl.h: <b>(Solaris only)</b> Non-blocking I/O.
+     */
+    O_NDELAY,
+    /**
+     * sys/fcntl.h: <b>(Solaris only)</b> openat(2) request is for an extended
+     * attribute.
+     */
+    O_XATTR,
+
+
     /* End: Constants from sys/fcntl.h */
 
 
@@ -86,7 +124,7 @@ enum NumericalConstant {
     XATTR_MAXNAMELEN,
 
     /* End: Constants from sys/xattr.h */
-    
+
     ;
 
     private final Integer value;
@@ -106,6 +144,13 @@ enum NumericalConstant {
         this.value = nativeValue;
     }
 
+    /**
+     * Returns the value of the constant, if the constant exists in the host's
+     * execution environment, or <code>null</code> if it isn't available on the
+     * currently running system.
+     *
+     * @return the value of the constant, or <code>null</code> if not available.
+     */
     public Integer getValue() {
         return value;
     }

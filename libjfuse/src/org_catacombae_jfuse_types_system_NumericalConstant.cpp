@@ -33,7 +33,9 @@
 #include <inttypes.h>
 
 #include <sys/fcntl.h>
+#if !defined(__sun__)
 #include <sys/xattr.h>
+#endif
 
 /*
  * Class:     org_catacombae_jfuse_types_system_NumericalConstant
@@ -55,17 +57,8 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_NumericalConstant_
 
     if(0);
 
-#ifdef __linux__
-    /* Dummy definitions of these bitmasks to allow them to still be retrieved
-     * in Mac OS X. */
-    #define O_SHLOCK    0
-    #define O_EXLOCK    0
-    #define O_SYMLINK   0
-    #define O_EVTONLY   0
-    #define XATTR_MAXNAMELEN INT32_MAX // There's probably a real limit somewhere that I should respect.
-#endif
-
-#if (defined(__APPLE__) || defined(_DARWIN_)) && !defined(O_SYMLINK)
+#if (defined(__APPLE__) || defined(__DARWIN__)) && !defined(O_SYMLINK)
+    // This constant is missing from Mac OS X 10.4 headers.
     #define O_SYMLINK	0x200000
 #endif
 
@@ -79,20 +72,40 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_NumericalConstant_
     else_if_constant(O_CREAT);
     else_if_constant(O_TRUNC);
     else_if_constant(O_EXCL);
+    else_if_constant(O_NOFOLLOW);
+    else_if_constant(O_SYNC);
+    else_if_constant(O_NOCTTY);
+
+#if !defined(__sun__)
+    /* Constants not available on Solaris. */
+    else_if_constant(O_ASYNC);
+    else_if_constant(O_DIRECTORY);
+#endif
+
+#if !defined(__linux__) && !defined(__sun__)
     else_if_constant(O_SHLOCK);
     else_if_constant(O_EXLOCK);
-    else_if_constant(O_NOFOLLOW);
     else_if_constant(O_SYMLINK);
-    else_if_constant(O_SYNC);
-    else_if_constant(O_ASYNC);
     else_if_constant(O_EVTONLY);
-    else_if_constant(O_NOCTTY);
-    else_if_constant(O_DIRECTORY);
+#endif
+
+//#if !defined(__APPLE__) && !defined(__DARWIN__) && !defined(__linux__) && (__FreeBSD__ < 10)
+    else_if_constant(O_DSYNC); // Solaris only (?)
+    else_if_constant(O_LARGEFILE); // Solaris only (?)
+    else_if_constant(O_NOLINKS); // Solaris only (?)
+    else_if_constant(O_NDELAY); // Solaris only (?)
+    else_if_constant(O_RSYNC); // Solaris only (?)
+    else_if_constant(O_XATTR); // Solaris only (?)
+//#endif
 
     // Constants from sys/xattr.h
+#if !defined(__sun__)
     else_if_constant(XATTR_CREATE);
     else_if_constant(XATTR_REPLACE);
+#endif
+#if !defined(__linux__) && !defined(__sun__)
     else_if_constant(XATTR_MAXNAMELEN);
+#endif
     
     //else_if_constant();
 

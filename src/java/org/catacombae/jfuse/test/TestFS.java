@@ -36,6 +36,7 @@ import org.catacombae.jfuse.util.FUSEUtil;
 import org.catacombae.jfuse.types.system.Stat;
 import org.catacombae.jfuse.types.system.StatVFS;
 import org.catacombae.jfuse.types.system.Timespec;
+import org.catacombae.jfuse.types.system.XattrUtil;
 import org.catacombae.jfuse.util.Log;
 
 /**
@@ -1226,9 +1227,9 @@ public class TestFS extends MacFUSEFileSystemAdapter {
             else {
                 boolean existsXattr = e.existsXattr(nameString);
 
-                if((flags & XATTR_CREATE) != 0 && existsXattr)
+                if(XattrUtil.isCreateFlagSet(flags) && existsXattr)
                     res = -EEXIST;
-                else if((flags & XATTR_REPLACE) != 0 && !existsXattr)
+                else if(XattrUtil.isReplaceFlagSet(flags) && !existsXattr)
                     res = -ENOATTR;
                 else {
 

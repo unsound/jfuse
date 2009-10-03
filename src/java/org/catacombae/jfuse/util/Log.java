@@ -64,6 +64,17 @@ public class Log {
     }
 
     /**
+     * 'notice' is the least urgent log level. Messages printed at this level
+     * are relatively unimportant for debugging, but might be interesting when
+     * following the behaviour of the program.
+     *
+     * @param msg the log message.
+     */
+    public static void notice(String msg) {
+        System.err.println("NOTICE: " + msg);
+    }
+
+    /**
      * Free form TRACE level log message.
      * @param msg
      */
@@ -83,11 +94,15 @@ public class Log {
         System.err.println("ERROR: " + msg);
     }
 
+    /**
+     * The 'info' log level represents messages that should always be printed,
+     * for instance for runtime diagnostic purposes. Use this log level
+     * sparsely.
+     *
+     * @param msg the log message.
+     */
     public static void info(String msg) {
         System.err.println("INFO: " + msg);
     }
 
-    public static void notice(String msg) {
-        System.err.println("NOTICE: " + msg);
-    }
 }

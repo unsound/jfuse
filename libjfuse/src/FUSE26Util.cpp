@@ -222,7 +222,7 @@ bool FUSE26Util::mergeStat(JNIEnv *env, jobject statObject, struct stat *target)
         target->st_uid = jl_uid;
         target->st_gid = jl_gid;
         target->st_rdev = jl_rdev;
-#ifdef __linux__
+#if defined(__linux__) || defined(__sun__)
         target->st_atim = tmp_st_atimespec;
         target->st_mtim = tmp_st_mtimespec;
         target->st_ctim = tmp_st_ctimespec;
@@ -234,7 +234,7 @@ bool FUSE26Util::mergeStat(JNIEnv *env, jobject statObject, struct stat *target)
         target->st_size = jl_size;
         target->st_blocks = jl_blocks;
         target->st_blksize = jl_blocksize;
-#ifndef __linux__
+#if !defined(__linux__) && !defined(__sun__)
         target->st_flags = jl_flags;
         target->st_gen = jl_gen;
 #endif
@@ -288,7 +288,7 @@ bool FUSE26Util::fillStat(JNIEnv *env, const struct stat *st, jobject statObject
             break;
         if(!setLongField(env, statClass, statObject, "st_rdev", st->st_rdev))
             break;
-#ifdef __linux__
+#if defined(__linux__) || defined(__sun__)
         if(!FUSE26Util::fillTimespec(env, &(st->st_atim), st_atimespec))
             break;
         if(!FUSE26Util::fillTimespec(env, &(st->st_mtim), st_mtimespec))
@@ -309,7 +309,7 @@ bool FUSE26Util::fillStat(JNIEnv *env, const struct stat *st, jobject statObject
             break;
         if(!setLongField(env, statClass, statObject, "st_blocksize", st->st_blksize))
             break;
-#ifndef __linux__
+#if !defined(__linux__) && !defined(__sun__)
         if(!setLongField(env, statClass, statObject, "st_flags", st->st_flags))
             break;
         if(!setLongField(env, statClass, statObject, "st_gen", st->st_gen))
