@@ -8,7 +8,7 @@ case `uname -s` in
 	fi
 	export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}:lib"
 	;;
-[Ll]inux* | [Nn]et[Bb][Ss][Dd]*)
+[Ll]inux* | [Nn]et[Bb][Ss][Dd]* | SunOS*)
 	export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/lib"
 	;;
 esac
