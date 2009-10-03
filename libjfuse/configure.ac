@@ -116,8 +116,8 @@ AC_PROG_LN_S
 AM_PROG_CC_C_O
 
 ifdef(
-	[LT_INIT],
-	[LT_INIT],
+	[[LT_INIT]],
+	[[LT_INIT]],
 	[
 		AC_PROG_LIBTOOL
 		AC_ENABLE_STATIC
