@@ -98,7 +98,7 @@ enum NumericalConstant {
         try {
             nativeValue = getNativeValue(name());
         } catch(NoSuchConstantException e) {
-            Log.warning("No native numerical constant value found for " +
+            Log.notice("No native numerical constant value found for " +
                     name() + ". Message: " + e.getMessage());
             nativeValue = null;
         }

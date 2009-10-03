@@ -86,4 +86,8 @@ public class Log {
     public static void info(String msg) {
         System.err.println("INFO: " + msg);
     }
+
+    public static void notice(String msg) {
+        System.err.println("NOTICE: " + msg);
+    }
 }

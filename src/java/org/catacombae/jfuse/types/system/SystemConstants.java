@@ -27,6 +27,7 @@ import org.catacombae.jfuse.FUSEErrorValues;
  *
  * @author Erik Larsson
  */
-public interface SystemConstants extends FileStatusFlags, FileModeFlags, XattrConstants, FUSEErrorValues {
+public interface SystemConstants extends FileStatusFlags, FileModeFlags,
+        XattrConstants, FUSEErrorValues {
 
 }
