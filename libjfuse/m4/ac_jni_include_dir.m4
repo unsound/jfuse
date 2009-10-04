@@ -77,6 +77,7 @@ solaris*)       _JNI_INC_SUBDIRS="solaris";;
 mingw*)			_JNI_INC_SUBDIRS="win32";;
 cygwin*)		_JNI_INC_SUBDIRS="win32";;
 freebsd*)		_JNI_INC_SUBDIRS="freebsd";;
+netbsd*)		_JNI_INC_SUBDIRS="netbsd";;
 *)              _JNI_INC_SUBDIRS="genunix";;
 esac
 
