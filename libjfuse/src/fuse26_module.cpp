@@ -19,6 +19,8 @@
 
 #define LOG_ENABLE_DEBUG 1
 
+#define __STDC_FORMAT_MACROS
+
 #include "fuse26_module.h"
 
 #include "common.h"
@@ -26,7 +28,6 @@
 
 #include <string.h>
 #include <errno.h>
-#define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
 #if !defined(__NetBSD__)
