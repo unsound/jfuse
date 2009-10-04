@@ -86,6 +86,8 @@ public class JNILoader {
             return ExecutionEnvironment.GNU_LINUX;
         else if(osName.startsWith("freebsd"))
             return ExecutionEnvironment.FREEBSD;
+	else if(osName.startsWith("netbsd"))
+	    return ExecutionEnvironment.NETBSD;
         else
             return ExecutionEnvironment.UNKNOWN;
     }
