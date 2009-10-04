@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#define __STDC_FORMAT_MACROS
+
 #include "org_catacombae_jfuse_types_fuse26_FUSEFillDir.h"
 
 #include "common.h"
@@ -27,7 +29,6 @@
 #include "JavaSignatures.h"
 
 #include <stdlib.h>
-#define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 #include <fuse.h>
 

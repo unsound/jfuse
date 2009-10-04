@@ -29,7 +29,9 @@
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
+#if !defined(__NetBSD__)
 #include <fuse_common.h>
+#endif
 #include <fuse.h>
 
 #include "JavaSignatures.h"

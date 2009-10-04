@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#define __STDC_FORMAT_MACROS
+
 #define LOG_ENABLE_TRACE 0
 
 #include "org_catacombae_jfuse_types_system_StringConstant.h"
@@ -26,10 +28,9 @@
 #include "JavaSignatures.h"
 
 #include <string.h>
-#define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
-#if !defined(__sun__)
+#if !defined(__sun__) && !defined(__NetBSD__)
 #include <sys/xattr.h>
 #endif
 
@@ -53,7 +54,7 @@ JNIEXPORT jstring JNICALL Java_org_catacombae_jfuse_types_system_StringConstant_
 
     if(0);
 
-#if defined(__linux__) || defined(__sun__)
+#if defined(__linux__) || defined(__sun__) || defined(__NetBSD__)
     // Getting these variables dynamically from headers is just madness.
     #define XATTR_FINDERINFO_NAME	  "com.apple.FinderInfo"
     #define XATTR_RESOURCEFORK_NAME	  "com.apple.ResourceFork"

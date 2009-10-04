@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#define __STDC_FORMAT_MACROS
+
 #define LOG_ENABLE_TRACE 0
 
 #include "org_catacombae_jfuse_types_system_NumericalConstant.h"
@@ -29,11 +31,15 @@
 #ifdef __linux__
 #define __STDC_LIMIT_MACROS
 #endif
-#define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
 #include <sys/fcntl.h>
-#if !defined(__sun__)
+
+//#if defined(__NetBSD__)
+//#include <sys/extattr.h>
+//#endif
+
+#if !defined(__sun__) && !defined(__NetBSD__)
 #include <sys/xattr.h>
 #endif
 
@@ -51,7 +57,10 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_NumericalConstant_
     const char *constantNameChars = env->GetStringUTFChars(constantName, NULL);
 
     // One truth.
-#define else_if_constant(a) \
+#define else_if_constant2(a, b)			\
+    else if(strcmp(#a, constantNameChars) == 0) \
+        result = (jint)b
+#define else_if_constant(a)	\
     else if(strcmp(#a, constantNameChars) == 0) \
         result = (jint)a
 
@@ -77,38 +86,71 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_NumericalConstant_
     else_if_constant(O_NOCTTY);
 
 #if !defined(__sun__)
-    /* Constants not available on Solaris. */
+    /* Unavailable on: Solaris */
+    /* Confirmed on: Mac OS X, Linux, NetBSD */
     else_if_constant(O_ASYNC);
+#endif
+
+#if !defined(__sun__) && !defined(__NetBSD__)
+    /* Unavailable on: Solaris, NetBSD */
+    /* Confirmed on: Mac OS X, Linux */
     else_if_constant(O_DIRECTORY);
 #endif
 
 #if !defined(__linux__) && !defined(__sun__)
+    /* Unavailable on: Linux, Solaris */
+    /* Confirmed on: Mac OS X, NetBSD */
     else_if_constant(O_SHLOCK);
     else_if_constant(O_EXLOCK);
+#endif
+
+#if !defined(__linux__) && !defined(__sun__) && !defined(__NetBSD__)
+    /* Unavailable on: Linux, Solaris, NetBSD */
+    /* Confirmed on: Mac OS X */
     else_if_constant(O_SYMLINK);
     else_if_constant(O_EVTONLY);
 #endif
 
 #if !defined(__linux__) // && !(!defined(__APPLE__) && !defined(__DARWIN__) && (__FreeBSD__ >= 10))
-    // Solaris and Mac OS X has these. (TODO: What about FreeBSD?)
+    /* Unavailable on: Linux */
+    /* Confirmed on: Mac OS X, Solaris, NetBSD */
     else_if_constant(O_DSYNC);
     else_if_constant(O_NDELAY);
 #endif
 
+#if !defined(__APPLE__) && !defined(__DARWIN__) && !defined(__linux__) && !(__FreeBSD__ >= 10) && !defined(__NetBSD__)
+    /* Unavailable on: Mac OS X, Linux, NetBSD */
+    /* Confirmed on: Solaris */
+    else_if_constant(O_LARGEFILE);
+    else_if_constant(O_NOLINKS);
+    else_if_constant(O_XATTR);
+#endif
+
 #if !defined(__APPLE__) && !defined(__DARWIN__) && !defined(__linux__) && !(__FreeBSD__ >= 10)
-    else_if_constant(O_LARGEFILE); // Solaris only (?)
-    else_if_constant(O_NOLINKS); // Solaris only (?)
-    else_if_constant(O_RSYNC); // Solaris only (?)
-    else_if_constant(O_XATTR); // Solaris only (?)
+    /* Unavailable on: Mac OS X, Linux */
+    /* Confirmed on: Solaris, NetBSD */
+    else_if_constant(O_RSYNC);
 #endif
 
     // Constants from sys/xattr.h
-#if !defined(__sun__)
-    // Solaris doesn't have xattr.h.
+#if !defined(__sun__) && !defined(__NetBSD__)
+    /* Unavailable on: Solaris, NetBSD */
+    /* Confirmed on: Mac OS X, Linux */
+    /* Not applicable for Solaris and NetBSD, who are using another xattr infrastructure. */
     else_if_constant(XATTR_CREATE);
     else_if_constant(XATTR_REPLACE);
 #endif
-#if !defined(__linux__) && !defined(__sun__)
+
+/* NetBSD has a constant called EXATTR_MAXNAMELEN, but it's kernel-private so I don't think it makes sense to export it.
+/*
+#if defined(__NetBSD__)
+    else_if_constant2(XATTR_MAXNAMELEN, EXTATTR_MAXNAMELEN);
+#endif
+*/
+
+#if !defined(__linux__) && !defined(__sun__) && !defined(__NetBSD__)
+    /* Unavailable on: Linux, Solaris, NetBSD */
+    /* Confirmed on: Mac OS X */
     else_if_constant(XATTR_MAXNAMELEN);
 #endif
     
@@ -120,6 +162,7 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_NumericalConstant_
         throwByName(env, NOSUCHCONSTANTEXCEPTION_CLASS, "Unrecognized constant value!");
     }
 
+#undef else_if_constant2
 #undef else_if_constant
 
     env->ReleaseStringUTFChars(constantName, constantNameChars);

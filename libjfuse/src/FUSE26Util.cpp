@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#define __STDC_FORMAT_MACROS
+
 #include "FUSE26Util.h"
 
 #include "CSLog.h"
@@ -24,7 +26,6 @@
 #include "FUSEDirFilContext.h"
 #include "JavaSignatures.h"
 
-#define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 #include <sys/stat.h>
 
