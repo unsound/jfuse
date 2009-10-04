@@ -277,11 +277,16 @@ static inline jFUSEContext* getjFUSEContext() {
 
 #define JAVA_ARG_FUSE_CONN_INFO(num, conn) \
     CSLogDebug("Processing argument %d (%s) of type struct fuse_conn_info...", num, #conn); \
-    jobject java_arg##num = FUSE26Util::newFUSEConnInfo(env, conn); \
-    if(java_arg##num == NULL) { \
-        if(env->ExceptionCheck() == JNI_TRUE) \
-            env->ExceptionDescribe(); \
-        CSPanicWithMessage("Could not create new FUSEConnInfo."); \
+    jobject java_arg##num; \
+    if(conn == NULL) \
+        java_arg##num = NULL; \
+    else { \
+        java_arg##num = FUSE26Util::newFUSEConnInfo(env, conn); \
+        if(java_arg##num == NULL) { \
+            if(env->ExceptionCheck() == JNI_TRUE) \
+                env->ExceptionDescribe(); \
+            CSPanicWithMessage("Could not create new FUSEConnInfo."); \
+        } \
     }
 
 #define JAVA_ARG_UTIMBUF(num, time) \
