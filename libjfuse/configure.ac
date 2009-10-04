@@ -160,6 +160,22 @@ AC_CHECK_HEADERS(
 	AC_MSG_ERROR([[Could not find one of the required headers!]])
 )
 
+case "${target_os}" in
+netbsd*)
+	AC_CHECK_HEADERS(
+		[fuse.h],
+		,
+		AC_MSG_ERROR([[Could not find fuse.h.]])
+	)
+	AC_CHECK_LIB(
+		[refuse],
+		[fuse_mount],
+		,
+		AC_MSG_ERROR([[Could not find librefuse.]])
+	)
+	;;
+*)
+
 # FUSE check, using pkg-config
 if test -z "$PKG_CONFIG"; then
 	AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
@@ -177,6 +193,9 @@ PKG_CHECK_MODULES(
 	]
 )
 FUSE_LIB_PATH=`$PKG_CONFIG --libs-only-L fuse | sed -e 's,/[/]*,/,g' -e 's,[ ]*$,,'`
+
+;;
+esac
 
 # Attempt to locate JNI headers
 if test -z "${JAVAC}"; then
