@@ -30,7 +30,175 @@
 
 #define FUSE_USE_VERSION 26
 #include <fuse.h>
+#if !defined(__NetBSD__)
 #include <fuse_common.h>
+#else
+
+extern "C" {
+
+#include <stddef.h>
+#include <fuse_opt.h>
+
+enum  {
+  KEY_HELP,
+  KEY_HELP_NOHEADER,
+  KEY_VERSION,
+};
+
+struct helper_opts {
+  int singlethread;
+  int foreground;
+  int nodefault_subtype;
+  char *mountpoint;
+};
+
+#define FUSE_HELPER_OPT(t, p) { t, offsetof(struct helper_opts, p), 1 }
+
+static const struct fuse_opt fuse_helper_opts[] = {
+  FUSE_HELPER_OPT("-d",foreground),
+  FUSE_HELPER_OPT("debug",foreground),
+  FUSE_HELPER_OPT("-f",foreground),
+  FUSE_HELPER_OPT("-s",singlethread),
+  FUSE_HELPER_OPT("fsname=",nodefault_subtype),
+  FUSE_HELPER_OPT("subtype=",nodefault_subtype),
+
+  FUSE_OPT_KEY("-h",KEY_HELP),
+  FUSE_OPT_KEY("--help",KEY_HELP),
+  FUSE_OPT_KEY("-ho",KEY_HELP_NOHEADER),
+  FUSE_OPT_KEY("-V",KEY_VERSION),
+  FUSE_OPT_KEY("--version",KEY_VERSION),
+  FUSE_OPT_KEY("-d",FUSE_OPT_KEY_KEEP),
+  FUSE_OPT_KEY("debug",FUSE_OPT_KEY_KEEP),
+  FUSE_OPT_KEY("fsname=",FUSE_OPT_KEY_KEEP),
+  FUSE_OPT_KEY("subtype=",FUSE_OPT_KEY_KEEP),
+  /*FUSE_OPT_END*/ { NULL, 0, 0 }
+};
+
+static void usage(const char *progname)
+{
+  fprintf(stderr,
+	  "usage: %s mountpoint [options]\n\n", progname);
+  fprintf(stderr,
+	  "general options:\n"
+	  "    -o opt,[opt...]        mount options\n"
+	  "    -h   --help            print help\n"
+	  "    -V   --version         print version\n"
+	  "\n");
+}
+
+static void helper_help(void)
+{
+  fprintf(stderr,
+	  "FUSE options:\n"
+	  "    -d   -o debug          enable debug output (implies -f)\n"
+	  "    -f                     foreground operation\n"
+	  "    -s                     disable multi-threaded operation\n"
+	  "\n"
+	  );
+}
+
+static void helper_version(void)
+{
+  //fprintf(stderr, "FUSE library version: %s\n", PACKAGE_VERSION);
+  // Apparently this is read from config.h... does librefuse have a gettable version?
+  fprintf(stderr, "FUSE library version: ?\n");
+}
+
+static int fuse_helper_opt_proc(void *data, const char *arg, int key,
+				struct fuse_args *outargs)
+{
+  struct helper_opts *hopts = data;
+
+  switch (key) {
+  case KEY_HELP:
+    usage(outargs->argv[0]);
+    /* fall through */
+
+  case KEY_HELP_NOHEADER:
+    helper_help();
+    return fuse_opt_add_arg(outargs, "-h");
+
+  case KEY_VERSION:
+    helper_version();
+    return 1;
+
+  case FUSE_OPT_KEY_NONOPT:
+    if (!hopts->mountpoint) {
+      char mountpoint[PATH_MAX];
+      if (realpath(arg, mountpoint) == NULL) {
+	fprintf(stderr,
+		"fuse: bad mount point `%s': %s\n",
+		arg, strerror(errno));
+	return -1;
+      }
+      return fuse_opt_add_opt(&hopts->mountpoint, mountpoint);
+    } else {
+      fprintf(stderr, "fuse: invalid argument `%s'\n", arg);
+      return -1;
+    }
+
+  default:
+    return 1;
+  }
+}
+
+static int add_default_subtype(const char *progname, struct fuse_args *args)
+{
+  int res;
+  char *subtype_opt;
+  const char *basename = strrchr(progname, '/');
+  if (basename == NULL)
+    basename = progname;
+  else if (basename[1] != '\0')
+    basename++;
+
+  subtype_opt = (char *) malloc(strlen(basename) + 64);
+  if (subtype_opt == NULL) {
+    fprintf(stderr, "fuse: memory allocation failed\n");
+    return -1;
+  }
+  sprintf(subtype_opt, "-osubtype=%s", basename);
+  res = fuse_opt_add_arg(args, subtype_opt);
+  free(subtype_opt);
+  return res;
+}
+
+static int fuse_parse_cmdline(struct fuse_args *args, char **mountpoint,
+		       int *multithreaded, int *foreground)
+{
+  int res;
+  struct helper_opts hopts;
+
+  memset(&hopts, 0, sizeof(hopts));
+  res = fuse_opt_parse(args, &hopts, fuse_helper_opts,
+		       fuse_helper_opt_proc);
+  if (res == -1)
+    return -1;
+
+  if (!hopts.nodefault_subtype) {
+    res = add_default_subtype(args->argv[0], args);
+    if (res == -1)
+      goto err;
+  }
+  if (mountpoint)
+    *mountpoint = hopts.mountpoint;
+  else
+    free(hopts.mountpoint);
+
+  if (multithreaded)
+    *multithreaded = !hopts.singlethread;
+  if (foreground)
+    *foreground = hopts.foreground;
+  return 0;
+
+ err:
+  free(hopts.mountpoint);
+  return -1;
+}
+
+}
+
+#endif
 #include <sys/mount.h>
 
 #include "fuse26_module.h"
@@ -334,7 +502,13 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSE_mountNative26(
                     sizeof (jfuse_operations), context);
             CSLogDebug("   done. result=%p", fh);
             if(fh != NULL) {
-                if(fuse_set_signal_handlers(fuse_get_session(fh)) == 0) {
+#if defined(__NetBSD__)
+	        int sighandler_res = 0;
+#else
+                int sighandler_res =
+		  fuse_set_signal_handlers(fuse_get_session(fh));
+#endif /* defined(__NetBSD__) */
+		if(sighandler_res == 0) {
                     CSLogDebug("Invoking fuse_loop...");
                     int fuseLoopRetval = fuse_loop(fh);
                     CSLogDebug("  done. result=%d", fuseLoopRetval);
@@ -345,7 +519,9 @@ JNIEXPORT jboolean JNICALL Java_org_catacombae_jfuse_FUSE_mountNative26(
                     else
                         res = JNI_TRUE;
 
+#if !defined(__NetBSD__)
                     fuse_remove_signal_handlers(fuse_get_session(fh));
+#endif
                 }
                 else
                     CSLogError("Couldn't set signal handlers!");
