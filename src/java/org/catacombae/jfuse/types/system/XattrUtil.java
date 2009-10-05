@@ -34,7 +34,7 @@ public class XattrUtil {
      */
     public static boolean isCreateFlagSet(int flags) {
         Integer xattr_create = NumericalConstant.XATTR_CREATE.getValue();
-        if(xattr_create == null)
+        if(xattr_create != null)
             return (flags & xattr_create) != 0;
         else
             return false;
@@ -50,7 +50,7 @@ public class XattrUtil {
      */
     public static boolean isReplaceFlagSet(int flags) {
         Integer xattr_replace = NumericalConstant.XATTR_REPLACE.getValue();
-        if(xattr_replace == null)
+        if(xattr_replace != null)
             return (flags & xattr_replace) != 0;
         else
             return false;
