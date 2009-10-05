@@ -185,9 +185,9 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_NumericalConstant_
     else_if_constant(O_RSYNC);
 #endif
 
-#if !T_DARWIN && !T_FREEBSD
+#if !T_DARWIN && !T_FREEBSD && !T_NETBSD
     /* Confirmed on: Linux */
-    /* Unavailable on: Darwin, FreeBSD */
+    /* Unavailable on: Darwin, FreeBSD, NetBSD */
     else_if_constant(O_NOATIME);
     else_if_constant(O_CLOEXEC);
 #endif
