@@ -157,10 +157,10 @@ public class JNILoader {
     public static void ensureLoaded() {
         synchronized(loadSync) {
             if(!loaded) {
-                System.err.println("Loading library 'jfuse'...");
+                Log.info("Loading library 'jfuse'...");
                 loadLibrary();
                 loaded = true;
-                System.err.println("   done.");
+                Log.info("   done.");
             }
         }
     }
