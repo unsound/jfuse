@@ -164,8 +164,10 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_NumericalConstant_
 
     else {
         // If we got here, the constant is unrecognized.
-        CSLogError("Could not find a matching constant value for \"%s\".", constantNameChars);
-        throwByName(env, NOSUCHCONSTANTEXCEPTION_CLASS, "Unrecognized constant value!");
+        CSLogDebug("Could not find a matching constant value for \"%s\".",
+                constantNameChars);
+        throwByName(env, NOSUCHCONSTANTEXCEPTION_CLASS,
+                "Unrecognized constant value.");
     }
 
 #undef else_if_constant2
