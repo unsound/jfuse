@@ -29,8 +29,15 @@
 #include <jni.h>
 
 #define FUSE_USE_VERSION 26
+#if defined(__NetBSD__)
+extern "C" {
+#endif
 #include <fuse.h>
-#if !defined(__NetBSD__)
+#if defined(__NetBSD__)
+}
+#endif
+
+#if !defined(__NetBSD__) // This should be removed. Nobody should include fuse_common.h directly.
 #include <fuse_common.h>
 #else
 
