@@ -111,10 +111,15 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_NumericalConstant_
     else_if_constant(O_EVTONLY);
 #endif
 
+#if !defined(__linux__) && !(defined(__APPLE__) || defined(__DARWIN__))
+    /* Unavailable on: Linux, Mac OS X */
+    /* Confirmed on: Solaris, NetBSD */
+    else_if_constant(O_DSYNC);
+#endif
+
 #if !defined(__linux__) // && !(!defined(__APPLE__) && !defined(__DARWIN__) && (__FreeBSD__ >= 10))
     /* Unavailable on: Linux */
     /* Confirmed on: Mac OS X, Solaris, NetBSD */
-    else_if_constant(O_DSYNC);
     else_if_constant(O_NDELAY);
 #endif
 
@@ -141,7 +146,8 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_NumericalConstant_
     else_if_constant(XATTR_REPLACE);
 #endif
 
-/* NetBSD has a constant called EXATTR_MAXNAMELEN, but it's kernel-private so I don't think it makes sense to export it.
+/* NetBSD has a constant called EXATTR_MAXNAMELEN, but it's kernel-private so I
+ * don't think it makes sense to export it. */
 /*
 #if defined(__NetBSD__)
     else_if_constant2(XATTR_MAXNAMELEN, EXTATTR_MAXNAMELEN);
