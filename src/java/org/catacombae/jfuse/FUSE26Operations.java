@@ -34,6 +34,7 @@ import org.catacombae.jfuse.types.system.LongRef;
 import org.catacombae.jfuse.types.fuse26.FUSEFillDir;
 import org.catacombae.jfuse.types.fuse26.FUSEFileInfo;
 import org.catacombae.jfuse.types.fuse26.FUSEDirFil;
+import org.catacombae.jfuse.types.fuse26.FUSEContext;
 import java.nio.ByteBuffer;
 
 /**
@@ -651,10 +652,14 @@ public interface FUSE26Operations extends SystemConstants {
      * Changed in version 2.6
      * </pre>
      *
-     * @param conn <b>(struct fuse_conn_info*)</b>
-     * @return (optional) a return value that will be passed in the private_data
-     * field of fuse_context to all file operations and as a parameter to the
-     * destroy() method.
+     * @param conn <b>(struct fuse_conn_info*)</b> the connection info for this
+     * FUSE session, if applicable (on NetBSD, <code>conn</code> will be
+     * <code>null</code> since FUSE is implemented as an emulation layer on top
+     * of <code>puffs</code>).
+     * @return <i>(optional)</i> a return value that will be passed in the
+     * {@link FUSEContext#privateData privateData} field of
+     * {@link FUSEContext} to all file operations and as a parameter to the
+     * {@link #destroy(Object) destroy} method.
      */
     public Object init(FUSEConnInfo conn);
 
