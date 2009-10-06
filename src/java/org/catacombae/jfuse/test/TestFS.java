@@ -603,11 +603,15 @@ public class TestFS extends MacFUSEFileSystemAdapter {
         final String METHOD_NAME = "init";
         Log.traceEnter(CLASS_NAME + "." + METHOD_NAME, conn);
 
-        Log.trace("conn.proto_major = " + conn.proto_major);
-        Log.trace("conn.proto_minor = " + conn.proto_minor);
-        Log.trace("conn.async_read = " + conn.async_read);
-        Log.trace("conn.max_readahead = " + conn.max_readahead);
-        Log.trace("conn.max_write = " + conn.max_write);
+	if(conn != null) {
+	    Log.trace("conn.proto_major = " + conn.proto_major);
+	    Log.trace("conn.proto_minor = " + conn.proto_minor);
+	    Log.trace("conn.async_read = " + conn.async_read);
+	    Log.trace("conn.max_readahead = " + conn.max_readahead);
+	    Log.trace("conn.max_write = " + conn.max_write);
+	}
+	else
+	    Log.warning("No FUSEConnInfo object passed to init.");
 
         Log.debug("process pid=" + FUSEUtil.getProcessPid());
 
