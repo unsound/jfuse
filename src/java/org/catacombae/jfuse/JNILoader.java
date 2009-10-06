@@ -84,10 +84,14 @@ public class JNILoader {
             return ExecutionEnvironment.DARWIN;
         else if(osName.startsWith("linux"))
             return ExecutionEnvironment.GNU_LINUX;
+        else if(osName.startsWith("sunos"))
+            return ExecutionEnvironment.SOLARIS;
         else if(osName.startsWith("freebsd"))
             return ExecutionEnvironment.FREEBSD;
-	else if(osName.startsWith("netbsd"))
-	    return ExecutionEnvironment.NETBSD;
+        else if(osName.startsWith("netbsd"))
+            return ExecutionEnvironment.NETBSD;
+        else if(osName.startsWith("openbsd"))
+            return ExecutionEnvironment.OPENBSD;
         else
             return ExecutionEnvironment.UNKNOWN;
     }
