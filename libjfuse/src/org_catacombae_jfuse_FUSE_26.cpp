@@ -212,14 +212,6 @@ static int fuse_parse_cmdline(struct fuse_args *args, char **mountpoint,
 #define UNMOUNT_FORCE MNT_FORCE
 #endif
 
-#define errorHandling(...) \
-    do { \
-        fprintf(stderr, "Panic!\n"); \
-        char *ptr = NULL; \
-        ptr[0] = '\0'; \
-        exit(1); \
-    } while(0)
-
 static bool getCapability(JNIEnv *env, jclass capabilitiesClass,
         jobject capabilities, const char *name, jboolean *out) {
     jfieldID fid = env->GetFieldID(capabilitiesClass, name, "Z");
