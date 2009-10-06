@@ -24,43 +24,58 @@ package org.catacombae.jfuse.util;
  * @author erik
  */
 public class Log {
+    public static boolean noticeEnabled = true;
+    public static boolean traceEnabled = true;
+    public static boolean debugEnabled = true;
+    public static boolean warningEnabled = true;
+    public static boolean errorEnabled = true;
+
     public static void traceEnter(String methodName, Object... args) {
-        StringBuilder sb = new StringBuilder("ENTER: ");
-        sb.append(methodName).append("(");
-        for(int i = 0; i < args.length; ++i) {
-            if(i != 0)
-                sb.append(", ");
-            sb.append(args[i]);
+        if(traceEnabled) {
+            StringBuilder sb = new StringBuilder("ENTER: ");
+            sb.append(methodName).append("(");
+            for(int i = 0; i < args.length; ++i) {
+                if(i != 0) {
+                    sb.append(", ");
+                }
+                sb.append(args[i]);
+            }
+            sb.append(")");
+
+            System.err.println(sb.toString());
         }
-        sb.append(")");
-        
-        System.err.println(sb.toString());
     }
 
     public static void traceLeave(String methodName, Object retval, Object... args) {
-        StringBuilder sb = new StringBuilder("LEAVE: ");
-        sb.append(methodName).append("(");
-        for(int i = 0; i < args.length; ++i) {
-            if(i != 0)
-                sb.append(", ");
-            sb.append(args[i]);
-        }
-        sb.append("): ").append(retval);
+        if(traceEnabled) {
+            StringBuilder sb = new StringBuilder("LEAVE: ");
+            sb.append(methodName).append("(");
+            for(int i = 0; i < args.length; ++i) {
+                if(i != 0) {
+                    sb.append(", ");
+                }
+                sb.append(args[i]);
+            }
+            sb.append("): ").append(retval);
 
-        System.err.println(sb.toString());
+            System.err.println(sb.toString());
+        }
     }
 
     public static void traceLeaveVoid(String methodName, Object... args) {
-        StringBuilder sb = new StringBuilder("LEAVE: ");
-        sb.append(methodName).append("(");
-        for(int i = 0; i < args.length; ++i) {
-            if(i != 0)
-                sb.append(", ");
-            sb.append(args[i]);
-        }
-        sb.append(")");
+        if(traceEnabled) {
+            StringBuilder sb = new StringBuilder("LEAVE: ");
+            sb.append(methodName).append("(");
+            for(int i = 0; i < args.length; ++i) {
+                if(i != 0) {
+                    sb.append(", ");
+                }
+                sb.append(args[i]);
+            }
+            sb.append(")");
 
-        System.err.println(sb.toString());
+            System.err.println(sb.toString());
+        }
     }
 
     /**
@@ -71,7 +86,8 @@ public class Log {
      * @param msg the log message.
      */
     public static void notice(String msg) {
-        System.err.println("NOTICE: " + msg);
+        if(noticeEnabled)
+            System.err.println("NOTICE: " + msg);
     }
 
     /**
@@ -79,19 +95,23 @@ public class Log {
      * @param msg
      */
     public static void trace(String msg) {
-        System.err.println("TRACE: " + msg);
+        if(traceEnabled)
+            System.err.println("TRACE: " + msg);
     }
 
     public static void debug(String msg) {
-        System.err.println("DEBUG: " + msg);
+        if(debugEnabled)
+            System.err.println("DEBUG: " + msg);
     }
 
     public static void warning(String msg) {
-        System.err.println("WARNING: " + msg);
+        if(warningEnabled)
+            System.err.println("WARNING: " + msg);
     }
 
     public static void error(String msg) {
-        System.err.println("ERROR: " + msg);
+        if(errorEnabled)
+            System.err.println("ERROR: " + msg);
     }
 
     /**
