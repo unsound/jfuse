@@ -25,8 +25,8 @@ package org.catacombae.jfuse.util;
  */
 public class Log {
     public static boolean noticeEnabled = true;
-    public static boolean traceEnabled = true;
-    public static boolean debugEnabled = true;
+    public static boolean traceEnabled = false;
+    public static boolean debugEnabled = false;
     public static boolean warningEnabled = true;
     public static boolean errorEnabled = true;
 
