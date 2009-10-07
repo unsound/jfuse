@@ -663,22 +663,31 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                 //Log.debug("stbuf before:");
                 //stbuf.printFields("  ", System.err);
 
+                stbuf.st_ino = e.id & 0xFFFFFFFFL;
                 stbuf.st_uid = e.uid;
                 stbuf.st_gid = e.gid;
                 stbuf.st_mode = e.mode;
-                stbuf.st_nlink = e.nlink;
                 stbuf.st_atimespec.setToTimespec(e.accessTime);
                 stbuf.st_mtimespec.setToTimespec(e.modificationTime);
                 stbuf.st_ctimespec.setToTimespec(e.statusChangeTime);
                 stbuf.st_flags = e.flags;
                 
-                if(e instanceof File)
+                if(e instanceof File) {
                     stbuf.st_size = ((File) e).data.getLength();
-                else if(e instanceof Symlink)
+                    stbuf.st_nlink = e.nlink;
+                }
+                else if(e instanceof Symlink) {
                      // TODO: Don't waste memory and CPU cycles here.
                     stbuf.st_size = FUSEUtil.encodeUTF8(((Symlink)e).target).length;
-                else
+                    stbuf.st_nlink = e.nlink;
+                }
+                else if(e instanceof Directory) {
+                    // TODO: How much actual space does the directory take up in memory?
                     stbuf.st_size = 0;
+
+                    // ( +2 for '.' and '..')
+                    stbuf.st_nlink = ((Directory)e).children.size() + 2;
+                }
 
                 //Log.debug("stbuf after:");
                 //stbuf.printFields("  ", System.err);
