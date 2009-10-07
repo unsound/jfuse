@@ -19,10 +19,12 @@
 
 package org.catacombae.jfuse.types.system;
 
+import java.io.PrintStream;
+
 /**
  * Java representation of <code>struct statvfs</code>.
  *
- * @author erik
+ * @author Erik Larsson
  */
 public class StatVFS {
     /** File system block size */
@@ -47,4 +49,37 @@ public class StatVFS {
     public long f_flag;
     /** Max file name length */
     public long f_namemax;
+
+    /** Sets all fields to zero. */
+    public void zero() {
+        f_bsize = 0;
+        f_frsize = 0;
+        f_blocks = 0;
+        f_bfree = 0;
+        f_bavail = 0;
+        f_files = 0;
+        f_ffree = 0;
+        f_favail = 0;
+        f_fsid = 0;
+        f_flag = 0;
+        f_namemax = 0;
+    }
+
+    /**
+     * Prints the values of all fields to <code>ps</code> prepending
+     * <code>prefix</code> to each line.
+     */
+    public void printFields(String prefix, PrintStream ps) {
+        ps.println(prefix + "f_bsize = " + f_bsize);
+        ps.println(prefix + "f_frsize = " + f_frsize);
+        ps.println(prefix + "f_blocks = " + f_blocks);
+        ps.println(prefix + "f_bfree = " + f_bfree);
+        ps.println(prefix + "f_bavail = " + f_bavail);
+        ps.println(prefix + "f_files = " + f_files);
+        ps.println(prefix + "f_ffree = " + f_ffree);
+        ps.println(prefix + "f_favail = " + f_favail);
+        ps.println(prefix + "f_fsid = " + f_fsid);
+        ps.println(prefix + "f_flag = 0x" + Long.toHexString(f_flag));
+        ps.println(prefix + "f_namemax = " + f_namemax);
+    }
 }
