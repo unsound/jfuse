@@ -19,6 +19,13 @@
 
 #define __STDC_FORMAT_MACROS
 
+#ifdef __linux__
+#define __STDC_LIMIT_MACROS
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+#endif
+
 #define LOG_ENABLE_TRACE 0
 
 #include "org_catacombae_jfuse_types_system_NumericalConstant.h"
@@ -28,9 +35,6 @@
 #include "JavaSignatures.h"
 
 #include <string.h>
-#ifdef __linux__
-#define __STDC_LIMIT_MACROS
-#endif
 #include <inttypes.h>
 
 #include <sys/fcntl.h>
@@ -41,6 +45,34 @@
 
 #if !defined(__sun__) && !defined(__NetBSD__)
 #include <sys/xattr.h>
+#endif
+
+#if (defined(__APPLE__) || defined(__DARWIN__)) && !defined(O_SYMLINK)
+// This constant is missing from Mac OS X 10.4 headers.
+#define O_SYMLINK	0x200000
+#endif
+
+/* Testing macros for each platform that jFUSE supports. */
+#define T_DARWIN  (defined(__APPLE__) || defined(__DARWIN__))
+#define T_LINUX   (defined(__linux__))
+#define T_FREEBSD ((__FreeBSD__ >= 10) && !T_DARWIN)
+#define T_SOLARIS (defined(__sun__))
+#define T_NETBSD  (defined(__NetBSD__))
+
+#if T_DARWIN
+#define HEJ
+#endif
+#if T_LINUX
+#define HEJ
+#endif
+#if T_FREEBSD
+#define HEJ
+#endif
+#if T_SOLARIS
+#define HEJ
+#endif
+#if T_NETBSD
+#define HEJ
 #endif
 
 /*
@@ -66,82 +98,91 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_NumericalConstant_
 
     if(0);
 
-#if (defined(__APPLE__) || defined(__DARWIN__)) && !defined(O_SYMLINK)
-    // This constant is missing from Mac OS X 10.4 headers.
-    #define O_SYMLINK	0x200000
-#endif
-
     // Constants from sys/fcntl.h
-    else_if_constant(O_ACCMODE);
-    else_if_constant(O_RDONLY);
-    else_if_constant(O_WRONLY);
-    else_if_constant(O_RDWR);
-    else_if_constant(O_NONBLOCK);
-    else_if_constant(O_APPEND);
-    else_if_constant(O_CREAT);
-    else_if_constant(O_TRUNC);
-    else_if_constant(O_EXCL);
-    else_if_constant(O_NOFOLLOW);
-    else_if_constant(O_SYNC);
-    else_if_constant(O_NOCTTY);
+    else_if_constant(O_ACCMODE); // X
+    else_if_constant(O_RDONLY); // X
+    else_if_constant(O_WRONLY); // X
+    else_if_constant(O_RDWR); // X
+    else_if_constant(O_NONBLOCK); // X
+    else_if_constant(O_APPEND); // X
+    else_if_constant(O_CREAT); // X
+    else_if_constant(O_TRUNC); // X
+    else_if_constant(O_EXCL); // X
+    else_if_constant(O_NOFOLLOW); // X
+    else_if_constant(O_SYNC); // X
+    else_if_constant(O_NOCTTY); // X
+    else_if_constant(O_NDELAY); // X
 
-#if !defined(__sun__)
-    /* Unavailable on: Solaris */
-    /* Confirmed on: Mac OS X, Linux, NetBSD */
-    else_if_constant(O_ASYNC);
-#endif
+    // OS conditional constants
 
-#if !defined(__sun__) && !defined(__NetBSD__)
-    /* Unavailable on: Solaris, NetBSD */
-    /* Confirmed on: Mac OS X, Linux */
-    else_if_constant(O_DIRECTORY);
-#endif
-
-#if !defined(__linux__) && !defined(__sun__)
-    /* Unavailable on: Linux, Solaris */
-    /* Confirmed on: Mac OS X, NetBSD */
-    else_if_constant(O_SHLOCK);
-    else_if_constant(O_EXLOCK);
-#endif
-
-#if !defined(__linux__) && !defined(__sun__) && !defined(__NetBSD__)
+#if !T_LINUX && !T_SOLARIS && !T_NETBSD
+    /* Confirmed on: Darwin */
     /* Unavailable on: Linux, Solaris, NetBSD */
-    /* Confirmed on: Mac OS X */
     else_if_constant(O_SYMLINK);
     else_if_constant(O_EVTONLY);
 #endif
 
-#if !defined(__linux__) && !(defined(__APPLE__) || defined(__DARWIN__))
-    /* Unavailable on: Linux, Mac OS X */
-    /* Confirmed on: Solaris, NetBSD */
-    else_if_constant(O_DSYNC);
+#if !T_NETBSD && !T_SOLARIS
+    /* Confirmed on: Darwin, Linux */
+    /* Unavailable on: NetBSD, Solaris */
+    else_if_constant(O_DIRECTORY); // X
 #endif
 
-#if !defined(__linux__) // && !(!defined(__APPLE__) && !defined(__DARWIN__) && (__FreeBSD__ >= 10))
-    /* Unavailable on: Linux */
-    /* Confirmed on: Mac OS X, Solaris, NetBSD */
-    else_if_constant(O_NDELAY);
+#if !T_SOLARIS
+    /* Confirmed on: Darwin, Linux, NetBSD */
+    /* Unavailable on: Solaris */
+    else_if_constant(O_ASYNC); // X
 #endif
 
-#if !defined(__APPLE__) && !defined(__DARWIN__) && !defined(__linux__) && !(__FreeBSD__ >= 10) && !defined(__NetBSD__)
-    /* Unavailable on: Mac OS X, Linux, NetBSD */
+#if !T_LINUX && !T_SOLARIS
+    /* Confirmed on: Darwin, NetBSD */
+    /* Unavailable on: Linux, Solaris */
+    else_if_constant(O_SHLOCK);
+    else_if_constant(O_EXLOCK);
+#endif
+
+#if !T_DARWIN
+    /* Confirmed on: Linux */
+    /* Unavailable on: Darwin */
+    else_if_constant(O_FSYNC); // X
+    else_if_constant(O_DIRECT); // X
+    else_if_constant(O_NOATIME); // X
+    else_if_constant(O_CLOEXEC); // X
+#endif
+
+#if !T_DARWIN
+    /* Confirmed on: Linux, NetBSD, Solaris */
+    /* Unavailable on: Darwin */
+    else_if_constant(O_DSYNC); // X
+    else_if_constant(O_RSYNC); // X
+#endif
+
+#if !T_DARWIN && !T_NETBSD
+    /* Confirmed on: Linux, Solaris */
+    /* Unavailable on: Darwin, NetBSD */
+    else_if_constant(O_LARGEFILE); // X
+#endif
+
+#if !T_DARWIN && !T_LINUX && !T_FREEBSD && !T_NETBSD
     /* Confirmed on: Solaris */
-    else_if_constant(O_LARGEFILE);
+    /* Unavailable on: Darwin, Linux, NetBSD */
     else_if_constant(O_NOLINKS);
     else_if_constant(O_XATTR);
 #endif
 
-#if !defined(__APPLE__) && !defined(__DARWIN__) && !defined(__linux__) && !(__FreeBSD__ >= 10)
-    /* Unavailable on: Mac OS X, Linux */
-    /* Confirmed on: Solaris, NetBSD */
-    else_if_constant(O_RSYNC);
+    // Constants from sys/xattr.h
+
+#if !T_LINUX && !T_SOLARIS && !T_NETBSD
+    /* Confirmed on: Darwin */
+    /* Unavailable on: Linux, Solaris, NetBSD */
+    else_if_constant(XATTR_MAXNAMELEN);
 #endif
 
-    // Constants from sys/xattr.h
-#if !defined(__sun__) && !defined(__NetBSD__)
+#if !T_SOLARIS && !T_NETBSD
+    /* Confirmed on: Darwin, Linux */
     /* Unavailable on: Solaris, NetBSD */
-    /* Confirmed on: Mac OS X, Linux */
-    /* Not applicable for Solaris and NetBSD, who are using another xattr infrastructure. */
+    /* Not applicable for Solaris and NetBSD, who are using another xattr
+     * infrastructure. */
     else_if_constant(XATTR_CREATE);
     else_if_constant(XATTR_REPLACE);
 #endif
@@ -149,17 +190,11 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_NumericalConstant_
 /* NetBSD has a constant called EXATTR_MAXNAMELEN, but it's kernel-private so I
  * don't think it makes sense to export it. */
 /*
-#if defined(__NetBSD__)
+#if T_NETBSD
     else_if_constant2(XATTR_MAXNAMELEN, EXTATTR_MAXNAMELEN);
 #endif
 */
 
-#if !defined(__linux__) && !defined(__sun__) && !defined(__NetBSD__)
-    /* Unavailable on: Linux, Solaris, NetBSD */
-    /* Confirmed on: Mac OS X */
-    else_if_constant(XATTR_MAXNAMELEN);
-#endif
-    
     //else_if_constant();
 
     else {

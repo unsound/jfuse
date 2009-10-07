@@ -39,89 +39,133 @@ public enum NumericalConstant {
     /** sys/fcntl.h: Mask for open modes (O_RDONLY, O_WRONLY and O_RDWR). */
     O_ACCMODE,
 
-    /* flags present in the open(2) manpage: */
-
     /** sys/fcntl.h: Open for reading only. */
     O_RDONLY,
+
     /** sys/fcntl.h: Open for writing only */
     O_WRONLY,
+
     /** sys/fcntl.h: Open for reading and writing. */
     O_RDWR,
+
     /** sys/fcntl.h: Do not block on open or for data to become available. */
     O_NONBLOCK,
+
     /** sys/fcntl.h: Set append mode (append on each write). */
     O_APPEND,
+
     /** sys/fcntl.h: Create file if it does not exist. */
     O_CREAT,
+
     /** sys/fcntl.h: Truncate size to 0. */
     O_TRUNC,
+
     /** sys/fcntl.h: Error if O_CREAT and the file exists. */
     O_EXCL,
-    /** sys/fcntl.h: Atomically obtain a shared lock. */
-    O_SHLOCK,
-    /** sys/fcntl.h: Atomically obtain an exclusive lock. */
-    O_EXLOCK,
+
     /** sys/fcntl.h: Don't follow symlinks. */
     O_NOFOLLOW,
-    /** sys/fcntl.h: Allow open of a symlink. */
-    O_SYMLINK,
-
-    /* additional #defines found in fcntl.h: */
 
     /** sys/fcntl.h: Synchronous writes. */
     O_SYNC,
-    /** sys/fcntl.h: Signal pgrp when data ready. */
-    O_ASYNC,
-    /** sys/fcntl.h: Descriptor requested for event notifications only. */
-    O_EVTONLY,
+
     /** sys/fcntl.h: Don't assign controlling terminal. */
     O_NOCTTY,
-    /** sys/fcntl.h: Must be a directory. */
+
+    /** sys/fcntl.h: Non-blocking I/O. */
+    O_NDELAY,
+
+    /* The following constants are not present on all systems that jFUSE
+     * supports. Thus their value may be null. */
+
+    /** sys/fcntl.h: <b>(Mac OS X)</b> Descriptor requested for event notifications only. */
+    O_EVTONLY,
+
+    /** sys/fcntl.h: <b>(Mac OS X)</b> Allow open of a symlink. */
+    O_SYMLINK,
+
+    /** sys/fcntl.h: <b>(Mac OS X, Linux)</b> Must be a directory. */
     O_DIRECTORY,
 
-    /* Begin: Solaris specific constants. */
-    /* The values of these constants will be null on all other platforms. */
+    /**
+     * sys/fcntl.h: <b>(Mac OS X, Linux, NetBSD)</b> Signal pgrp when data
+     * ready.
+     */
+    O_ASYNC,
 
     /**
-     * sys/fcntl.h: <b>(Solaris only)</b> Synchronized update of file data.
+     * sys/fcntl.h: <b>(Mac OS X, NetBSD)</b> Atomically obtain an exclusive
+     * lock.
+     */
+    O_EXLOCK,
+
+    /**
+     * sys/fcntl.h: <b>(Mac OS X, NetBSD)</b> Atomically obtain a shared lock.
+     */
+    O_SHLOCK,
+
+    /** sys/fcntl.h: <b>(Linux)</b> ? */
+    O_FSYNC,
+
+    /** sys/fcntl.h: <b>(Linux)</b> Set close_on_exec. */
+    O_CLOEXEC,
+
+    /** sys/fcntl.h: <b>(Linux)</b> Direct disk access. */
+    O_DIRECT,
+
+    /** sys/fcntl.h: <b>(Linux)</b> Do not set atime. */
+    O_NOATIME,
+
+    /**
+     * sys/fcntl.h: <b>(Linux, NetBSD, Solaris)</b> Synchronized update of file
+     * data.
      */
     O_DSYNC,
+
     /**
-     * sys/fcntl.h: <b>(Solaris only)</b> Synchronized update of file
+     * sys/fcntl.h: <b>(Linux, NetBSD, Solaris)</b> Synchronized update of file
      * (read/write file integrity).
      */
     O_RSYNC,
+
     /**
-     * sys/fcntl.h: <b>(Solaris only)</b>  Maximum offset limit is the largest
+     * sys/fcntl.h: <b>(Linux, Solaris)</b>  Maximum offset limit is the largest
      * value of off64_t.
      */
     O_LARGEFILE,
+
     /**
-     * sys/fcntl.h: <b>(Solaris only)</b> Don't allow multiple hard links.
+     * sys/fcntl.h: <b>(Solaris)</b> Don't allow multiple hard links.
      */
     O_NOLINKS,
+
     /**
-     * sys/fcntl.h: <b>(Solaris only)</b> Non-blocking I/O.
-     */
-    O_NDELAY,
-    /**
-     * sys/fcntl.h: <b>(Solaris only)</b> openat(2) request is for an extended
+     * sys/fcntl.h: <b>(Solaris)</b> openat(2) request is for an extended
      * attribute.
      */
     O_XATTR,
-
 
     /* End: Constants from sys/fcntl.h */
 
 
     /* Begin: Constants from sys/xattr.h */
 
-    /** sys/xattr.h: Set the value, fail if attr already exists. */
-    XATTR_CREATE,
-    /** sys/xattr.h: Set the value, fail if attr does not exist. */
-    XATTR_REPLACE,
-    /** sys/xattr.h: Maximum length of an xattr name. */
+    /**
+     * sys/xattr.h: <b>(Mac OS X)</b> Maximum length of an xattr name.
+     */
     XATTR_MAXNAMELEN,
+
+    /**
+     * sys/xattr.h: <b>(Mac OS X, Linux)</b> Set the value, fail if attr already
+     * exists.
+     */
+    XATTR_CREATE,
+
+    /**
+     * sys/xattr.h: <b>(Mac OS X, Linux)</b> Set the value, fail if attr does
+     * not exist.
+     */
+    XATTR_REPLACE,
 
     /* End: Constants from sys/xattr.h */
 
