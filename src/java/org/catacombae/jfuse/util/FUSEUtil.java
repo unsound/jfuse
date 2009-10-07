@@ -139,4 +139,6 @@ public class FUSEUtil {
     private static native long getProcessUidNative();
     private static native long getProcessGidNative();
     private static native long getProcessPidNative();
+
+    private FUSEUtil() {}
 }
