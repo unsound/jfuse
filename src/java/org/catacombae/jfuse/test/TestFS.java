@@ -38,6 +38,7 @@ import org.catacombae.jfuse.types.system.StatVFS;
 import org.catacombae.jfuse.types.system.Timespec;
 import org.catacombae.jfuse.types.system.XattrUtil;
 import org.catacombae.jfuse.util.Log;
+import org.catacombae.jfuse.util.PlatformUtil;
 
 /**
  * In-memory file system for testing jFUSE.<br>
@@ -1171,7 +1172,15 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                 long totalMem = rt.totalMemory();
 
                 st.f_frsize = blockSize;
-                st.f_bsize = 1*1024*1024; // As much data as possible in each op
+                
+                /* Possibly this is the behaviour expected in OS X, while the
+                 * bwlow is what Linux expects. TODO: Check this. */
+                if(PlatformUtil.isMacOSX) {
+                    // As much data as possible in each op.
+                    st.f_bsize = 1*1024*1024;
+                }
+                else
+                    st.f_bsize = blockSize;
 
                 st.f_blocks = maxMem / blockSize;
                 st.f_bfree = (freeMem + (maxMem - totalMem)) / blockSize;
