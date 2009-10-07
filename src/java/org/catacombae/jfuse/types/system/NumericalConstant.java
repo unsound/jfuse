@@ -76,7 +76,7 @@ public enum NumericalConstant {
     O_EVTONLY,
     /** sys/fcntl.h: Don't assign controlling terminal. */
     O_NOCTTY,
-    /** sys/fcntl.h: */
+    /** sys/fcntl.h: Must be a directory. */
     O_DIRECTORY,
 
     /* Begin: Solaris specific constants. */
