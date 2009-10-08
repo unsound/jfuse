@@ -30,7 +30,14 @@
 #include <string.h>
 #include <inttypes.h>
 
-#if !defined(__sun__) && !defined(__NetBSD__)
+/* Testing macros for each platform that jFUSE supports. */
+#define T_DARWIN  (defined(__APPLE__) || defined(__DARWIN__))
+#define T_LINUX   (defined(__linux__))
+#define T_FREEBSD ((__FreeBSD__ > 0) && !T_DARWIN)
+#define T_SOLARIS (defined(__sun__))
+#define T_NETBSD  (defined(__NetBSD__))
+
+#if !T_FREEBSD && !T_NETBSD && !T_SOLARIS
 #include <sys/xattr.h>
 #endif
 
@@ -54,7 +61,7 @@ JNIEXPORT jstring JNICALL Java_org_catacombae_jfuse_types_system_StringConstant_
 
     if(0);
 
-#if defined(__linux__) || defined(__sun__) || defined(__NetBSD__)
+#if T_FREEBSD || T_LINUX || T_NETBSD || T_SOLARIS
     // Getting these variables dynamically from headers is just madness.
     #define XATTR_FINDERINFO_NAME	  "com.apple.FinderInfo"
     #define XATTR_RESOURCEFORK_NAME	  "com.apple.ResourceFork"

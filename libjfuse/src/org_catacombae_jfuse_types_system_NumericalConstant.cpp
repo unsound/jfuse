@@ -39,14 +39,6 @@
 
 #include <sys/fcntl.h>
 
-//#if defined(__NetBSD__)
-//#include <sys/extattr.h>
-//#endif
-
-#if !defined(__sun__) && !defined(__NetBSD__)
-#include <sys/xattr.h>
-#endif
-
 #if (defined(__APPLE__) || defined(__DARWIN__)) && !defined(O_SYMLINK)
 // This constant is missing from Mac OS X 10.4 headers.
 #define O_SYMLINK	0x200000
@@ -55,24 +47,62 @@
 /* Testing macros for each platform that jFUSE supports. */
 #define T_DARWIN  (defined(__APPLE__) || defined(__DARWIN__))
 #define T_LINUX   (defined(__linux__))
-#define T_FREEBSD ((__FreeBSD__ >= 10) && !T_DARWIN)
+#define T_FREEBSD ((__FreeBSD__ > 0) && !T_DARWIN)
 #define T_SOLARIS (defined(__sun__))
 #define T_NETBSD  (defined(__NetBSD__))
 
+/* Safeguard against multiple platform detection. */
+
 #if T_DARWIN
-#define HEJ
+#ifndef T_PLATFORM
+#define T_PLATFORM "Darwin"
+#else
+#error Multiple platforms detected.
 #endif
+#endif
+
 #if T_LINUX
-#define HEJ
+#ifndef T_PLATFORM
+#define T_PLATFORM "Linux"
+#else
+#error Multiple platforms detected.
 #endif
+#endif
+
 #if T_FREEBSD
-#define HEJ
+#ifndef T_PLATFORM
+#define T_PLATFORM "FreeBSD"
+#else
+#error Multiple platforms detected.
 #endif
+#endif
+
 #if T_SOLARIS
-#define HEJ
+#ifndef T_PLATFORM
+#define T_PLATFORM "Solaris"
+#else
+#error Multiple platforms detected.
 #endif
+#endif
+
 #if T_NETBSD
-#define HEJ
+#ifndef T_PLATFORM
+#define T_PLATFORM "NetBSD"
+#else
+#error Multiple platforms detected.
+#endif
+#endif
+
+#if !defined(T_PLATFORM)
+#error No known platform detected!
+#endif
+
+#if T_LINUX || T_DARWIN
+#include <sys/xattr.h>
+/*
+#elif T_FREEBSD || T_NETBSD
+#include <sys/extattr.h>
+*/
 #endif
 
 /*
@@ -99,101 +129,104 @@ JNIEXPORT jint JNICALL Java_org_catacombae_jfuse_types_system_NumericalConstant_
     if(0);
 
     // Constants from sys/fcntl.h
-    else_if_constant(O_ACCMODE); // X
-    else_if_constant(O_RDONLY); // X
-    else_if_constant(O_WRONLY); // X
-    else_if_constant(O_RDWR); // X
-    else_if_constant(O_NONBLOCK); // X
-    else_if_constant(O_APPEND); // X
-    else_if_constant(O_CREAT); // X
-    else_if_constant(O_TRUNC); // X
-    else_if_constant(O_EXCL); // X
-    else_if_constant(O_NOFOLLOW); // X
-    else_if_constant(O_SYNC); // X
-    else_if_constant(O_NOCTTY); // X
-    else_if_constant(O_NDELAY); // X
+    else_if_constant(O_ACCMODE);
+    else_if_constant(O_RDONLY);
+    else_if_constant(O_WRONLY);
+    else_if_constant(O_RDWR);
+    else_if_constant(O_NONBLOCK);
+    else_if_constant(O_APPEND);
+    else_if_constant(O_CREAT);
+    else_if_constant(O_TRUNC);
+    else_if_constant(O_EXCL);
+    else_if_constant(O_NOFOLLOW);
+    else_if_constant(O_SYNC);
+    else_if_constant(O_NOCTTY);
+    else_if_constant(O_NDELAY);
 
     // OS conditional constants
 
-#if !T_LINUX && !T_SOLARIS && !T_NETBSD
+#if !T_FREEBSD && !T_LINUX && !T_SOLARIS && !T_NETBSD
     /* Confirmed on: Darwin */
-    /* Unavailable on: Linux, Solaris, NetBSD */
+    /* Unavailable on: FreeBSD, Linux, NetBSD, Solaris */
     else_if_constant(O_SYMLINK);
     else_if_constant(O_EVTONLY);
 #endif
 
-#if !T_NETBSD && !T_SOLARIS
+#if !T_FREEBSD && !T_NETBSD && !T_SOLARIS
     /* Confirmed on: Darwin, Linux */
-    /* Unavailable on: NetBSD, Solaris */
-    else_if_constant(O_DIRECTORY); // X
+    /* Unavailable on: FreeBSD, NetBSD, Solaris */
+    else_if_constant(O_DIRECTORY);
 #endif
 
 #if !T_SOLARIS
-    /* Confirmed on: Darwin, Linux, NetBSD */
+    /* Confirmed on: Darwin, FreeBSD, Linux, NetBSD */
     /* Unavailable on: Solaris */
-    else_if_constant(O_ASYNC); // X
+    else_if_constant(O_ASYNC);
 #endif
 
 #if !T_LINUX && !T_SOLARIS
-    /* Confirmed on: Darwin, NetBSD */
+    /* Confirmed on: Darwin, FreeBSD, NetBSD */
     /* Unavailable on: Linux, Solaris */
     else_if_constant(O_SHLOCK);
     else_if_constant(O_EXLOCK);
 #endif
 
 #if !T_DARWIN
-    /* Confirmed on: Linux */
+    /* Confirmed on: Linux, FreeBSD */
     /* Unavailable on: Darwin */
-    else_if_constant(O_FSYNC); // X
-    else_if_constant(O_DIRECT); // X
-    else_if_constant(O_NOATIME); // X
-    else_if_constant(O_CLOEXEC); // X
+    else_if_constant(O_FSYNC);
+    else_if_constant(O_DIRECT);
 #endif
 
-#if !T_DARWIN
+#if !T_DARWIN && !T_FREEBSD
     /* Confirmed on: Linux, NetBSD, Solaris */
-    /* Unavailable on: Darwin */
-    else_if_constant(O_DSYNC); // X
-    else_if_constant(O_RSYNC); // X
+    /* Unavailable on: Darwin, FreeBSD */
+    else_if_constant(O_DSYNC);
+    else_if_constant(O_RSYNC);
 #endif
 
-#if !T_DARWIN && !T_NETBSD
+#if !T_DARWIN && !T_FREEBSD
+    /* Confirmed on: Linux */
+    /* Unavailable on: Darwin, FreeBSD */
+    else_if_constant(O_NOATIME);
+    else_if_constant(O_CLOEXEC);
+#endif
+
+#if !T_DARWIN && !T_FREEBSD && !T_NETBSD
     /* Confirmed on: Linux, Solaris */
-    /* Unavailable on: Darwin, NetBSD */
-    else_if_constant(O_LARGEFILE); // X
+    /* Unavailable on: Darwin, FreeBSD, NetBSD */
+    else_if_constant(O_LARGEFILE);
 #endif
 
-#if !T_DARWIN && !T_LINUX && !T_FREEBSD && !T_NETBSD
+#if !T_DARWIN && !T_FREEBSD && !T_LINUX && !T_NETBSD
     /* Confirmed on: Solaris */
-    /* Unavailable on: Darwin, Linux, NetBSD */
+    /* Unavailable on: Darwin, FreeBSD, Linux, NetBSD */
     else_if_constant(O_NOLINKS);
     else_if_constant(O_XATTR);
 #endif
 
     // Constants from sys/xattr.h
 
-#if !T_LINUX && !T_SOLARIS && !T_NETBSD
+#if !T_LINUX && !T_FREEBSD && !T_SOLARIS && !T_NETBSD
     /* Confirmed on: Darwin */
-    /* Unavailable on: Linux, Solaris, NetBSD */
+    /* Unavailable on: Linux, FreeBSD, Solaris, NetBSD */
     else_if_constant(XATTR_MAXNAMELEN);
+#elif T_FREEBSD || T_NETBSD
+    /* *BSD has a constant called EXTATTR_MAXNAMELEN, but it's kernel-private
+     * (#ifdef _KERNEL) so I don't think it makes sense to export it. */
+    /*
+    else_if_constant2(XATTR_MAXNAMELEN, EXTATTR_MAXNAMELEN);
+    */
 #endif
 
-#if !T_SOLARIS && !T_NETBSD
+#if !T_SOLARIS && !T_FREEBSD && !T_NETBSD
     /* Confirmed on: Darwin, Linux */
-    /* Unavailable on: Solaris, NetBSD */
-    /* Not applicable for Solaris and NetBSD, who are using another xattr
-     * infrastructure. */
+    /* Unavailable on: FreeBSD, NetBSD, Solaris */
+    /* Not applicable for Solaris and *BSD, whose xattr APIs are fundamentally
+     * different from the ones in Linux/Mac OS X. */
     else_if_constant(XATTR_CREATE);
     else_if_constant(XATTR_REPLACE);
 #endif
-
-/* NetBSD has a constant called EXATTR_MAXNAMELEN, but it's kernel-private so I
- * don't think it makes sense to export it. */
-/*
-#if T_NETBSD
-    else_if_constant2(XATTR_MAXNAMELEN, EXTATTR_MAXNAMELEN);
-#endif
-*/
 
     //else_if_constant();
 
