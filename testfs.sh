@@ -8,7 +8,7 @@ case `uname -s` in
 	fi
 	export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}:lib"
 	;;
-[Ll]inux* | [Nn]et[Bb][Ss][Dd]*)
+[Ll]inux* | [Nn]et[Bb][Ss][Dd]* | SunOS*)
 	if test -z "${LD_LIBRARY_PATH}"; then
             # Set up a sane initial library path.
             LD_LIBRARY_PATH=/lib:/usr/lib
