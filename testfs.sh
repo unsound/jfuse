@@ -9,6 +9,10 @@ case `uname -s` in
 	export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}:lib"
 	;;
 [Ll]inux* | [Nn]et[Bb][Ss][Dd]*)
+	if test -z "${LD_LIBRARY_PATH}"; then
+            # Set up a sane initial library path.
+            LD_LIBRARY_PATH=/lib:/usr/lib
+        fi
 	export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/lib"
 	;;
 esac
