@@ -168,7 +168,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                     (mode & S_ISGID) | // Set setgid bit
                     (mode & S_ISVTX)); // Set sticky bit
         }
-	
+
         /**
          * Sets file mode, preserving the setuid, setgid and sticky bits as
          * well as the file type.
@@ -694,9 +694,9 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                     stbuf.st_nlink = ((Directory)e).children.size() + 2;
                 }
 
-		//System.err.println("stbuf after:");
+                //System.err.println("stbuf after:");
                 //stbuf.printFields("  ", System.err);
-		//System.err.println("e.mode = " + e.mode + " (0x" + Integer.toHexString(e.mode) + ")");
+                //System.err.println("e.mode = " + e.mode + " (0x" + Integer.toHexString(e.mode) + ")");
             }
             else
                 res = -ENOENT;
