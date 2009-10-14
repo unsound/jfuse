@@ -93,7 +93,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
 
         public long uid;
         public long gid;
-        public short mode;
+        public int mode;
         public int nlink;
 
         public final Timespec accessTime = new Timespec();
@@ -159,8 +159,8 @@ public class TestFS extends MacFUSEFileSystemAdapter {
         }
 
         /** Sets file mode, preserving the file type. */
-        public void setRWXSModeBits(short mode) {
-            this.mode = (short) ((this.mode & S_IFMT) | // Preserve file type.
+        public void setRWXSModeBits(int mode) {
+            this.mode = (int) ((this.mode & S_IFMT) | // Preserve file type.
                     (mode & S_IRWXU) | // Set user bits
                     (mode & S_IRWXG) | // Set group bits
                     (mode & S_IRWXO) | // Set other bits
@@ -168,8 +168,13 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                     (mode & S_ISGID) | // Set setgid bit
                     (mode & S_ISVTX)); // Set sticky bit
         }
-        public void setRWXModeBits(short mode) {
-            this.mode = (short) ((this.mode & S_IFMT) | // Preserve file type.
+	
+        /**
+         * Sets file mode, preserving the setuid, setgid and sticky bits as
+         * well as the file type.
+         */
+        public void setRWXModeBits(int mode) {
+            this.mode = (int) ((this.mode & S_IFMT) | // Preserve file type.
                     (mode & S_IRWXU) | // Set user bits
                     (mode & S_IRWXG) | // Set group bits
                     (mode & S_IRWXO)); // Set other bits
@@ -354,7 +359,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
             File f = new File();
             f.uid = parent.uid;
             f.gid = parent.gid;
-            f.mode = (short)S_IFREG;
+            f.mode = (int)S_IFREG;
             if(mode != null)
                 f.setRWXSModeBits(mode);
             else
@@ -393,7 +398,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
             Directory node = new Directory();
             node.uid = parent.uid;
             node.gid = parent.gid;
-            node.mode = (short)S_IFDIR;
+            node.mode = (int)S_IFDIR;
             if(mode != null) {
                 Log.debug("mode supplied: 0x" + Integer.toHexString(mode));
                 node.setRWXSModeBits(mode);
@@ -476,7 +481,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
             Symlink l = new Symlink();
             l.uid = parent.uid;
             l.gid = parent.gid;
-            l.mode = (short)S_IFLNK;
+            l.mode = (int)S_IFLNK;
             l.setRWXModeBits(parent.mode); // Inherit.
             setCreateTimes(l, createTime);
             l.nlink = 1;
@@ -625,7 +630,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
         Log.debug("root directory gid set to: " + rootNode.gid +
                 " (0x" + Long.toHexString(rootNode.gid) + ")");
         rootNode.nlink = 2; // Always 2 for root dir?
-        rootNode.mode = (short)(S_IFDIR | 0777);
+        rootNode.mode = (int)(S_IFDIR | 0777);
         setCreateTimes(rootNode, mountTime);
         fileTable.put("/", rootNode);
 
@@ -666,7 +671,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                 stbuf.st_ino = e.id & 0xFFFFFFFFL;
                 stbuf.st_uid = e.uid;
                 stbuf.st_gid = e.gid;
-                stbuf.st_mode = e.mode;
+                stbuf.st_mode = e.mode & 0xFFFFFFFFL;
                 stbuf.st_atimespec.setToTimespec(e.accessTime);
                 stbuf.st_mtimespec.setToTimespec(e.modificationTime);
                 stbuf.st_ctimespec.setToTimespec(e.statusChangeTime);
@@ -689,8 +694,9 @@ public class TestFS extends MacFUSEFileSystemAdapter {
                     stbuf.st_nlink = ((Directory)e).children.size() + 2;
                 }
 
-                //Log.debug("stbuf after:");
+		//System.err.println("stbuf after:");
                 //stbuf.printFields("  ", System.err);
+		//System.err.println("e.mode = " + e.mode + " (0x" + Integer.toHexString(e.mode) + ")");
             }
             else
                 res = -ENOENT;
