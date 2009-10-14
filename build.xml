@@ -38,7 +38,7 @@
 	   source="${java.source.level}"
 	   target="${java.target.level}"
 	   deprecation="on">
-      <compilerarg value="-Xlint:unchecked"/>
+      <compilerarg value="-Xlint:all"/>
       <src path="${java.source.dir}"/>
       <classpath refid="build.classpath"/>
     </javac>
