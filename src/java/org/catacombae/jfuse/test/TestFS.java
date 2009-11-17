@@ -160,7 +160,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
 
         /** Sets file mode, preserving the file type. */
         public void setRWXSModeBits(int mode) {
-            this.mode = (int) ((this.mode & S_IFMT) | // Preserve file type.
+            this.mode = ((this.mode & S_IFMT) | // Preserve file type.
                     (mode & S_IRWXU) | // Set user bits
                     (mode & S_IRWXG) | // Set group bits
                     (mode & S_IRWXO) | // Set other bits
@@ -174,7 +174,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
          * well as the file type.
          */
         public void setRWXModeBits(int mode) {
-            this.mode = (int) ((this.mode & S_IFMT) | // Preserve file type.
+            this.mode = ((this.mode & S_IFMT) | // Preserve file type.
                     (mode & S_IRWXU) | // Set user bits
                     (mode & S_IRWXG) | // Set group bits
                     (mode & S_IRWXO)); // Set other bits
@@ -359,7 +359,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
             File f = new File();
             f.uid = parent.uid;
             f.gid = parent.gid;
-            f.mode = (int)S_IFREG;
+            f.mode = S_IFREG;
             if(mode != null)
                 f.setRWXSModeBits(mode);
             else
@@ -398,7 +398,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
             Directory node = new Directory();
             node.uid = parent.uid;
             node.gid = parent.gid;
-            node.mode = (int)S_IFDIR;
+            node.mode = S_IFDIR;
             if(mode != null) {
                 Log.debug("mode supplied: 0x" + Integer.toHexString(mode));
                 node.setRWXSModeBits(mode);
@@ -481,7 +481,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
             Symlink l = new Symlink();
             l.uid = parent.uid;
             l.gid = parent.gid;
-            l.mode = (int)S_IFLNK;
+            l.mode = S_IFLNK;
             l.setRWXModeBits(parent.mode); // Inherit.
             setCreateTimes(l, createTime);
             l.nlink = 1;
@@ -630,7 +630,7 @@ public class TestFS extends MacFUSEFileSystemAdapter {
         Log.debug("root directory gid set to: " + rootNode.gid +
                 " (0x" + Long.toHexString(rootNode.gid) + ")");
         rootNode.nlink = 2; // Always 2 for root dir?
-        rootNode.mode = (int)(S_IFDIR | 0777);
+        rootNode.mode = (S_IFDIR | 0777);
         setCreateTimes(rootNode, mountTime);
         fileTable.put("/", rootNode);
 
