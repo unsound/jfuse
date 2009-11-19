@@ -1,0 +1,70 @@
+=====================================================================
+libjfuse compile instructions and prerequisites for different systems
+=====================================================================
+
+1. Linux
+--------
+
+To compile libjfuse on Linux you need the following:
+- The GCC C++ compiler (g++).
+    Debian package: g++
+    Fedora package: gcc-c++
+- libfuse >= 2.6 + headers.
+    Debian package: libfuse-dev
+    Fedora package: fuse-devel
+- A Java JDK >= 1.5, for instance OpenJDK 6 with 'javac' in the PATH.
+    Debian package: openjdk-6-jdk
+    Fedora package: java-1.6.0-openjdk-devel
+- libattr + headers (extended attribute handling).
+    Debian package: libattr1-dev
+    Fedora package: libattr-devel
+
+Tested with Fedora 12 (amd64).
+
+
+2. Mac OS X
+-----------
+
+To compile libjfuse on Mac OS X you need the following:
+- Xcode Tools (includes gcc and system headers).
+    http://developer.apple.com/TOOLS/Xcode/
+- MacFUSE 2.0 or later.
+    http://code.google.com/p/macfuse/
+- Java 5 or later (included in Mac OS X 10.5+).
+    http://developer.apple.com/java/download/
+
+Tested with Mac OS X 10.4 (Intel/PowerPC), Mac OS X 10.5 (Intel/PowerPC).
+
+
+3. OpenSolaris
+--------------
+
+To compile libjfuse on OpenSolaris you need the following:
+- The GCC C++ compiler (g++).
+    ? (gcc-dev package?)
+- libfuse and the fusefs kernel module.
+    You have to build these manually from Mercurial source repositories.
+    See instructions (written for NTFS-3G) here:
+      http://forums.opensolaris.com/thread.jspa?threadID=513
+- Java 5 or later (OpenJDK is included in OpenSolaris).
+- Anything else?
+
+
+4. FreeBSD
+----------
+
+- The GCC C++ compiler (g++).
+- libfuse (and the fuse kernel module, if not included).
+- A JDK >= 1.5 (OpenJDK is in the ports collection).
+- Something else?
+
+
+5. NetBSD
+---------
+
+- The GCC C++ compiler (g++).
+- librefuse (and puffs).
+- A JDK >= 1.5 (OpenJDK is in NetBSD pkgsrc collection).
+- Something else?
+
+
