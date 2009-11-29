@@ -24,9 +24,12 @@ To compile libjfuse on a common Linux distribution you need the following:
 - A Java JDK >= 1.5, for instance OpenJDK 6 with 'javac' in the PATH.
     Debian package: openjdk-6-jdk
     Fedora package: java-1.6.0-openjdk-devel
-- libattr + headers (extended attribute handling).
+- libattr headers (extended attribute function prototypes and constants).
     Debian package: libattr1-dev
     Fedora package: libattr-devel
+- pkg-config (a recent version).
+    Debian package: pkg-config
+    Fedora package: pkgconfig
 
 Tested with Fedora 12 (amd64).
 
@@ -35,12 +38,15 @@ Tested with Fedora 12 (amd64).
 -----------
 
 To compile libjfuse on Mac OS X you need the following:
-- Xcode Tools (includes gcc and system headers).
+- Xcode Tools (includes gcc/g++ and system headers).
     http://developer.apple.com/TOOLS/Xcode/
 - MacFUSE 2.0 or later.
     http://code.google.com/p/macfuse/
 - Java 5 or later (included in Mac OS X 10.5+).
     http://developer.apple.com/java/download/
+- pkg-config (a recent version).
+    You can either install it from MacPorts / Fink, or compile it yourself from
+    sources (http://pkg-config.freedesktop.org/).
 
 Tested with Mac OS X 10.4 (Intel/PowerPC), Mac OS X 10.5 (Intel/PowerPC).
 
@@ -62,13 +68,15 @@ To compile libjfuse on OpenSolaris you need the following:
 4. FreeBSD
 ----------
 
-- The GCC C++ compiler (g++). This is usually included in FreeBSD but if it's
-  not, then check the 'lang' section in the ports tree.
+- The GCC C++ compiler (g++). This is usually included in FreeBSD but if not,
+  then check the 'lang' section in the ports tree.
 - The FUSE kernel module and libraries. Both can be found in the ports tree as
   sysutils/fusefs-kmod and sysutils/fusefs-libs respectively.
 - A JDK >= 1.5. Diablo JDK 1.6 and OpenJDK 6 are recommended. Both can be found
   in the ports tree as java/diablo-jdk16 and java/openjdk6 respectively.
 - pkg-config. This can be found in the ports tree as devel/pkg-config.
+
+Tested with FreeBSD 7.2 and FreeBSD 8.0 (both amd64 architecture).
 
 
 5. NetBSD
@@ -79,3 +87,5 @@ To compile libjfuse on OpenSolaris you need the following:
 - A JDK >= 1.5 (OpenJDK is in NetBSD pkgsrc collection).
 - pkg-config.
 - Something else?
+
+Tested with NetBSD 5.0.1 (amd64).
