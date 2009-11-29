@@ -2,10 +2,19 @@
 libjfuse compile instructions and prerequisites for different systems
 =====================================================================
 
+In general, jFUSE needs the following to compile:
+- A C++ compiler. Only GCC (g++) has been tested.
+- FUSE libraries and headers (for FUSE 2.6 or later).
+- A Java JDK >= 1.5 with the appropriate machine-specific headers.
+- A fairly recent version of pkg-config.
+
+Here are some more specific instructions for specific supported platforms:
+
+
 1. Linux
 --------
 
-To compile libjfuse on Linux you need the following:
+To compile libjfuse on a common Linux distribution you need the following:
 - The GCC C++ compiler (g++).
     Debian package: g++
     Fedora package: gcc-c++
