@@ -214,7 +214,9 @@ esac
 AC_JNI_INCLUDE_DIR
 for JNI_INCLUDE_DIR in $JNI_INCLUDE_DIRS
 do
-	CPPFLAGS="$CPPFLAGS -I$JNI_INCLUDE_DIR"
+	CFLAGS="${CFLAGS} -I$JNI_INCLUDE_DIR"
+	CPPFLAGS="${CPPFLAGS} -I$JNI_INCLUDE_DIR"
+	OBJCFLAGS="${OBJCFLAGS} -I$JNI_INCLUDE_DIR"
 done
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -236,17 +238,35 @@ if test "$GCC" = "yes" ; then
 	CFLAGS="${CFLAGS} -Wall"
 fi
 
+if test "$GXX" = "yes" ; then
+	# We add -Wall to enable some compiler warnings.
+	CPPFLAGS="${CPPFLAGS} -Wall"
+fi
+
+if test "$GOBJC" = "yes" ; then
+	# We add -Wall to enable some compiler warnings.
+	OBJCFLAGS="${OBJCFLAGS} -Wall"
+fi
+
 if test "${enable_pedantic}" = "yes"; then
 	enable_warnings="yes"
 	CFLAGS="${CFLAGS} -pedantic"
+	CPPFLAGS="${CPPFLAGS} -pedantic"
+	OBJCFLAGS="${OBJCFLAGS} -pedantic"
 fi
 
 if test "${enable_warnings}" = "yes"; then
 	CFLAGS="${CFLAGS} -W -Wall -Waggregate-return -Wbad-function-cast -Wcast-align -Wcast-qual -Wdisabled-optimization -Wdiv-by-zero -Wfloat-equal -Winline -Wmissing-declarations -Wmissing-format-attribute -Wmissing-noreturn -Wmissing-prototypes -Wmultichar -Wnested-externs -Wpointer-arith -Wredundant-decls -Wshadow -Wsign-compare -Wstrict-prototypes -Wundef -Wwrite-strings -Wformat -Wformat-security"
+	# There are surely more C++ warnings that one could add here.
+	CPPFLAGS="${CPPFLAGS} -W -Wall -Waggregate-return -Wcast-align -Wcast-qual -Wdisabled-optimization -Wfloat-equal -Winline -Wmissing-format-attribute -Wmissing-noreturn -Wmultichar -Wpointer-arith -Wredundant-decls -Wshadow -Wsign-compare -Wundef -Wwrite-strings -Wformat -Wformat-security"
+	# There are surely more ObjC warnings that one could add here.
+	OBJCFLAGS="${OBJCFLAGS} -W -Wall -Waggregate-return -Wbad-function-cast -Wcast-align -Wcast-qual -Wdisabled-optimization -Wdiv-by-zero -Wfloat-equal -Winline -Wmissing-declarations -Wmissing-format-attribute -Wmissing-noreturn -Wmissing-prototypes -Wmultichar -Wnested-externs -Wpointer-arith -Wredundant-decls -Wshadow -Wsign-compare -Wstrict-prototypes -Wundef -Wwrite-strings -Wformat -Wformat-security"
 fi
 
 if test "${enable_debug}" = "yes"; then
 	CFLAGS="${CFLAGS} -g -DDEBUG"
+	CPPFLAGS="${CPPFLAGS} -g -DDEBUG"
+	OBJCFLAGS="${OBJCFLAGS} -g -DDEBUG"
 	AC_DEFINE(
 		[ENABLE_DEBUG],
 		[1],
@@ -270,6 +290,7 @@ esac
 if test ! -z "${ARCH_FLAGS}"; then
    CFLAGS="${ARCH_FLAGS} ${CFLAGS}"
    CPPFLAGS="${ARCH_FLAGS} ${CPPFLAGS}"
+   OBJCFLAGS="${ARCH_FLAGS} ${OBJCFLAGS}"
    LDFLAGS="${ARCH_FLAGS} ${LDFLAGS}"
 fi
 
@@ -278,6 +299,7 @@ case "${macosx_sdk}" in
 	SDK=/Developer/SDKs/MacOSX10.4u.sdk
 	CFLAGS="${CFLAGS} -mmacosx-version-min=10.4 -isysroot ${SDK}"
 	CPPFLAGS="${CPPFLAGS} -mmacosx-version-min=10.4 -isysroot ${SDK}"
+	OBJCFLAGS="${OBJCFLAGS} -mmacosx-version-min=10.4 -isysroot ${SDK}"
 	LDFLAGS="${LDFLAGS} -mmacosx-version-min=10.4 -isysroot ${SDK} -Wl,-syslibroot,${SDK}"
 	;;
 esac
