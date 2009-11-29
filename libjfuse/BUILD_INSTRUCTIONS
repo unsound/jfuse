@@ -62,10 +62,13 @@ To compile libjfuse on OpenSolaris you need the following:
 4. FreeBSD
 ----------
 
-- The GCC C++ compiler (g++).
-- libfuse (and the fuse kernel module, if not included).
-- A JDK >= 1.5 (OpenJDK is in the ports collection).
-- Something else?
+- The GCC C++ compiler (g++). This is usually included in FreeBSD but if it's
+  not, then check the 'lang' section in the ports tree.
+- The FUSE kernel module and libraries. Both can be found in the ports tree as
+  sysutils/fusefs-kmod and sysutils/fusefs-libs respectively.
+- A JDK >= 1.5. Diablo JDK 1.6 and OpenJDK 6 are recommended. Both can be found
+  in the ports tree as java/diablo-jdk16 and java/openjdk6 respectively.
+- pkg-config. This can be found in the ports tree as devel/pkg-config.
 
 
 5. NetBSD
@@ -74,6 +77,5 @@ To compile libjfuse on OpenSolaris you need the following:
 - The GCC C++ compiler (g++).
 - librefuse (and puffs).
 - A JDK >= 1.5 (OpenJDK is in NetBSD pkgsrc collection).
+- pkg-config.
 - Something else?
-
-
