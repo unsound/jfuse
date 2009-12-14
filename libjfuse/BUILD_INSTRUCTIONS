@@ -42,7 +42,7 @@ To compile libjfuse on Mac OS X you need the following:
     http://developer.apple.com/TOOLS/Xcode/
 - MacFUSE 2.0 or later.
     http://code.google.com/p/macfuse/
-- Java 5 or later (included in Mac OS X 10.5+).
+- Java JDK 5 or later (included in Mac OS X 10.5+).
     http://developer.apple.com/java/download/
 - pkg-config (a recent version).
     You can either install it from MacPorts / Fink, or compile it yourself from
@@ -56,13 +56,21 @@ Tested with Mac OS X 10.4 (Intel/PowerPC), Mac OS X 10.5 (Intel/PowerPC).
 
 To compile libjfuse on OpenSolaris you need the following:
 - The GCC C++ compiler (g++).
-    ? (gcc-dev package?)
+    Included in the package 'gcc-dev'.
 - libfuse and the fusefs kernel module.
     You have to build these manually from Mercurial source repositories.
     See instructions (written for NTFS-3G) here:
       http://forums.opensolaris.com/thread.jspa?threadID=513
-- Java 5 or later (OpenJDK is included in OpenSolaris).
-- Anything else?
+    Stop after the line:
+      '$ pfexec /usr/sbin/pkgadd -d ../../libfuse/packages SUNWlibfuse'
+- JDK 5 or later.
+    Sun's JDK 6.0 can be found in the packages 'SUNWj6dev' (32-bit) and
+    'SUNWj6dvx' (64-bit). The 'java-dev' package includes these and some more
+    potentially useful tools for Java development.
+- pkg-config (a recent version).
+    Included in the package 'SUNWgnome-common-devel'.
+
+Tested with OpenSolaris 2009.06.
 
 
 4. FreeBSD
