@@ -82,10 +82,8 @@ Tested with FreeBSD 7.2 and FreeBSD 8.0 (both amd64 architecture).
 5. NetBSD
 ---------
 
-- The GCC C++ compiler (g++).
-- librefuse (and puffs).
-- A JDK >= 1.5 (OpenJDK is in NetBSD pkgsrc collection).
-- pkg-config.
-- Something else?
+- The GCC C++ compiler (g++) (included in the standard install of NetBSD 5.0.1).
+- librefuse / puffs (included in the standard install of NetBSD 5.0.1).
+- A JDK >= 1.5 (I used OpenJDK 7, which is in pkgsrc as 'lang/openjdk7-bin').
 
-Tested with NetBSD 5.0.1 (amd64).
+Tested with NetBSD 5.0.1 (i386).
