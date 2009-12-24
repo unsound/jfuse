@@ -24,8 +24,8 @@
 
 # Autoconf
 AC_PREREQ(2.59)
-AC_INIT([libjfuse],[0.1],[erik82@kth.se])
-LIBJFUSE_VERSION="0"
+AC_INIT([libjfuse],[0.2],[erik82@kth.se])
+LIBJFUSE_VERSION="1"
 AC_CONFIG_SRCDIR([src/fuse26_module.cpp])
 
 # Environment
