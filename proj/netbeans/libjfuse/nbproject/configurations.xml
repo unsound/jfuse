@@ -97,7 +97,7 @@
           <warningLevel>2</warningLevel>
         </ccTool>
         <linkerTool>
-          <output>dist/darwin-Debug/libjfuse.dylib</output>
+          <output>dist/darwin-Debug/libjfuse.jnilib</output>
           <linkerLibItems>
             <linkerOptionItem>-lfuse</linkerOptionItem>
           </linkerLibItems>

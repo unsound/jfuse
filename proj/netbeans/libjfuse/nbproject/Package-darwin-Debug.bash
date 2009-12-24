@@ -11,8 +11,8 @@ CND_CONF=darwin-Debug
 CND_DISTDIR=dist
 TMPDIR=build/${CND_CONF}/${CND_PLATFORM}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=dist/darwin-Debug/libjfuse.dylib
-OUTPUT_BASENAME=libjfuse.dylib
+OUTPUT_PATH=dist/darwin-Debug/libjfuse.jnilib
+OUTPUT_BASENAME=libjfuse.jnilib
 PACKAGE_TOP_DIR=liblibjfuse.dylib/
 
 # Functions
