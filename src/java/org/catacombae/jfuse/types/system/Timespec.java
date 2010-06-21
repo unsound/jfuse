@@ -88,7 +88,7 @@ public class Timespec {
     }
 
     public long toMillis() {
-        return this.sec*1000 + this.nsec/1000000;
+        return this.sec*1000L + this.nsec/1000000;
     }
 
     public Date toDate() {
